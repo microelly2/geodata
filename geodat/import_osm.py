@@ -752,7 +752,7 @@ def import_osm(b,l,bk,progressbar,status):
 			g=App.ActiveDocument.addObject("Part::Extrusion",name)
 			g.Base = z
 			g.ViewObject.ShapeColor = (1.00,0.00,0.00)
-			g.Dir = (0,0,1)
+			g.Dir = (0,0,10000)
 			g.Solid=True
 			g.Label=name
 
