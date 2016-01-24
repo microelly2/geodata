@@ -657,6 +657,10 @@ def import_osm(b,l,bk,progressbar,status):
 	starttime=time.time()
 	refresh=1000
 	for w in ways:
+		print w
+		wid=w['@id']
+		print wid
+		
 		building=False
 		landuse=False
 		highway=False
@@ -735,10 +739,7 @@ def import_osm(b,l,bk,progressbar,status):
 		pp=Part.makePolygon(polis)
 		Part.show(pp)
 		z=App.ActiveDocument.ActiveObject
-		if name:
-			z.Label=name+' outline'
-		else:
-			z.Label='way '
+		z.Label="w_"+wid
 
 		if name==' ':
 			g=App.ActiveDocument.addObject("Part::Extrusion",name)
@@ -794,8 +795,8 @@ def import_osm(b,l,bk,progressbar,status):
 
 
 	print "relations ..."
-	for r  in relations:
-		print r
+#	for r  in relations:
+#		print r
 
 
 	print progressbar

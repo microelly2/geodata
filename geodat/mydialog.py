@@ -38,7 +38,7 @@ VerticalLayout:
 			setMinimum: 1
 			setMaximum: 20
 			setTickInterval: 1
-			setValue: 10
+			setValue: 5
 			setTickPosition: QtGui.QSlider.TicksBothSides
 
 		QtGui.QPushButton:

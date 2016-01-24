@@ -56,6 +56,22 @@ class import_osm:
 		}
 
 
+class navigator:
+
+	def Activated(self):
+		print "run import ..."
+		import geodat.navigator
+		geodat.navigator.navi()
+		
+
+	def GetResources(self):
+		return {
+			'Pixmap'  : 'Std_Tool2', 
+			'MenuText': 'Navigator', 
+			'ToolTip': 'Navigator'
+		}
+
+
 class mydialog:
 
 	def Activated(self):
@@ -72,7 +88,9 @@ class mydialog:
 		}
 
 
+
 FreeCADGui.addCommand('Import OSM Map', mydialog())
+FreeCADGui.addCommand('Navigator', navigator())
 # FreeCADGui.addCommand('Dialog', mydialog())
 
 
@@ -88,7 +106,7 @@ class Geodat ( Workbench ):
 
 	def Initialize(self):
 		
-		cmds= ["Import OSM Map"]
+		cmds= ["Import OSM Map",'Navigator']
 		self.appendToolbar("Geo Data", cmds )
 		self.appendMenu("Geo Data", cmds)
 		Log ("Loading Goe Data Workbench ... done\n")
