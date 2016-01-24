@@ -1,3 +1,12 @@
+# -*- coding: utf-8 -*-
+#-------------------------------------------------
+#-- osm map importer
+#--
+#-- microelly 2016 v 0.3
+#--
+#-- GNU Lesser General Public License (LGPL)
+#-------------------------------------------------
+
 
 s6='''
 VerticalLayout:
@@ -7,7 +16,7 @@ VerticalLayout:
 		move:  PySide.QtCore.QPoint(3000,100)
 		
 		QtGui.QLabel:
-			setText:"C O N F I G U R A T I ON"
+			setText:"C O N F I G U R A T I O N"
 		QtGui.QLabel:
 		QtGui.QLabel:
 			setText:"Latitude"
@@ -37,7 +46,7 @@ VerticalLayout:
 			clicked.connect: app.runValues
 
 		QtGui.QPushButton:
-			setText: "Show map"
+			setText: "Show openstreet map in web browser"
 			clicked.connect: app.showMap
 
 		QtGui.QLabel:
@@ -125,7 +134,7 @@ class App(object):
 		s=self.root.ids['s'].value()
 		print [l,b,s]
 		import WebGui
-		WebGui.openBrowser( "http://www.openstreetmap.org/#map=19/"+str(b)+'/'+str(l))
+		WebGui.openBrowser( "http://www.openstreetmap.org/#map=16/"+str(b)+'/'+str(l))
 		
 
 # =17/50.26286/10.94804
