@@ -61,8 +61,10 @@ class navigator:
 	def Activated(self):
 		print "run import ..."
 		import geodat.navigator
+		FreeCADGui.activeDocument().activeView().setCameraType("Perspective")
+		FreeCADGui.updateGui() 
 		geodat.navigator.navi()
-		
+
 
 	def GetResources(self):
 		return {

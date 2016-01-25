@@ -400,7 +400,7 @@ def keypress2(ef,keystring):
 			camera.position.setValue(campos) 
 
 			nD=100
-			fD=1000000
+			fD=12000000
 			camera.nearDistance.setValue(nD)
 			camera.farDistance.setValue(fD)
 
@@ -590,7 +590,7 @@ def keypress2(ef,keystring):
 			ef.tex.filename = fn
 
 		if keystring=='F4':
-			fn='/home/thomas/Dokumente/freecad_buch/b175_camera_controller/samstag.jpg'
+			fn='/home/thomas/Dokumente/freecad_buch/b175_camera_controller/winter.jpg'
 			ef.tex.filename = fn
 
 
@@ -943,8 +943,8 @@ def huhu():
 import os
 def background1(ef):
 	print "hintergrund 1"
-	fn='/home/thomas/Dokumente/freecad_buch/b175_camera_controller/samstag.jpg'
-	fn=os.path.dirname(__file__) +"/../pics/samstag.jpg"
+	fn='/home/thomas/Dokumente/freecad_buch/b175_camera_controller/winter.jpg'
+	fn=os.path.dirname(__file__) +"/../pics/winter.jpg"
 	ef.tex.filename = fn
 
 def background2(ef):
@@ -997,6 +997,8 @@ def navi():
 	from PySide import QtGui
 	from pivy import coin
 
+	FreeCADGui.activeDocument().activeView().setCameraType("Perspective")
+
 	mw=QtGui.qApp
 	#widget.setCursor(QtCore.Qt.SizeAllCursor)
 	#cursor ausblenden
@@ -1008,7 +1010,7 @@ def navi():
 
 	ef.laenge=0.0
 	ef.breite=0.0
-	ef.campos=FreeCAD.Vector( 0, 0, 2000)
+	ef.campos=FreeCAD.Vector( 0, 0, 20000)
 	# ef.output.hide()
 
 	ef.mouseMode=False
@@ -1028,7 +1030,9 @@ def navi():
 	 
 	# get a jpg filename
 	## jpgfilename = QtGui.QFileDialog.getOpenFileName(QtGui.qApp.activeWindow(),'Open image file','*.jpg')
-	fn='/home/thomas/Dokumente/freecad_buch/b175_camera_controller/P1170039.JPG'
+	fn='/home/thomas/Dokumente/freecad_buch/b175_camera_controller/winter.jpg'
+	import os
+	fn=os.path.dirname(__file__) +"/../pics/winter.jpg"
 
 	sg = FreeCADGui.ActiveDocument.ActiveView.getSceneGraph()
 	print sg
@@ -1059,7 +1063,7 @@ def navi():
 
 
 		cub = coin.SoSphere()
-		cub.radius.setValue(500000)
+		cub.radius.setValue(10000000)
 
 
 
@@ -1076,7 +1080,7 @@ def navi():
 		myCustomNode.addChild(s)
 
 
-
+	if False:
 		l=coin.SoDirectionalLight()
 		l.direction.setValue(coin.SbVec3f(0,1,0))
 		l.color.setValue(coin.SbColor(0,0,1))
