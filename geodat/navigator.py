@@ -324,7 +324,7 @@ def stop():
 	mw.removeEventFilter(ef)
 	#mw.setOverrideCursor(QtCore.Qt.SizeAllCursor)
 	mw.setOverrideCursor(QtCore.Qt.ArrowCursor)
-	FreeCADGui.activateWorkbench("Geodat")
+#	FreeCADGui.activateWorkbench("Geodat")
 	sg = FreeCADGui.ActiveDocument.ActiveView.getSceneGraph()
 	
 	ef.output.deleteLater()
@@ -997,7 +997,7 @@ def navi():
 	from PySide import QtGui
 	from pivy import coin
 
-	FreeCADGui.activeDocument().activeView().setCameraType("Perspective")
+
 
 	mw=QtGui.qApp
 	#widget.setCursor(QtCore.Qt.SizeAllCursor)
