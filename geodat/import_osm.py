@@ -35,6 +35,9 @@ from xml.parsers import expat
 from xml.sax.saxutils import XMLGenerator
 from xml.sax.xmlreader import AttributesImpl
 
+import pivy 
+from pivy import coin
+
 try:
     from cStringIO import StringIO
 except ImportError:  # pragma no cover
@@ -647,6 +650,16 @@ def import_osm(b,l,bk,progressbar,status):
 
 	App.newDocument("OSM Map")
 	area=App.ActiveDocument.addObject("Part::Plane","area")
+	obj = FreeCAD.ActiveDocument.ActiveObject
+	viewprovider = obj.ViewObject
+	root=viewprovider.RootNode
+	myLight = coin.SoDirectionalLight()
+	myLight.color.setValue(coin.SbColor(0,1,0))
+	root.insertChild(myLight, 0)
+
+
+
+
 	area.Length=size[0]*2
 	area.Width=size[1]*2
 	area.Placement=FreeCAD.Placement(FreeCAD.Vector(-size[0],-size[1],0.00),FreeCAD.Rotation(0.00,0.00,0.00,1.00))
@@ -752,9 +765,53 @@ def import_osm(b,l,bk,progressbar,status):
 		if building:
 			g=App.ActiveDocument.addObject("Part::Extrusion",name)
 			g.Base = z
-			g.ViewObject.ShapeColor = (1.00,0.00,0.00)
+			g.ViewObject.ShapeColor = (1.00,1.00,1.00)
+			
 			g.Dir = (0,0,10000)
 			g.Solid=True
+			
+			obj = FreeCAD.ActiveDocument.ActiveObject
+			viewprovider = obj.ViewObject
+			root=viewprovider.RootNode
+			#myLight = coin.SoDirectionalLight()
+			#root.insertChild(myLight, 0)
+
+			l=coin.SoDirectionalLight()
+			l.direction.setValue(coin.SbVec3f(0,1,0))
+			l.color.setValue(coin.SbColor(0,0,1))
+			root.insertChild(l, 0)
+			l=coin.SoDirectionalLight()
+			l.direction.setValue(coin.SbVec3f(1,0,0))
+			l.color.setValue(coin.SbColor(0,1,0))
+			root.insertChild(l, 0)
+
+			l=coin.SoDirectionalLight()
+			l.direction.setValue(coin.SbVec3f(0,-1,0))
+			l.color.setValue(coin.SbColor(1,0,1))
+			root.insertChild(l, 0)
+			
+			l=coin.SoDirectionalLight()
+			l.direction.setValue(coin.SbVec3f(-1,0,0))
+			l.color.setValue(coin.SbColor(0,1,1))
+			root.insertChild(l, 0)
+
+			l=coin.SoDirectionalLight()
+			l.direction.setValue(coin.SbVec3f(0,0,1))
+			l.color.setValue(coin.SbColor(1,0,0))
+			root.insertChild(l, 0)
+			
+			l=coin.SoDirectionalLight()
+			l.direction.setValue(coin.SbVec3f(0,0,-1))
+			l.color.setValue(coin.SbColor(1,1,0))
+			root.insertChild(l, 0)
+
+			
+
+
+
+
+
+
 			g.Label=name
 
 		if landuse:
