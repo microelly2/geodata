@@ -99,6 +99,8 @@ def run(b0=50.35,l0=11.17,b=50.35,l=11.17,size=40):
 	source="https://maps.googleapis.com/maps/api/elevation/json?locations="
 	#b0=50.35
 	#l0=11.17
+	
+	
 	for i in range(-size,size):
 		bb=b+i*0.001
 		ll=l+i*0.001
@@ -116,7 +118,7 @@ def run(b0=50.35,l0=11.17,b=50.35,l=11.17,size=40):
 
 	tm.lat=b0
 	tm.lon=l0
-
+	baseheight=getheight(tm.lat,tm.lon)
 
 	response = urllib2.urlopen(source)
 	ans=response.read()
@@ -129,7 +131,7 @@ def run(b0=50.35,l0=11.17,b=50.35,l=11.17,size=40):
 	#tm.lat=52.5073
 	#tm.lon=13.1881
 
-	baseheight=getheight(tm.lat,tm.lon)
+	
 
 
 	center=tm.fromGeographic(tm.lat,tm.lon)
@@ -152,6 +154,9 @@ def run(b0=50.35,l0=11.17,b=50.35,l=11.17,size=40):
 	
 	
 	Draft.makeWire(points,closed=False,face=False,support=None)
+	FreeCAD.activeDocument().recompute()
+	FreeCADGui.updateGui()
+
 	return App.ActiveDocument.ActiveObject
 	print points[0]
 	print points[-1]
@@ -161,7 +166,7 @@ def import_heights(b,l,size):
 	# altstadt sonneberg/we
 	##b=50.3689;l=11.174;size=15
 	size=int(size)
-	size=15
+	size=10
 	# outdoor inn
 	##b=50.3736049;l=11.191643
 	
@@ -172,11 +177,14 @@ def import_heights(b,l,size):
 	for ld in range(-size,size): 
 		res=run(b,l,b,l +ld*0.001,size)
 		lines.append(res)
-		res.ViewObject.Visibility=False
+		# res.ViewObject.Visibility=False
+		
 		
 
 	ll=App.ActiveDocument.addObject('Part::Loft','Loft')
 	ll.Sections=lines
+	for l in lines:
+		l.ViewObject.Visibility=False
 	
 	#---------------
 	if True:
