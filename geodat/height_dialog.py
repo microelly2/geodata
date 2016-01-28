@@ -28,7 +28,9 @@ VerticalLayout:
 			setText: "Run values"
 			clicked.connect: app.runbl
 
+'''
 
+ss='''
 
 		QtGui.QLabel:
 			setText:"Latitude"
@@ -138,14 +140,15 @@ class App(object):
 		l=float(spli[1])
 		
 		
-		s=self.root.ids['s'].value()
+		# s=self.root.ids['s'].value()
+		s=15
 		print [l,b,s]
 		import WebGui
 #		WebGui.openBrowser( "http://www.openstreetmap.org/#map=19/"+str(b)+'/'+str(l))
-		import geodat.import_osm
-		reload(geodat.import_osm)
+		import geodat.import_heights
+		reload(geodat.import_heights)
 		print "Start"
-		geodat.import_osm.import_osm(float(b),float(l),float(s)/10,self.root.ids['progb'],self.root.ids['status'])
+		geodat.import_heights.import_heights(float(b),float(l),float(s))
 
 
 

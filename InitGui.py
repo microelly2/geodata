@@ -79,6 +79,7 @@ class mydialog:
 	def Activated(self):
 		print "run import ..."
 		import geodat.mydialog
+		reload(geodat.mydialog)
 		geodat.mydialog.mydialog()
 		
 
@@ -90,10 +91,26 @@ class mydialog:
 		}
 
 
+class importheights:
+
+	def Activated(self):
+		print "run import ..."
+		import geodat.height_dialog
+		reload(geodat.height_dialog)
+		geodat.height_dialog.mydialog()
+		
+
+	def GetResources(self):
+		return {
+			'Pixmap'  : 'Std_Tool1', 
+			'MenuText': 'Import OSM Heights', 
+			'ToolTip': 'Import OSM Heights'
+		}
+
 
 FreeCADGui.addCommand('Import OSM Map', mydialog())
 FreeCADGui.addCommand('Navigator', navigator())
-# FreeCADGui.addCommand('Dialog', mydialog())
+FreeCADGui.addCommand('Import Heights', importheights())
 
 
 
@@ -108,7 +125,7 @@ class Geodat ( Workbench ):
 
 	def Initialize(self):
 		
-		cmds= ["Import OSM Map",'Navigator']
+		cmds= ["Import OSM Map",'Navigator','Import Heights']
 		self.appendToolbar("Geo Data", cmds )
 		self.appendMenu("Geo Data", cmds)
 		Log ("Loading Goe Data Workbench ... done\n")

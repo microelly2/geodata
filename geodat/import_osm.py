@@ -28,8 +28,9 @@ https://github.com/vvoovv/blender-geo/wiki/Import-OpenStreetMap-(.osm)
 '''
 
 import FreeCAD,FreeCADGui
+App=FreeCAD
 
-import json
+import json,urllib2
 
 from xml.parsers import expat
 from xml.sax.saxutils import XMLGenerator
@@ -484,6 +485,45 @@ class TransverseMercator:
 #------------------------------
 
 
+def getheight(b,l):
+
+	source="https://maps.googleapis.com/maps/api/elevation/json?locations="+str(b)+','+str(l)
+	response = urllib2.urlopen(source)
+	ans=response.read()
+	print ans
+	import json
+	s=json.loads(ans)
+	res=s['results']
+	for r in res:
+		return round(r['elevation']*1000,2)
+
+
+
+
+def organize():
+	highways=App.activeDocument().addObject("App::DocumentObjectGroup","GRP_highways")
+	landuse=App.activeDocument().addObject("App::DocumentObjectGroup","GRP_landuse")
+	buildings=App.activeDocument().addObject("App::DocumentObjectGroup","GRP_building")
+	pathes=App.activeDocument().addObject("App::DocumentObjectGroup","GRP_pathes")
+
+	for oj in App.activeDocument().Objects:
+		if oj.Label.startswith('building'):
+			buildings.addObject(oj)
+			# oj.ViewObject.Visibility=False
+		if oj.Label.startswith('highway') or oj.Label.startswith('way'):
+			highways.addObject(oj)
+			oj.ViewObject.Visibility=False
+		if oj.Label.startswith('landuse'):
+			landuse.addObject(oj)
+			oj.ViewObject.Visibility=False
+		if oj.Label.startswith('w_'):
+			pathes.addObject(oj)
+			oj.ViewObject.Visibility=False
+
+
+
+
+
 def import_osm(b,l,bk,progressbar,status):
 
 
@@ -507,7 +547,11 @@ def import_osm(b,l,bk,progressbar,status):
 
 
 
+
 	import urllib2
+
+
+
 
 	if progressbar:
 			progressbar.setValue(0)
@@ -572,6 +616,7 @@ def import_osm(b,l,bk,progressbar,status):
 				content += line
 	'''
 
+	baseheight=getheight(b,l)
 
 	print "---------------------"
 	print content
@@ -622,7 +667,10 @@ def import_osm(b,l,bk,progressbar,status):
 
 	# map all points to xy-plane
 	points={}
+	nodesbyid={}
 	for n in nodes:
+		nodesbyid[n['@id']]=n
+		print n
 		ll=tm.fromGeographic(float(n['@lat']),float(n['@lon']))
 		points[str(n['@id'])]=FreeCAD.Vector(ll[0]-center[0],ll[1]-center[1],0.0)
 		print  points[str(n['@id'])]
@@ -649,6 +697,7 @@ def import_osm(b,l,bk,progressbar,status):
 		FreeCADGui.updateGui()
 
 	App.newDocument("OSM Map")
+
 	area=App.ActiveDocument.addObject("Part::Plane","area")
 	obj = FreeCAD.ActiveDocument.ActiveObject
 	viewprovider = obj.ViewObject
@@ -657,8 +706,24 @@ def import_osm(b,l,bk,progressbar,status):
 	myLight.color.setValue(coin.SbColor(0,1,0))
 	root.insertChild(myLight, 0)
 
-
-
+	if True:
+		cam='''#Inventor V2.1 ascii
+		OrthographicCamera {
+		  viewportMapping ADJUST_CAMERA
+		  orientation 0 0 -1.0001  0.001
+		  nearDistance 0
+		  farDistance 10000000000
+		  aspectRatio 100
+		  focalDistance 1
+		'''
+		x=0
+		y=0
+		height=1000000
+		height=200*bk*10000/0.6
+		cam += '\nposition ' +str(x) + ' ' + str(y) + ' 999\n '
+		cam += '\nheight ' + str(height) + '\n}\n\n'
+		FreeCADGui.activeDocument().activeView().setCamera(cam)
+		FreeCADGui.activeDocument().activeView().viewAxonometric()
 
 	area.Length=size[0]*2
 	area.Width=size[1]*2
@@ -724,6 +789,8 @@ def import_osm(b,l,bk,progressbar,status):
 						st=beaustring(zz)
 					if str(t['@k'])=='landuse':
 						landuse=True
+						st=w['tag']['@k']
+						nr=w['tag']['@v']
 				except:
 					print "unexpected error ################################################################"
 			else:
@@ -741,12 +808,25 @@ def import_osm(b,l,bk,progressbar,status):
 					nr=w['tag']['@v']
 					highway=True
 			name=str(st) + " " + str(nr)
+			if name==' ':
+				name='landuse xyz'
 			if debug: print "name ",name
 
 		#generate pointlist of the way
 		polis=[]
+		height=None
 		for n in w['nd']:
-			polis.append(points[str(n['@ref'])])
+			p=points[str(n['@ref'])]
+			print p
+			print n
+			print nodesbyid[n['@ref']]
+			m=nodesbyid[n['@ref']]
+			print "---------------------"
+			if building:
+				if not height:
+					height=getheight(float(m['@lat']),float(m['@lon'])) - baseheight
+				p.z=height
+			polis.append(p)
 
 		#create 2D map
 		pp=Part.makePolygon(polis)
@@ -769,6 +849,8 @@ def import_osm(b,l,bk,progressbar,status):
 			
 			g.Dir = (0,0,10000)
 			g.Solid=True
+			
+			
 			
 			obj = FreeCAD.ActiveDocument.ActiveObject
 			viewprovider = obj.ViewObject
@@ -839,14 +921,14 @@ def import_osm(b,l,bk,progressbar,status):
 		refresh += 1
 		if refresh >100:
 			FreeCADGui.updateGui()
-			FreeCADGui.SendMsgToActiveView("ViewFit")
+			# FreeCADGui.SendMsgToActiveView("ViewFit")
 			refresh=0
 
 
 	FreeCAD.activeDocument().recompute()
 	FreeCADGui.updateGui()
 
-	FreeCADGui.SendMsgToActiveView("ViewFit")
+	# FreeCADGui.SendMsgToActiveView("ViewFit")
 
 	FreeCAD.activeDocument().recompute()
 
@@ -862,6 +944,9 @@ def import_osm(b,l,bk,progressbar,status):
 		status.setText("import finished.")
 	if progressbar:
 			progressbar.setValue(100)
+			
+	organize()
+
 
 
 
