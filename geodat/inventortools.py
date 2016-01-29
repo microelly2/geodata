@@ -1,0 +1,44 @@
+
+def setcolorlights(obj):
+	''' lichter auf objekte legen '''
+
+	import pivy
+	from pivy import coin
+	# obj = ll
+	obj.ViewObject.ShapeColor = (1.00,1.00,1.00)
+	obj.ViewObject.LineColor = (1.00,1.00,.00)
+	obj.ViewObject.LineWidth = 1.00
+	
+	viewprovider = obj.ViewObject
+	root=viewprovider.RootNode
+	#myLight = coin.SoDirectionalLight()
+	#root.insertChild(myLight, 0)
+
+	l=coin.SoDirectionalLight()
+	l.direction.setValue(coin.SbVec3f(0,1,0))
+	l.color.setValue(coin.SbColor(0,1,0))
+	root.insertChild(l, 0)
+	l=coin.SoDirectionalLight()
+	l.direction.setValue(coin.SbVec3f(1,0,0))
+	l.color.setValue(coin.SbColor(0,1,0))
+	root.insertChild(l, 0)
+
+	l=coin.SoDirectionalLight()
+	l.direction.setValue(coin.SbVec3f(0,-1,0))
+	l.color.setValue(coin.SbColor(0,1,0))
+	root.insertChild(l, 0)
+	
+	l=coin.SoDirectionalLight()
+	l.direction.setValue(coin.SbVec3f(-1,0,0))
+	l.color.setValue(coin.SbColor(0,1,0))
+	root.insertChild(l, 0)
+
+	l=coin.SoDirectionalLight()
+	l.direction.setValue(coin.SbVec3f(0,0,1))
+	l.color.setValue(coin.SbColor(0,1,0))
+	root.insertChild(l, 0)
+	
+	l=coin.SoDirectionalLight()
+	l.direction.setValue(coin.SbVec3f(0,0,-1))
+	l.color.setValue(coin.SbColor(0,1,0))
+	root.insertChild(l, 0)

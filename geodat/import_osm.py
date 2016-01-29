@@ -485,7 +485,11 @@ class TransverseMercator:
 #------------------------------
 
 
+
 def getheight(b,l):
+	
+	# hard coded no height 
+	# return 0.0
 
 	source="https://maps.googleapis.com/maps/api/elevation/json?locations="+str(b)+','+str(l)
 	response = urllib2.urlopen(source)
@@ -670,10 +674,10 @@ def import_osm(b,l,bk,progressbar,status):
 	nodesbyid={}
 	for n in nodes:
 		nodesbyid[n['@id']]=n
-		print n
+#		print n
 		ll=tm.fromGeographic(float(n['@lat']),float(n['@lon']))
 		points[str(n['@id'])]=FreeCAD.Vector(ll[0]-center[0],ll[1]-center[1],0.0)
-		print  points[str(n['@id'])]
+#		print  points[str(n['@id'])]
 
 
 
@@ -750,7 +754,7 @@ def import_osm(b,l,bk,progressbar,status):
 		
 		nowtime=time.time()
 		print
-		if wn<>0: print "way -------- # " + str(wn) + "/" + str(coways) + " time per house : " +  str(round((nowtime-starttime)/wn,4))
+		if wn<>0: print "!!way -------- # " + str(wn) + "/" + str(coways) + " time per house : " +  str(round((nowtime-starttime)/wn,4))
 		if progressbar:
 			progressbar.setValue(int(0+100.0*wn/coways))
 		
@@ -758,6 +762,7 @@ def import_osm(b,l,bk,progressbar,status):
 		if debug: print "tags ..."
 		st=""
 		nr=""
+		h=0
 		try:
 			w['tag']
 		except:
@@ -766,10 +771,11 @@ def import_osm(b,l,bk,progressbar,status):
 
 		for t in w['tag']:
 			if t.__class__.__name__ == 'OrderedDict':
+				print "Dict #############################"
 				try:
 					#list of tags
-					if debug: print t
-					print t['@k'],' = ', t['@v']
+					if  1 or debug: print t
+					print "!"+t['@k']+'! = !'+ t['@v'] +'!'
 					if str(t['@k'])=='highway':
 						highway=True
 						st=t['@k']
@@ -782,8 +788,20 @@ def import_osm(b,l,bk,progressbar,status):
 					if str(t['@k'])=='building':
 						building=True
 						st='building'
+					
 					if str(t['@k'])=='addr:housenumber':
 						nr=str(t['@v'])
+
+					if str(t['@k'])=='building:levels':
+						print "----------------------------yy--levesl----------------xxxxxxxxxxxxxxxxxx"
+						if h==0:
+							h=int(str(t['@v']))*1000*3
+#						else:
+#							h=400000 
+					if str(t['@k'])=='building:height':
+						print "-----------------------------yy-height---------------xxxxxxxxxxxxxxxxxx"
+						h=int(str(t['@v']))*1000
+
 					if str(t['@k'])=='addr:street':
 						zz=w['tag'][1]['@v']
 						st=beaustring(zz)
@@ -795,10 +813,22 @@ def import_osm(b,l,bk,progressbar,status):
 					print "unexpected error ################################################################"
 			else:
 				# single tag only 
-				if debug: print [w['tag']['@k'],w['tag']['@v']]
+				print "SIMMPLE"
+				if 1 or debug: print [w['tag']['@k'],w['tag']['@v']]
 				if str(w['tag']['@k'])=='building':
 					building=True
 					st='building'
+
+				if str(w['tag']['@k'])=='building:levels':
+					print "-------------------------------ss---levels------------xxxxxxxxxxxxxxxxxx"
+					if h==0:
+						h=int(str(w['tag']['@v']))*1000*3
+				if str(w['tag']['@k'])=='building:height':
+					print "---------------------------------ss----height---------xxxxxxxxxxxxxxxxxx"
+					h=int(str(w['tag']['@v']))*1000
+
+
+
 				if str(w['tag']['@k'])=='landuse':
 					landuse=True
 					st=w['tag']['@k']
@@ -821,7 +851,7 @@ def import_osm(b,l,bk,progressbar,status):
 			print n
 			print nodesbyid[n['@ref']]
 			m=nodesbyid[n['@ref']]
-			print "---------------------"
+			print "---------------------!!"
 			if building:
 				if not height:
 					height=getheight(float(m['@lat']),float(m['@lon'])) - baseheight
@@ -847,7 +877,9 @@ def import_osm(b,l,bk,progressbar,status):
 			g.Base = z
 			g.ViewObject.ShapeColor = (1.00,1.00,1.00)
 			
-			g.Dir = (0,0,10000)
+			if h==0:
+				h=10000
+			g.Dir = (0,0,h)
 			g.Solid=True
 			
 			

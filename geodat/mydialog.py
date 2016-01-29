@@ -7,6 +7,17 @@
 #-- GNU Lesser General Public License (LGPL)
 #-------------------------------------------------
 
+'''
+{
+   "error_message" : "You have exceeded your daily request quota for this API. We recommend registering for a key at the Google Developers Console: https://console.developers.google.com/",
+   "results" : [],
+   "status" : "OVER_QUERY_LIMIT"
+}
+
+'''
+
+
+
 
 s6='''
 VerticalLayout:
@@ -18,15 +29,26 @@ VerticalLayout:
 		QtGui.QLabel:
 			setText:"C O N F I G U R A T I O N"
 		QtGui.QLabel:
-
-
 		QtGui.QLineEdit:
 			setText:"50.3736049,11.191643"
-#			setText:"50.3736049/11.191643"
 			id: 'bl'
 		QtGui.QPushButton:
 			setText: "Run values"
 			clicked.connect: app.runbl
+
+
+		QtGui.QPushButton:
+			setText: "Run Alexanderplatz  Haus des Lehrers"
+			clicked.connect: app.run_alex
+
+
+		QtGui.QPushButton:
+			setText: "Run Paris Rue de Seine"
+			clicked.connect: app.run_paris
+
+		QtGui.QPushButton:
+			setText: "Run Tokyo near tower"
+			clicked.connect: app.run_tokyo
 
 
 
@@ -122,9 +144,47 @@ class App(object):
 		print s
 		pb.setValue(v)
 		
+
+	def run_alex(self):
+		import geodat.import_osm
+		reload(geodat.import_osm)
+		s=self.root.ids['s'].value()
+
+		#52.5219184,13.4110207
+		
+		b=52.52128
+		l=13.41646
+		print s
+		geodat.import_osm.import_osm(b,l,float(s)/10,self.root.ids['progb'],self.root.ids['status'])
+
+
+	def run_paris(self):
+		import geodat.import_osm
+		reload(geodat.import_osm)
+		s=self.root.ids['s'].value()
+		b=48.85167
+		l=2.33669
+		print s
+		geodat.import_osm.import_osm(b,l,float(s)/10,self.root.ids['progb'],self.root.ids['status'])
+
+
+
+
+
+	def run_tokyo(self):
+		import geodat.import_osm
+		reload(geodat.import_osm)
+		s=self.root.ids['s'].value()
+		b=35.65905
+		l=139.74991
+		print s
+		geodat.import_osm.import_osm(b,l,float(s)/10,self.root.ids['progb'],self.root.ids['status'])
+
+
 	def run3(self):
 		import geodat.import_osm
-		geodat.import_osm.import_osm(52.508,13.18,1.3,self.root.ids['progb'],self.root.ids['status'])
+		s=self.root.ids['s'].value()
+		geodat.import_osm.import_osm(52.508,13.18,float(s)/10,self.root.ids['progb'],self.root.ids['status'])
 
 	def run_co2(self):
 		import geodat.import_osm
