@@ -108,9 +108,29 @@ class importheights:
 		}
 
 
+class createHouse:
+
+	def Activated(self):
+		print "run import ..."
+		import geodat.createhouse
+		reload(geodat.createhouse)
+		geodat.createhouse.mydialog()
+		
+
+	def GetResources(self):
+		return {
+			'Pixmap'  : 'Std_Tool1', 
+			'MenuText': 'Create Houses', 
+			'ToolTip': 'Create House '
+		}
+
+
+
+
 FreeCADGui.addCommand('Import OSM Map', mydialog())
 FreeCADGui.addCommand('Navigator', navigator())
 FreeCADGui.addCommand('Import Heights', importheights())
+FreeCADGui.addCommand('Create House', createHouse())
 
 
 
@@ -125,7 +145,7 @@ class Geodat ( Workbench ):
 
 	def Initialize(self):
 		
-		cmds= ["Import OSM Map",'Navigator','Import Heights']
+		cmds= ["Import OSM Map",'Navigator','Import Heights','Create House']
 		self.appendToolbar("Geo Data", cmds )
 		self.appendMenu("Geo Data", cmds)
 		Log ("Loading Goe Data Workbench ... done\n")
