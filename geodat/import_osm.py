@@ -484,16 +484,24 @@ class TransverseMercator:
 #
 #------------------------------
 
-
+import time
 
 def getheight(b,l):
 	
 	# hard coded no height 
 	# return 0.0
+	anz=0
+	while anz<4:
+			source="https://maps.googleapis.com/maps/api/elevation/json?locations="+str(b)+','+str(l)
+			response = urllib2.urlopen(source)
+			ans=response.read()
+			if ans.find("OVER_QUERY_LIMIT"):
+				anz += 1
+				time.sleep(5)
+			else:
+				anz=10
 
-	source="https://maps.googleapis.com/maps/api/elevation/json?locations="+str(b)+','+str(l)
-	response = urllib2.urlopen(source)
-	ans=response.read()
+
 	print ans
 	import json
 	s=json.loads(ans)
@@ -502,6 +510,45 @@ def getheight(b,l):
 		return round(r['elevation']*1000,2)
 
 
+import time
+
+def get_heights(points):
+	
+	
+	
+	i=0
+	size=len(points)
+	while i<size:
+		source="https://maps.googleapis.com/maps/api/elevation/json?locations="
+		ii=0
+		if i>0:
+			time.sleep(1)
+		while ii < 20 and i < size:
+			p=points[i]
+			ss= p[1]+','+p[2] + '|'
+			source += ss
+			i += 1
+			ii += 1
+		source += "60.0,10.0"
+		print "###############"
+		print source
+		print "###############"
+		response = urllib2.urlopen(source)
+		ans=response.read()
+		#+# to do: error handling  - wait and try again
+		print ans
+		s=json.loads(ans)
+		res=s['results']
+		
+		heights= {}
+		for r in res:
+			
+			key="%0.7f" %(r['location']['lat']) + " " + "%0.7f" %(r['location']['lng'])
+			heights[key]=r['elevation']
+		print "--------------------", i, " " ,ii
+		print heights
+	
+	return heights
 
 
 def organize():
@@ -845,6 +892,17 @@ def import_osm(b,l,bk,progressbar,status):
 		#generate pointlist of the way
 		polis=[]
 		height=None
+		
+		llpoints=[]
+		for n in w['nd']:
+			m=nodesbyid[n['@ref']]
+			llpoints.append([n['@ref'],m['@lat'],m['@lon']])
+		heights=get_heights(llpoints)
+		print "okay"
+		
+		
+		
+		
 		for n in w['nd']:
 			p=points[str(n['@ref'])]
 			print p
@@ -854,7 +912,12 @@ def import_osm(b,l,bk,progressbar,status):
 			print "---------------------!!"
 			if building:
 				if not height:
-					height=getheight(float(m['@lat']),float(m['@lon'])) - baseheight
+					# height=getheight(float(m['@lat']),float(m['@lon'])) - baseheight
+					try:
+						height=heights[m['@lat']+' '+m['@lon']]*1000 - baseheight
+					except:
+						print "-------------!!!!!  -----------KEY error " + m['@lat']+' '+m['@lon']
+						height=0
 				p.z=height
 			polis.append(p)
 

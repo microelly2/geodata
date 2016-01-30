@@ -21,8 +21,9 @@ VerticalLayout:
 
 
 		QtGui.QLineEdit:
-			setText:"50.3736049,11.191643"
-#			setText:"50.3736049/11.191643"
+			setText:"50.3377879,11.2104096"
+#			setText:"50.3736049,11.191643"
+
 			id: 'bl'
 		QtGui.QPushButton:
 			setText: "Run values"

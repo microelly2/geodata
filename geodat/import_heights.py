@@ -76,7 +76,7 @@ def run(b0=50.35,l0=11.17,b=50.35,le=11.17,size=40):
 def import_heights(b,le,size):
 
 	size=int(size)
-	size=10
+	size=20
 
 	lines=[]
 	for ld in range(-size,size): 
