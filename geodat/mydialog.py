@@ -2,7 +2,7 @@
 #-------------------------------------------------
 #-- osm map importer
 #--
-#-- microelly 2016 v 0.3
+#-- microelly 2016 v 0.4
 #--
 #-- GNU Lesser General Public License (LGPL)
 #-------------------------------------------------
@@ -17,63 +17,37 @@
 '''
 
 
-
-
 s6='''
 VerticalLayout:
 		id:'main'
 		setFixedHeight: 600
-		setFixedWidth: 600
+		setFixedWidth: 730
+		setFixedWidth: 654
 		move:  PySide.QtCore.QPoint(3000,100)
 
 		QtGui.QLabel:
 			setText:"C O N F I G U R A T I O N"
 		QtGui.QLabel:
 		QtGui.QLineEdit:
-			setText:"50.3736049,11.191643"
-			setText:"50.3377879,11.2104096"
+			setText:"50.340722, 11.232647"
+#			setText:"50.3736049,11.191643"
+#			setText:"50.3377879,11.2104096"
 			id: 'bl'
-		QtGui.QPushButton:
-			setText: "Run values"
-			clicked.connect: app.runbl
-
-
-		QtGui.QPushButton:
-			setText: "Run Alexanderplatz  Haus des Lehrers"
-			clicked.connect: app.run_alex
-
-
-		QtGui.QPushButton:
-			setText: "Run Paris Rue de Seine"
-			clicked.connect: app.run_paris
-
-		QtGui.QPushButton:
-			setText: "Run Tokyo near tower"
-			clicked.connect: app.run_tokyo
-
-
 
 		QtGui.QLabel:
-			setText:"Latitude"
-
-		QtGui.QLineEdit:
-			setText:"50.2631171"
-			id: 'b'
-
-
-
+		QtGui.QCheckBox:
+			id: 'elevation' 
+			setText: 'Process Elevation Data'
 
 		QtGui.QLabel:
-			setText:"Longitude"
-		QtGui.QLineEdit:
-			setText:"10.9483120"
-			id: 'l'
 		QtGui.QLabel:
-			setText:"Length of the Square 0,1 km ... 4 km"
+			setText:"Length of the Square 0 km ... 4 km, default 0.5 km  "
+		QtGui.QLabel:
+			setText:"0*2_4_6_8*#*2_4_6_8*1*2_4_6_8*#*2_4_6_8*2*2_4_6_8*#*2_4_6_8*3*2_4_6_8*#*2_4_6_8*4"
 		QtGui.QSlider:
 			id:'s'
 			setOrientation: PySide.QtCore.Qt.Orientation.Horizontal
-			setMinimum: 1
+			setMinimum: 0
 			setMaximum: 40
 			setTickInterval: 1
 			setValue: 2
@@ -81,7 +55,7 @@ VerticalLayout:
 
 		QtGui.QPushButton:
 			setText: "Run values"
-			clicked.connect: app.runValues
+			clicked.connect: app.runbl
 
 		QtGui.QPushButton:
 			setText: "Show openstreet map in web browser"
@@ -89,21 +63,38 @@ VerticalLayout:
 
 		QtGui.QLabel:
 		QtGui.QLabel:
-		QtGui.QLabel:
 			setText:"P R E D E F I N E D   L O C A T I O N S"
+		QtGui.QLabel:
 
-		QtGui.QPushButton:
-			setText: "Run import spandau"
-			clicked.connect: app.run3
+		QtGui.QRadioButton:
+			setText: "Sonneberg Outdoor Inn"
+			clicked.connect: app.run_sternwarte
 
-		QtGui.QPushButton:
-			setText: "Run import coburg university and school "
+		QtGui.QRadioButton:
+			setText: "Coburg university and school "
 			clicked.connect: app.run_co2
+
+		QtGui.QRadioButton:
+			setText: "Berlin Alexanderplatz/Haus des Lehrers"
+			clicked.connect: app.run_alex
+
+		QtGui.QRadioButton:
+			setText: "Berlin Spandau"
+			clicked.connect: app.run_spandau
+
+		QtGui.QRadioButton:
+			setText: "Paris Rue de Seine"
+			clicked.connect: app.run_paris
+
+		QtGui.QRadioButton:
+			setText: "Tokyo near tower"
+			clicked.connect: app.run_tokyo
+
+
 		QtGui.QLabel:
 		QtGui.QLabel:
 			setText:"P R O C E S S I N G:"
 			id: "status"
-
 
 		QtGui.QLabel:
 			setText:"---"
@@ -111,10 +102,6 @@ VerticalLayout:
 
 		QtGui.QProgressBar:
 			id: "progb"
-#		QtGui.QSlider:
-#			id:'slider'
-#			setOrientation: PySide.QtCore.Qt.Orientation.Horizontal
-#			valueChanged.connect: app.run2
 
 '''
 
@@ -122,8 +109,7 @@ import FreeCAD,FreeCADGui
 
 class App(object):
 
-
-	def run(self):
+	def runXX(self):
 		print "run app"
 		print self
 		s=self.root.ids['otto']
@@ -134,62 +120,32 @@ class App(object):
 		v=pb.value()
 		pb.setValue(v+5)
 
-
-	def run2(self,v=1234):
-		print "run2 app"
-		print self
-		print "value ",v
-		s=self.root.ids['otto']
-		print s
-		pb=self.root.ids['progb']
-		print s
-		pb.setValue(v)
-		
+	def run(self,b,l):
+		import geodat.import_osm
+		reload(geodat.import_osm)
+		s=self.root.ids['s'].value()
+		key="%0.7f" %(b) + "," + "%0.7f" %(l)
+		self.root.ids['bl'].setText(key)
+		geodat.import_osm.import_osm(b,l,float(s)/10,self.root.ids['progb'],self.root.ids['status'])
 
 	def run_alex(self):
-		import geodat.import_osm
-		reload(geodat.import_osm)
-		s=self.root.ids['s'].value()
-
-		#52.5219184,13.4110207
-		
-		b=52.52128
-		l=13.41646
-		print s
-		geodat.import_osm.import_osm(b,l,float(s)/10,self.root.ids['progb'],self.root.ids['status'])
-
+		self.run(52.52128,l=13.41646)
 
 	def run_paris(self):
-		import geodat.import_osm
-		reload(geodat.import_osm)
-		s=self.root.ids['s'].value()
-		b=48.85167
-		l=2.33669
-		print s
-		geodat.import_osm.import_osm(b,l,float(s)/10,self.root.ids['progb'],self.root.ids['status'])
-
-
-
-
+		self.run(48.85167,2.33669)
 
 	def run_tokyo(self):
-		import geodat.import_osm
-		reload(geodat.import_osm)
-		s=self.root.ids['s'].value()
-		b=35.65905
-		l=139.74991
-		print s
-		geodat.import_osm.import_osm(b,l,float(s)/10,self.root.ids['progb'],self.root.ids['status'])
+		self.run(35.65905,139.74991)
 
-
-	def run3(self):
-		import geodat.import_osm
-		s=self.root.ids['s'].value()
-		geodat.import_osm.import_osm(52.508,13.18,float(s)/10,self.root.ids['progb'],self.root.ids['status'])
+	def run_spandau(self):
+		self.run(52.508,13.18)
 
 	def run_co2(self):
-		import geodat.import_osm
-		geodat.import_osm.import_osm( 50.2631171, 10.9483,1.2,self.root.ids['progb'],self.root.ids['status'])
+		self.run(50.2631171, 10.9483)
+
+	def run_sternwarte(self):
+		self.run(50.3736049,11.191643)
+# "50.3736049,11.191643
 
 	def runbl(self):
 		print "Run values"
@@ -197,45 +153,23 @@ class App(object):
 		spli=bl.split(',')
 		b=float(spli[0])
 		l=float(spli[1])
-		
-		
 		s=self.root.ids['s'].value()
+		elevation=self.root.ids['elevation'].isChecked()
 		print [l,b,s]
-		import WebGui
-#		WebGui.openBrowser( "http://www.openstreetmap.org/#map=19/"+str(b)+'/'+str(l))
 		import geodat.import_osm
 		reload(geodat.import_osm)
-		print "Start"
-		geodat.import_osm.import_osm(float(b),float(l),float(s)/10,self.root.ids['progb'],self.root.ids['status'])
-
-
-
-	def runValues(self):
-		print "Run values"
-		b=self.root.ids['b'].text()
-		l=self.root.ids['l'].text()
-		s=self.root.ids['s'].value()
-		print [l,b,s]
-		import WebGui
-#		WebGui.openBrowser( "http://www.openstreetmap.org/#map=19/"+str(b)+'/'+str(l))
-		import geodat.import_osm
-		print "Start"
-		geodat.import_osm.import_osm(float(b),float(l),float(s)/10,self.root.ids['progb'],self.root.ids['status'])
-		
+		geodat.import_osm.import_osm2(float(b),float(l),float(s)/10,self.root.ids['progb'],self.root.ids['status'],elevation)
 
 	def showMap(self):
 		print "Run values"
-		b=self.root.ids['b'].text()
-		l=self.root.ids['l'].text()
+		bl=self.root.ids['bl'].text()
+		spli=bl.split(',')
+		b=float(spli[0])
+		l=float(spli[1])
 		s=self.root.ids['s'].value()
 		print [l,b,s]
 		import WebGui
 		WebGui.openBrowser( "http://www.openstreetmap.org/#map=16/"+str(b)+'/'+str(l))
-		
-
-# =17/50.26286/10.94804
-
-
 
 
 def mydialog():
@@ -248,28 +182,5 @@ def mydialog():
 	miki.app=app
 	app.root=miki
 
-
 	miki.parse2(s6)
-
 	miki.run(s6)
-	m=miki.ids['main']
-
-
-def mytest():
-	app=App()
-
-	import geodat.miki as miki
-	reload(miki)
-
-	miki=miki.Miki()
-	miki.app=app
-	app.root=miki
-
-
-	miki.parse2(s6)
-
-	miki.run(s6)
-	m=miki.ids['main']
-
-
-# mytest()

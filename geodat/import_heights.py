@@ -10,10 +10,10 @@
 import FreeCAD, FreeCADGui, Draft
 
 import urllib2, json, time
-
+import pivy
+from pivy import coin
 
 import geodat.transversmercator
-
 from  geodat.transversmercator import TransverseMercator
 import inventortools
 		
@@ -30,7 +30,6 @@ def getheight(b,l):
 	for r in res:
 		return round(r['elevation']*1000,2)
 
-		
 def run(b0=50.35,l0=11.17,b=50.35,le=11.17,size=40):
 
 	tm.lat=b0
@@ -76,7 +75,7 @@ def run(b0=50.35,l0=11.17,b=50.35,le=11.17,size=40):
 def import_heights(b,le,size):
 
 	size=int(size)
-	size=20
+	size=30
 
 	lines=[]
 	for ld in range(-size,size): 

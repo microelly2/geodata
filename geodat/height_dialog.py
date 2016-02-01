@@ -29,6 +29,14 @@ VerticalLayout:
 			setText: "Run values"
 			clicked.connect: app.runbl
 
+
+		QtGui.QRadioButton:
+			setText: "0"
+			clicked.connect: app.radio_0
+		QtGui.QRadioButton:
+			setText: "a"
+			clicked.connect: app.radio_a
+
 '''
 
 ss='''
@@ -101,6 +109,15 @@ ss='''
 import FreeCAD,FreeCADGui
 
 class App(object):
+
+	def radio_0(self):
+		print "clicked"
+		print "0"
+
+	def radio_a(self):
+		print "clicked"
+		print "a"
+
 
 
 	def run(self):
