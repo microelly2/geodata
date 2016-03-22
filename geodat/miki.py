@@ -65,6 +65,7 @@ YourSpecialCreator=Animation.createManager
 
 def  fv(name="vertical"):
 	w=QtGui.QWidget()
+	w.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
 
 ###	w.setStyleSheet("QWidget { font: bold 18px;color:brown;border-style: outset;border-width: 3px;border-radius: 10px;border-color: blue;}")
 	layout = QtGui.QVBoxLayout()
