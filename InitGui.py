@@ -56,6 +56,22 @@ class import_osm:
 		}
 
 
+class import_csv:
+
+	def Activated(self):
+		print "run import ..."
+		import geodat.import_csv
+		geodat.import_csv.mydialog()
+		
+
+	def GetResources(self):
+		return {
+			'Pixmap'  : 'Std_Tool3', 
+			'MenuText': 'Import CSV ', 
+			'ToolTip': 'Import CSV'
+		}
+
+
 class navigator:
 
 	def Activated(self):
@@ -128,9 +144,11 @@ class createHouse:
 
 
 FreeCADGui.addCommand('Import OSM Map', mydialog())
+FreeCADGui.addCommand('Import CSV', import_csv())
 FreeCADGui.addCommand('Navigator', navigator())
 FreeCADGui.addCommand('Import Heights', importheights())
 FreeCADGui.addCommand('Create House', createHouse())
+
 
 
 
@@ -145,10 +163,12 @@ class Geodat ( Workbench ):
 
 	def Initialize(self):
 		
-		cmds= ["Import OSM Map",'Navigator','Import Heights','Create House']
+		cmds= ["Import OSM Map",'Import CSV','Navigator','Import Heights','Create House']
 		self.appendToolbar("Geo Data", cmds )
 		self.appendMenu("Geo Data", cmds)
 		Log ("Loading Goe Data Workbench ... done\n")
+
+
 
 
 	Icon = """

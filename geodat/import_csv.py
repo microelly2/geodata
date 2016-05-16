@@ -1,0 +1,148 @@
+# -*- coding: utf-8 -*-
+#-------------------------------------------------
+#-- geodat import csv
+#--
+#-- microelly 2016 v 0.1
+#--
+#-- GNU Lesser General Public License (LGPL)
+#-------------------------------------------------
+
+
+from say import *
+
+import FreeCAD,FreeCADGui, Part
+App=FreeCAD
+Gui=FreeCADGui
+
+import geodat.transversmercator
+from  geodat.transversmercator import TransverseMercator
+
+import csv
+
+'''
+example data csv
+
+50.3729107;11.1913920;"l";"b"
+50.3731789;11.1919306;"l";"b"
+50.3732226;11.1920048;"l";"b"
+50.3732894;11.1920829;"l";"b"
+50.3734014;11.1900516;"l";"b"
+50.3736555;11.1906749;"l";"b"
+50.3734900;11.1904810;"l";"b"
+50.3734923;11.1905679;"l";"b"
+
+
+# python data ...
+
+	origin=(50.3729107,11.1913920)
+	
+	data=[
+		[50.3729107, 11.1913920, "l", "b"],
+		[50.3731789, 11.1919306, "l", "b"],
+		[50.3732226, 11.1920048, "l", "b"],
+		[50.3732894, 11.1920829, "l", "b"],
+		[50.3734014, 11.1900516, "l", "b"],
+		[50.3736555, 11.1906749, "l", "b"],
+		[50.3734900, 11.1904810, "l", "b"],
+		[50.3734923, 11.1905679, "l", "b"],
+	]
+
+'''
+
+def import_csv(fn,orig):
+	# lat lon
+	yy=orig.split(',')
+	origin=(float(yy[0]),float(yy[1]))
+
+	data=[]
+	with open(fn, 'rb') as csvfile:
+		reader = csv.reader(csvfile, delimiter=';')
+		for row in reader:
+			print ', '.join(row)
+			data.append(row)
+
+	tm=TransverseMercator()
+	tm.lat=origin[0]
+	tm.lon=origin[1]
+	center=tm.fromGeographic(tm.lat,tm.lon)
+
+	points=[]
+	for p in data:
+		lat,lon = p[0],p[1]
+		ll=tm.fromGeographic(float(lat),float(lon))
+		points.append( FreeCAD.Vector(ll[0]-center[0],ll[1]-center[1],0.0))
+
+	import Draft
+	points.append(points[0])
+	Draft.makeWire(points)
+
+	po=App.ActiveDocument.ActiveObject
+	po.ViewObject.LineColor=(1.0,0.0,0.0)
+	po.MakeFace = False
+
+	App.activeDocument().recompute()
+	Gui.SendMsgToActiveView("ViewFit")
+
+
+s6='''
+VerticalLayout:
+		id:'main'
+
+		QtGui.QLabel:
+			setText:"***   I M P O R T    CSV   GEODATA   ***"
+		QtGui.QLabel:
+		QtGui.QLineEdit:
+			setText:"/home/somebody/.FreeCAD/Mod/geodat/testdata/csv_example.csv"
+			id: 'bl'
+
+		QtGui.QPushButton:
+			setText: "Get Image Filename"
+			clicked.connect: app.getfn
+
+		QtGui.QLabel:
+			setText:"Origin (lat,lon) "
+
+		QtGui.QLineEdit:
+			setText:"50.3729107,11.1913920"
+			id: 'orig'
+
+		QtGui.QPushButton:
+			setText: "Run values"
+			clicked.connect: app.run
+
+'''
+
+import FreeCAD,FreeCADGui
+
+class MyApp(object):
+
+	def run(self):
+		filename=self.root.ids['bl'].text()
+		try:
+			import_csv(
+					filename,
+					self.root.ids['orig'].text(),
+			)
+		except:
+				sayexc()
+
+	def getfn(self):
+		fileName = QtGui.QFileDialog.getOpenFileName(None,u"Open File",u"/tmp/");
+		print fileName
+		s=self.root.ids['bl']
+		s.setText(fileName[0])
+
+
+def mydialog():
+	app=MyApp()
+
+	import geodat
+	import geodat.miki as miki
+	reload(miki)
+
+	miki=miki.Miki()
+	miki.app=app
+	app.root=miki
+
+	miki.parse2(s6)
+	miki.run(s6)
