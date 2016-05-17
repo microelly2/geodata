@@ -17,7 +17,7 @@ Gui=FreeCADGui
 import geodat.transversmercator
 from  geodat.transversmercator import TransverseMercator
 
-import csv
+import csv,re
 
 '''
 example data csv
@@ -48,6 +48,7 @@ example data csv
 	]
 
 '''
+
 
 def import_csv(fn,orig,datatext=None):
 	# lat lon
