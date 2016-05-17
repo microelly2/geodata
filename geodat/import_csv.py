@@ -49,17 +49,32 @@ example data csv
 
 '''
 
-def import_csv(fn,orig):
+def import_csv(fn,orig,datatext=None):
 	# lat lon
 	yy=orig.split(',')
 	origin=(float(yy[0]),float(yy[1]))
 
 	data=[]
-	with open(fn, 'rb') as csvfile:
-		reader = csv.reader(csvfile, delimiter=';')
-		for row in reader:
-			print ', '.join(row)
-			data.append(row)
+	if len(datatext) <> 0:
+		lines=datatext.split('\n')
+		for l in lines:
+			pp=re.split("( )+",l)
+			print pp
+			print len(pp)
+			if len(pp)==1:
+				continue
+			if len(pp)<3:
+				raise Exception("Syntax error in 'direct Data input'")
+			data.append([str(pp[0]),str(pp[2])])
+		print(data)
+	else:
+		with open(fn, 'rb') as csvfile:
+			reader = csv.reader(csvfile, delimiter=';')
+			for row in reader:
+				print ', '.join(row)
+				data.append(row)
+
+	print data
 
 	tm=TransverseMercator()
 	tm.lat=origin[0]
@@ -91,16 +106,29 @@ VerticalLayout:
 		QtGui.QLabel:
 			setText:"***   I M P O R T    CSV   GEODATA   ***"
 		QtGui.QLabel:
+
+		QtGui.QLabel:
+			setText:"Data input filename"
+
 		QtGui.QLineEdit:
-			setText:"/home/somebody/.FreeCAD/Mod/geodat/testdata/csv_example.csv"
+			setText:"???/csv_example.csv"
 			id: 'bl'
 
 		QtGui.QPushButton:
-			setText: "Get Image Filename"
+			setText: "Get CSV File Name"
 			clicked.connect: app.getfn
 
 		QtGui.QLabel:
+			setText:"direct Data input  "
+
+
+		QtGui.QTextEdit:
+			setText:""
+			id: 'data'
+
+		QtGui.QLabel:
 			setText:"Origin (lat,lon) "
+
 
 		QtGui.QLineEdit:
 			setText:"50.3729107,11.1913920"
@@ -122,6 +150,7 @@ class MyApp(object):
 			import_csv(
 					filename,
 					self.root.ids['orig'].text(),
+					self.root.ids['data'].toPlainText(),
 			)
 		except:
 				sayexc()
@@ -146,3 +175,6 @@ def mydialog():
 
 	miki.parse2(s6)
 	miki.run(s6)
+
+
+mydialog()

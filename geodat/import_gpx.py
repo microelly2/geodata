@@ -83,9 +83,17 @@ from  geodat.xmltodict import parse
 import time
 debug=1
 
+
+fn='/home/thomas/Dokumente/freecad_buch/b202_gmx_tracks/im_haus.gpx'
+f=open(fn,"r")
+content=f.read()
+
+
+
 def import_gpx():
 
-	content=trackstring
+	# content=trackstring
+	
 	tm=TransverseMercator()
 
 	sd=parse(content)
@@ -102,6 +110,8 @@ def import_gpx():
 
 	# map all points to xy-plane
 	points=[]
+	px=[]
+	py=[]
 	for n in trkpts:
 		print n['@lat'],n['@lon']
 		ll=tm.fromGeographic(float(n['@lat']),float(n['@lon']))
@@ -110,18 +120,59 @@ def import_gpx():
 		points.append(FreeCAD.Vector(ll[0]-center[0],ll[1]-center[1],float(h)))
 		points.append(FreeCAD.Vector(ll[0]-center[0],ll[1]-center[1],0))
 		points.append(FreeCAD.Vector(ll[0]-center[0],ll[1]-center[1],float(h)))
+		px.append(ll[0]-center[0])
+		py.append(ll[1]-center[1])
 		print ll
 
-	import Draft
-	points.append(points[0])
-	Draft.makeWire(points)
+	if 1:
+		import Draft
+		points.append(points[0])
+		Draft.makeWire(points)
 
-	po=App.ActiveDocument.ActiveObject
-	po.ViewObject.LineColor=(1.0,0.0,0.0)
-	po.MakeFace = False
+		po=App.ActiveDocument.ActiveObject
+		po.ViewObject.LineColor=(1.0,0.0,0.0)
+		po.MakeFace = False
 
-	App.activeDocument().recompute()
-	Gui.SendMsgToActiveView("ViewFit")
+		App.activeDocument().recompute()
+		Gui.SendMsgToActiveView("ViewFit")
+
+	return px,py
+
+if 0: 
+	px,py=import_gpx()
+	count=len(px)
+	pp=range(count)
+	px2=[]
+	py2=[]
+
+	import numpy as np
+	xpp=np.array(px)
+	np.average(xpp)
+	std=np.std(xpp)
+
+	for p in pp:
+		if abs(px[p]) <2*std:
+			px2.append(px[p])
+		else:
+			if px[p]>0:
+				px2.append(2*std)
+			else:
+				px2.append(-2*std)
+
+	for p in pp:
+		if abs(py[p]) <10000:
+			py2.append(py[p])
+		else:
+			py2.append(10000.0)
+			
+
+	import matplotlib.pyplot as plt
+
+	#plt.plot(pp,px,pp,py)
+	#plt.show()
+
+	plt.hist(px2)
+	# plt.hist(py2)
+	plt.show()
 
 
-import_gpx()
