@@ -94,9 +94,9 @@ def import_gpx(filename,orig,hi):
 	global sd
 	# content=trackstring
 	
-#	'/home/thomas/Dokumente/freecad_buch/b202_gmx_tracks/neufang.gpx'
 #	fn='/home/thomas/Dokumente/freecad_buch/b202_gmx_tracks/im_haus.gpx'
-#	fn='/home/thomas/Dokumente/freecad_buch/b202_gmx_tracks/neufang.gpx'
+#	filename='/home/thomas/Dokumente/freecad_buch/b202_gmx_tracks/neufang.gpx'
+	
 	
 	f=open(filename,"r")
 	c1=f.read()
@@ -125,6 +125,8 @@ def import_gpx(filename,orig,hi):
 	points2=[]
 	px=[]
 	py=[]
+	pz=[]
+	pt=[]
 	
 	startx=None
 	starty=None
@@ -150,6 +152,12 @@ def import_gpx(filename,orig,hi):
 			ll=tm.fromGeographic(float(n['@lat']),float(n['@lon']))
 			h=n['ele']
 			print h
+			tim=n['time']
+			t2=re.sub('^.*T', '', tim)
+			t3=re.sub('Z', '', t2)
+			t4=t3.split(':')
+			timx=int(t4[0])*3600+int(t4[1])*60+int(t4[2])
+			pt.append(timx)
 			if starth == None:
 				starth=float(h)
 			points.append(FreeCAD.Vector(ll[0]-center[0],ll[1]-center[1],1000*(float(h)-starth)))
@@ -158,6 +166,7 @@ def import_gpx(filename,orig,hi):
 			points2.append(FreeCAD.Vector(ll[0]-center[0],ll[1]-center[1],1000*(float(h)-starth)+20000))
 			px.append(ll[0]-center[0])
 			py.append(ll[1]-center[1])
+			pz.append(1000*(float(h)-starth))
 			print ll
 
 	if 1:
@@ -190,6 +199,57 @@ def import_gpx(filename,orig,hi):
 		App.activeDocument().recompute()
 		Gui.SendMsgToActiveView("ViewFit")
 		# break
+
+	#------------------------------------------------
+	# data for postprocessing
+
+	try:
+		import numpyNode
+		import mathplotlibNode
+
+		t=mathplotlibNode.createMPL()
+		t.Label="My Track raw Data"
+
+		# hier werte bereitstellen
+		t.countSources=4
+		t.source1Values=px
+		t.source2Values=py
+		t.source3Values=pz
+		t.source4Values=pt
+		t.useOut1=True
+		t.useOut2=True
+		t.useOut3=True
+		t.useOut4=True
+
+		# werte umrechnen
+		t2=numpyNode.createNP()
+		t2.Label="My Track data processed"
+		t2.sourceObject=t
+		t2.expression1="in1/np.max(np.abs(in1))"
+		t2.label1 = "x relative"
+
+		t2.expression2="in2/np.max(np.abs(in2))"
+		t2.label2 = "y relative"
+
+		t2.expression3="in3/np.max(np.abs(in3))"
+		t2.label3 = "z relative"
+
+		t2.expression4="-1+2*(in4-np.min(in4))/(np.max(in4)-np.min(in4))"
+		t2.label4 = "time relative"
+
+		# werte grafisch darstellen
+		t3=mathplotlibNode.createMPL()
+		t3.Label="My Track Data visualization"
+		t3.record=False
+		t3.useNumpy=True
+		t3.sourceNumpy=t2
+
+		t3.useOut1=True
+		t3.useOut2=True
+		t3.useOut3=True
+		t3.useOut4=True
+	except:
+		sayexc()
 
 	return px,py
 
