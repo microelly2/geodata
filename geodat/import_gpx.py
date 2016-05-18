@@ -7,6 +7,8 @@
 #-- GNU Lesser General Public License (LGPL)
 #-------------------------------------------------
 
+from say import *
+
 # test-data from https://en.wikipedia.org/wiki/GPS_Exchange_Format
 
 trackstring='''
@@ -84,57 +86,110 @@ import time
 debug=1
 
 
-fn='/home/thomas/Dokumente/freecad_buch/b202_gmx_tracks/im_haus.gpx'
-f=open(fn,"r")
-content=f.read()
 
 
+global sd
 
-def import_gpx():
-
+def import_gpx(filename,orig,hi):
+	global sd
 	# content=trackstring
+	
+#	'/home/thomas/Dokumente/freecad_buch/b202_gmx_tracks/neufang.gpx'
+#	fn='/home/thomas/Dokumente/freecad_buch/b202_gmx_tracks/im_haus.gpx'
+#	fn='/home/thomas/Dokumente/freecad_buch/b202_gmx_tracks/neufang.gpx'
+	
+	f=open(filename,"r")
+	c1=f.read()
+	import re
+	content = re.sub('^\<\?[^\>]+\?\>', '', c1)
+	print content
+	
 	
 	tm=TransverseMercator()
 
+	# outdoor inn ...
+	tm.lat,tm.lon = 50.3736049,11.191643
+	
+	yy=orig.split(',')
+	origin=(float(yy[0]),float(yy[1]))
+	tm.lat=origin[0]
+	tm.lon=origin[1]
+#	center=tm.fromGeographic(tm.lat,tm.lon)
+	
 	sd=parse(content)
 	if debug: print(json.dumps(sd, indent=4))
-	trkpts=sd['gpx']['trk']['trkseg']['trkpt']
 
-	n=trkpts[0]
-	tm.lat, tm.lon = float(n['@lat']), float(n['@lon'])
-	center=tm.fromGeographic(tm.lat,tm.lon)
-
-	print trkpts
-	for p in  trkpts:
-		print p
-
-	# map all points to xy-plane
+	print "huhu"
+	
 	points=[]
+	points2=[]
 	px=[]
 	py=[]
-	for n in trkpts:
-		print n['@lat'],n['@lon']
-		ll=tm.fromGeographic(float(n['@lat']),float(n['@lon']))
-		h=n['ele']
-		print h
-		points.append(FreeCAD.Vector(ll[0]-center[0],ll[1]-center[1],float(h)))
-		points.append(FreeCAD.Vector(ll[0]-center[0],ll[1]-center[1],0))
-		points.append(FreeCAD.Vector(ll[0]-center[0],ll[1]-center[1],float(h)))
-		px.append(ll[0]-center[0])
-		py.append(ll[1]-center[1])
-		print ll
+	
+	startx=None
+	starty=None
+	starth=None
+	
+	seg=sd['gpx']['trk']['trkseg']
+	for s in seg:
+		trkpts=s['trkpt']
+
+
+		n=trkpts[0]
+		# tm.lat, tm.lon = float(n['@lat']), float(n['@lon'])
+		
+		center=tm.fromGeographic(tm.lat,tm.lon)
+
+		print trkpts
+		for p in  trkpts:
+			print p
+
+		# map all points to xy-plane
+		for n in trkpts:
+			print n['@lat'],n['@lon']
+			ll=tm.fromGeographic(float(n['@lat']),float(n['@lon']))
+			h=n['ele']
+			print h
+			if starth == None:
+				starth=float(h)
+			points.append(FreeCAD.Vector(ll[0]-center[0],ll[1]-center[1],1000*(float(h)-starth)))
+			points.append(FreeCAD.Vector(ll[0]-center[0],ll[1]-center[1],0))
+			points.append(FreeCAD.Vector(ll[0]-center[0],ll[1]-center[1],1000*(float(h)-starth)))
+			points2.append(FreeCAD.Vector(ll[0]-center[0],ll[1]-center[1],1000*(float(h)-starth)+20000))
+			px.append(ll[0]-center[0])
+			py.append(ll[1]-center[1])
+			print ll
 
 	if 1:
 		import Draft
-		points.append(points[0])
+		if 0: #close path
+			points.append(points[0])
+		
 		Draft.makeWire(points)
 
 		po=App.ActiveDocument.ActiveObject
-		po.ViewObject.LineColor=(1.0,0.0,0.0)
+		po.ViewObject.LineColor=(1.0,.0,0.0)
 		po.MakeFace = False
+		say(hi)
+		
+		po.Placement.Base.z= float(hi) *1000
+		po.Label="My Track" 
+		
+
+		Draft.makeWire(points2)
+
+		po2=App.ActiveDocument.ActiveObject
+		po2.ViewObject.LineColor=(.0,.0,1.0)
+		po2.ViewObject.PointSize=5
+		po2.ViewObject.PointColor=(.0,1.0,1.0)
+		
+		po2.Placement.Base.z= float(hi)*1000
+		po2.Label="Track + 20m"
+
 
 		App.activeDocument().recompute()
 		Gui.SendMsgToActiveView("ViewFit")
+		# break
 
 	return px,py
 
@@ -173,6 +228,93 @@ if 0:
 
 	plt.hist(px2)
 	# plt.hist(py2)
-	plt.show()
+	#plt.show()
+
+
+# px,py=import_gpx()
+
+
+
+s6='''
+VerticalLayout:
+		id:'main'
+
+		QtGui.QLabel:
+			setText:"***   I M P O R T    GPX  T R A C K    ***"
+		QtGui.QLabel:
+
+		QtGui.QLabel:
+			setText:"Track input filename"
+
+		QtGui.QLineEdit:
+			setText:"/tmp/neufang.gpx"
+			id: 'bl'
+
+		QtGui.QPushButton:
+			setText: "Get GPX File Name"
+			clicked.connect: app.getfn
+
+		QtGui.QLabel:
+			setText:"Origin (lat,lon) "
+
+		QtGui.QLineEdit:
+			setText:"50.3736049,11.191643"
+			id: 'orig'
+
+		QtGui.QLabel:
+			setText:"relative Height of the Startpoint"
+
+		QtGui.QLineEdit:
+			setText:"-197.55"
+			id: 'h'
+
+		QtGui.QPushButton:
+			setText: "Run values"
+			clicked.connect: app.run
+
+'''
+
+import FreeCAD,FreeCADGui
+
+class MyApp(object):
+
+	def run(self):
+		filename=self.root.ids['bl'].text()
+		try:
+			import_gpx(
+					filename,
+					self.root.ids['orig'].text(),
+					self.root.ids['h'].text(),
+			)
+		except:
+				sayexc()
+
+	def getfn(self):
+		fileName = QtGui.QFileDialog.getOpenFileName(None,u"Open File",u"/tmp/");
+		print fileName
+		s=self.root.ids['bl']
+		s.setText(fileName[0])
+
+
+def mydialog():
+	app=MyApp()
+
+	import geodat
+	import geodat.miki as miki
+	reload(miki)
+
+	miki=miki.Miki()
+	miki.app=app
+	app.root=miki
+
+	miki.parse2(s6)
+	miki.run(s6)
+
+
+# mydialog()
+
+
+
+
 
 
