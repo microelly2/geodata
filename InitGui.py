@@ -140,6 +140,22 @@ class importheights:
 			'ToolTip': 'Import OSM Heights'
 		}
 
+class importsrtm:
+
+	def Activated(self):
+		print "run import ..."
+		import geodat.srtm_downloader
+		reload(geodat.srtm_downloader)
+		geodat.srtm_downloader.dialog()
+		
+
+	def GetResources(self):
+		return {
+			'Pixmap'  : 'Std_Tool1', 
+			'MenuText': 'Import SRTM Heights', 
+			'ToolTip': 'Import SRTM Heights'
+		}
+
 
 class createHouse:
 
@@ -165,6 +181,7 @@ FreeCADGui.addCommand('Import CSV', import_csv())
 FreeCADGui.addCommand('Import GPX', import_gpx())
 FreeCADGui.addCommand('Navigator', navigator())
 FreeCADGui.addCommand('Import Heights', importheights())
+FreeCADGui.addCommand('Import SRTM', importsrtm())
 FreeCADGui.addCommand('Create House', createHouse())
 
 
@@ -181,7 +198,7 @@ class Geodat ( Workbench ):
 
 	def Initialize(self):
 		
-		cmds= ["Import OSM Map",'Import CSV','Import GPX','Navigator','Import Heights','Create House']
+		cmds= ["Import OSM Map",'Import CSV','Import GPX','Navigator','Import Heights','Import SRTM','Create House']
 		self.appendToolbar("Geo Data", cmds )
 		self.appendMenu("Geo Data", cmds)
 		Log ("Loading Goe Data Workbench ... done\n")

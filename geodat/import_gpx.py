@@ -123,6 +123,7 @@ def import_gpx(filename,orig,hi):
 	
 	points=[]
 	points2=[]
+	points0=[]
 	px=[]
 	py=[]
 	pz=[]
@@ -164,6 +165,7 @@ def import_gpx(filename,orig,hi):
 			points.append(FreeCAD.Vector(ll[0]-center[0],ll[1]-center[1],0))
 			points.append(FreeCAD.Vector(ll[0]-center[0],ll[1]-center[1],1000*(float(h)-starth)))
 			points2.append(FreeCAD.Vector(ll[0]-center[0],ll[1]-center[1],1000*(float(h)-starth)+20000))
+			points0.append(FreeCAD.Vector(ll[0]-center[0],ll[1]-center[1],0))
 			px.append(ll[0]-center[0])
 			py.append(ll[1]-center[1])
 			pz.append(1000*(float(h)-starth))
@@ -173,6 +175,10 @@ def import_gpx(filename,orig,hi):
 		import Draft
 		if 0: #close path
 			points.append(points[0])
+		
+		
+		
+		Draft.makeWire(points0)
 		
 		Draft.makeWire(points)
 
@@ -216,6 +222,12 @@ def import_gpx(filename,orig,hi):
 		t.source2Values=py
 		t.source3Values=pz
 		t.source4Values=pt
+
+		t.source1Data="px"
+		t.source2Data="py"
+		t.source3Data="pz"
+		t.source4Data="pt"
+		
 		t.useOut1=True
 		t.useOut2=True
 		t.useOut3=True
@@ -248,6 +260,24 @@ def import_gpx(filename,orig,hi):
 		t3.useOut2=True
 		t3.useOut3=True
 		t3.useOut4=True
+
+		t4=numpyNode.createNP()
+		t4.Label="My Track Data xy"
+		t4.sourceObject=t
+
+		t4.expression2="in2"
+		t4.label2 = "path xy"
+		
+		t4.expressionTime="in1"
+
+		t5=mathplotlibNode.createMPL()
+		t5.Label="My Track Data xy Map"
+		t5.record=False
+		t5.useNumpy=True
+		t5.sourceNumpy=t4
+
+		t5.useOut2=True
+		FreeCAD.ActiveDocument.recompute()
 	except:
 		sayexc()
 
@@ -327,6 +357,11 @@ VerticalLayout:
 		QtGui.QLineEdit:
 			setText:"-197.55"
 			id: 'h'
+
+		QtGui.QRadioButton:
+			setText: "Generate Data Nodes "
+#			clicked.connect: app.run_co2
+
 
 		QtGui.QPushButton:
 			setText: "Run values"
