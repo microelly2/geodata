@@ -83,7 +83,7 @@ import geodat.xmltodict
 from  geodat.xmltodict import parse
 
 import time
-debug=1
+debug=0
 
 
 
@@ -102,24 +102,23 @@ def import_gpx(filename,orig,hi):
 	c1=f.read()
 	import re
 	content = re.sub('^\<\?[^\>]+\?\>', '', c1)
-	print content
-	
-	
+#	print content
+
+
 	tm=TransverseMercator()
 
 	# outdoor inn ...
 	tm.lat,tm.lon = 50.3736049,11.191643
 	
-	yy=orig.split(',')
-	origin=(float(yy[0]),float(yy[1]))
-	tm.lat=origin[0]
-	tm.lon=origin[1]
+	if orig<>'auto':
+		yy=orig.split(',')
+		origin=(float(yy[0]),float(yy[1]))
+		tm.lat=origin[0]
+		tm.lon=origin[1]
 #	center=tm.fromGeographic(tm.lat,tm.lon)
 	
 	sd=parse(content)
 	if debug: print(json.dumps(sd, indent=4))
-
-	print "huhu"
 	
 	points=[]
 	points2=[]
@@ -132,27 +131,56 @@ def import_gpx(filename,orig,hi):
 	startx=None
 	starty=None
 	starth=None
-	
+	FreeCAD.sd=sd
 	seg=sd['gpx']['trk']['trkseg']
+	try:
+		seg['trkpt']
+		ss=seg
+		seg=[ss]
+	except:
+		pass
+	lats=[]
+	lons=[]
+
+	for s in seg:
+		trkpts=s['trkpt']
+		for n in trkpts:
+			lats.append(float(n['@lat']))
+			lons.append(float(n['@lon']))
+
+	print (min(lats),max(lats))
+	print (min(lons),max(lons))
+	print ((max(lats)+min(lats))/2,(max(lons)+min(lons))/2)
+	print ((max(lats)-min(lats))/2,(max(lons)-min(lons))/2)
+
+	if orig == 'auto':
+		tm.lat, tm.lon = (max(lats)+min(lats))/2,(max(lons)+min(lons))/2
+		print "origin:"
+		print(tm.lat,tm.lon)
+		print ("----------")
+
+
+
 	for s in seg:
 		trkpts=s['trkpt']
 
 
 		n=trkpts[0]
-		# tm.lat, tm.lon = float(n['@lat']), float(n['@lon'])
-		
+
 		center=tm.fromGeographic(tm.lat,tm.lon)
 
-		print trkpts
-		for p in  trkpts:
-			print p
+#		print trkpts
+#		for p in  trkpts:
+#			print p
 
 		# map all points to xy-plane
 		for n in trkpts:
-			print n['@lat'],n['@lon']
+#			print n['@lat'],n['@lon']
+			lats.append(float(n['@lat']))
+			lons.append(float(n['@lon']))
 			ll=tm.fromGeographic(float(n['@lat']),float(n['@lon']))
 			h=n['ele']
-			print h
+#			print h
 			tim=n['time']
 			t2=re.sub('^.*T', '', tim)
 			t3=re.sub('Z', '', t2)
@@ -161,6 +189,8 @@ def import_gpx(filename,orig,hi):
 			pt.append(timx)
 			if starth == None:
 				starth=float(h)
+				starth=0
+
 			points.append(FreeCAD.Vector(ll[0]-center[0],ll[1]-center[1],1000*(float(h)-starth)))
 			points.append(FreeCAD.Vector(ll[0]-center[0],ll[1]-center[1],0))
 			points.append(FreeCAD.Vector(ll[0]-center[0],ll[1]-center[1],1000*(float(h)-starth)))
@@ -169,7 +199,8 @@ def import_gpx(filename,orig,hi):
 			px.append(ll[0]-center[0])
 			py.append(ll[1]-center[1])
 			pz.append(1000*(float(h)-starth))
-			print ll
+#			print ll
+
 
 	if 1:
 		import Draft
@@ -185,11 +216,9 @@ def import_gpx(filename,orig,hi):
 		po=App.ActiveDocument.ActiveObject
 		po.ViewObject.LineColor=(1.0,.0,0.0)
 		po.MakeFace = False
-		say(hi)
-		
+
 		po.Placement.Base.z= float(hi) *1000
 		po.Label="My Track" 
-		
 
 		Draft.makeWire(points2)
 
@@ -281,6 +310,8 @@ def import_gpx(filename,orig,hi):
 	except:
 		sayexc()
 
+	print "!",orig,"!"
+	return (str(tm.lat)+','+str(tm.lon))
 	return px,py
 
 if 0: 
@@ -337,7 +368,7 @@ VerticalLayout:
 			setText:"Track input filename"
 
 		QtGui.QLineEdit:
-			setText:"/tmp/neufang.gpx"
+			setText:"/tmp/track.gpx"
 			id: 'bl'
 
 		QtGui.QPushButton:
@@ -348,14 +379,16 @@ VerticalLayout:
 			setText:"Origin (lat,lon) "
 
 		QtGui.QLineEdit:
-			setText:"50.3736049,11.191643"
+#			setText:"50.3736049,11.191643"
+			setText:"auto"
 			id: 'orig'
 
 		QtGui.QLabel:
 			setText:"relative Height of the Startpoint"
 
 		QtGui.QLineEdit:
-			setText:"-197.55"
+#			setText:"-197.55"
+			setText:"0"
 			id: 'h'
 
 		QtGui.QRadioButton:
@@ -376,11 +409,12 @@ class MyApp(object):
 	def run(self):
 		filename=self.root.ids['bl'].text()
 		try:
-			import_gpx(
+			rc=import_gpx(
 					filename,
 					self.root.ids['orig'].text(),
 					self.root.ids['h'].text(),
 			)
+			self.root.ids['orig'].setText(rc),
 		except:
 				sayexc()
 
@@ -406,7 +440,7 @@ def mydialog():
 	miki.run(s6)
 
 
-# mydialog()
+mydialog()
 
 
 

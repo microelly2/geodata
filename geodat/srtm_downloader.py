@@ -79,7 +79,7 @@ def runfile(fn, xw,xe,ys,yn,ox=0,oy=0):
 	#Gui.ActiveDocument.ActiveView.setAnimationEnabled(False)
 
 
-	pb=createProgressBar(label="create Elevations ... ")
+	pb=createProgressBar(label="create Elevations " + os.path.basename(fn) )
 
 	# file = open('/home/thomas/Downloads/Lat50Lon11Lat51Lon12.osm', 'r')
 	file =open(fn)
@@ -165,7 +165,7 @@ def getdata(directory,dat):
 			targetfile=tg[0]
 			say("targetfile:"+targetfile)
 		else:
-			print "schon da"
+			print "schon osda"
 
 		fh = open(zipfilename, 'rb')
 		zfile = zipfile.ZipFile(fh)
@@ -205,6 +205,9 @@ def run(mx,my,dx,dy):
 
 		p=Points.Points(pts)
 		Points.show(p)
+		Gui.updateGui()
+		Gui.SendMsgToActiveView("ViewFit")
+
 
 	Gui.SendMsgToActiveView("ViewFit")
 
@@ -334,6 +337,18 @@ class MyApp(object):
 		self.root.ids['bl'].setText("50.3736049,11.1916430")
 
 
+# horta azores 38.5346786,-28.6456061
+# 0.25,0.25  flores azores 39.4360002,-31.1834447
+# pico 0.40,0.40 38.435102,-28.3676582
+
+# rocky mountains 44.188239,-109.8549527
+# niagara falls 43.1024171,-79.0903965
+# ungarn balaton 46.9101974,17.8516823
+
+# china drei schluchten 30.8243332,111.0184339
+
+# Guayaquil Ecuador-2.1523858,-80.0501215
+
 	def run_browser(self): 
 		import WebGui
 		bl=self.root.ids['bl'].text()
@@ -439,10 +454,9 @@ def dialog():
 	m=miki.ids['main']
 
 
-# mytest()
 
 
-dialog()
+# dialog()
 
 
 
