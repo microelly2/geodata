@@ -280,6 +280,19 @@ VerticalLayout:
 			setText: "Create Elevation Points"
 			clicked.connect: app.runbl
 
+		QtGui.QPushButton:
+			setText: "Show in OpenStreetMap"
+			clicked.connect: app.run_browser
+
+		QtGui.QPushButton:
+			setText: "Show in Google Maps"
+			clicked.connect: app.run_google
+
+		QtGui.QPushButton:
+			setText: "Reit und Wanderkarte"
+			clicked.connect: app.run_reitwander
+
+
 		QtGui.QLabel:
 			setText:"Test Case Coords ..."
 
@@ -321,6 +334,32 @@ class MyApp(object):
 		self.root.ids['bl'].setText("50.3736049,11.1916430")
 
 
+	def run_browser(self): 
+		import WebGui
+		bl=self.root.ids['bl'].text()
+		spli=bl.split(',')
+		my=float(spli[0])
+		mx=float(spli[1])
+		WebGui.openBrowser( "http://www.openstreetmap.org/#map=12/"+str(my)+'/'+str(mx))
+
+	def run_google(self): 
+		import WebGui
+		bl=self.root.ids['bl'].text()
+		spli=bl.split(',')
+		my=float(spli[0])
+		mx=float(spli[1])
+		WebGui.openBrowser( "https://www.google.de/maps/@"+str(my)+','+str(mx) +",8000m/data=!3m1!1e3")
+
+	def run_reitwander(self): 
+		import WebGui
+		bl=self.root.ids['bl'].text()
+		spli=bl.split(',')
+		my=float(spli[0])
+		mx=float(spli[1])
+		WebGui.openBrowser( "http://www.wanderreitkarte.de/index.php?lon="+str(mx)+"&lat="+str(my)+"&zoom=12")
+
+
+
 
 
 
@@ -353,7 +392,7 @@ class MyApp(object):
 		import geodat.import_osm
 		print "Start"
 		geodat.import_osm.import_osm(float(b),float(l),float(s)/10,self.root.ids['progb'],self.root.ids['status'])
-		
+
 
 	def showMap(self):
 		print "Run values"
@@ -362,7 +401,7 @@ class MyApp(object):
 		s=self.root.ids['s'].value()
 		print [l,b,s]
 		import WebGui
-		WebGui.openBrowser( "http://www.openstreetmap.org/#map=16/"+str(b)+'/'+str(l))
+		WebGui.openBrowser( "http://www.openstreetmap.org/#map=9/"+str(b)+'/'+str(l))
 
 
 
@@ -403,6 +442,7 @@ def dialog():
 # mytest()
 
 
+dialog()
 
 
 
