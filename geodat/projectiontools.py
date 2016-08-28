@@ -8,7 +8,7 @@ import numpy as np
 import numpy.linalg as npl
 import time
 
-print "projection tools v0.1"
+print "load projection tools v0.1"
 
 def mittelpunkt(A,B,C,D):
 	''' schnitt der Diagonalen AC und BD '''
