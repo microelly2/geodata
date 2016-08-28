@@ -254,7 +254,8 @@ mx=11.1916430
 
 
 s6='''
-VerticalLayout:
+MainWindow:
+	VerticalLayout:
 		id:'main'
 #		setFixedHeight: 600
 		setFixedWidth: 250

@@ -101,7 +101,8 @@ def import_csv(fn,orig,datatext=None):
 
 
 s6='''
-VerticalLayout:
+MainWindow:
+	VerticalLayout:
 		id:'main'
 
 		QtGui.QLabel:

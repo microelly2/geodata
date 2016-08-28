@@ -357,7 +357,8 @@ if 0:
 
 
 s6='''
-VerticalLayout:
+MainWindow:
+	VerticalLayout:
 		id:'main'
 
 		QtGui.QLabel:

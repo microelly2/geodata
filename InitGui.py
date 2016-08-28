@@ -217,7 +217,7 @@ class Geodat ( Workbench ):
 	def Initialize(self):
 		
 		cmds= ["Import OSM Map",'Import CSV','Import GPX','Navigator','Import Heights','Import SRTM','Import XYZ','Create House']
-		self.appendToolbar("Geo Data", cmds )
+##		self.appendToolbar("Geo Data", cmds )
 		self.appendMenu("Geo Data", cmds)
 		Log ("Loading Goe Data Workbench ... done\n")
 

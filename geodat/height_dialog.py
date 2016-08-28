@@ -9,7 +9,8 @@
 
 
 s6='''
-VerticalLayout:
+MainWindow:
+	VerticalLayout:
 		id:'main'
 		setFixedHeight: 600
 		setFixedWidth: 600

@@ -173,12 +173,12 @@ def import_xyz(filename="/tmp/test.xyz",ku=20, kv=10):
 
 sdialog='''
 #VerticalLayoutTab:
-VerticalLayout:
-	id:'main'
+MainWindow:
+	VerticalLayout:
+		id:'main'
 
-	QtGui.QLabel:
-		setText:"***   I M P O R T    Data from xyz   ***"
-	QtGui.QLabel:
+		QtGui.QLabel:
+			setText:"***   I M P O R T    Data from xyz   ***"
 
 	QtGui.QPushButton:
 		setText: "Browse for input data filename"
@@ -188,68 +188,105 @@ VerticalLayout:
 		setText:"/home/thomas/Dokumente/freecad_buch/b202_gmx_tracks/dgm1/dgm1_32356_5638_2_nw.xyz"
 		id: 'bl'
 
-	QtGui.QLabel:
-		setText:"Reduction Factor  "
+	HorizontalLayout:
+		QtGui.QLabel:
+			setText:"Reduction Factor  "
 
-	QtGui.QLineEdit:
-		setText:"5"
-		id: 'ku'
+		QtGui.QLineEdit:
+			setText:"10"
+			id: 'ku'
 
-	QtGui.QLineEdit:
-		setText:"5"
-		id: 'kv'
-
-
-#	QtGui.QLabel:
-#		setText:"Origin (lat,lon) "
+		QtGui.QLineEdit:
+			setText:"10"
+			id: 'kv'
 
 
 	QtGui.QPushButton:
 		setText: "initialize values"
 		clicked.connect: app.run
 
+	HorizontalLayout:
 
-	QtGui.QLabel:
-		setText:"Frame position"
+		QtGui.QLabel:
+			setText:"Frame position"
 
-	QtGui.QDial:
-		setValue: 0
-		id: 'ud'
-		setMinimum: 0
-		setMaximum: 200
-		setTickInterval: 1
-		valueChanged.connect: app.showFrame
-
-
-	QtGui.QDial:
-		setValue: 0
-		id: 'vd'
-		setMinimum: 0
-		setMaximum: 200
-		setTickInterval: 1
-		valueChanged.connect: app.showFrame
-
-	QtGui.QLabel:
-		setText:"Frame size"
-
-	QtGui.QDial:
-		setValue: 5
-		id: 'dd'
-		setMinimum: 1
-		setMaximum: 100
-		setTickInterval: 1
-		valueChanged.connect: app.update2
+		QtGui.QDial:
+			setValue: 0
+			id: 'ud'
+			setMinimum: 0
+			setMaximum: 200
+			setTickInterval: 1
+			valueChanged.connect: app.showFrame
 
 
-	QtGui.QPushButton:
-		setText: "hide Frame"
-		clicked.connect: app.hideFrame
+		QtGui.QDial:
+			setValue: 0
+			id: 'vd'
+			setMinimum: 0
+			setMaximum: 200
+			setTickInterval: 1
+			valueChanged.connect: app.showFrame
 
-	QtGui.QPushButton:
-		setText: "create Nurbs"
-		clicked.connect: app.createNurbs
+	HorizontalLayout:
+
+		QtGui.QLabel:
+			setText:"Frame size"
+
+
+		QtGui.QDial:
+			setValue: 5
+			id: 'dd'
+			setMinimum: 1
+			setMaximum: 100
+			setTickInterval: 1
+			valueChanged.connect: app.update2
+
+	HorizontalLayout:
+		QtGui.QPushButton:
+			setText: "hide Frame"
+			clicked.connect: app.hideFrame
+
+		QtGui.QPushButton:
+			setText: "create Nurbs"
+			clicked.connect: app.createNurbs
+		QtGui.QPushButton:
 
 '''
+
+
+
+Xsdialog='''
+VerticalLayoutTab:
+#	id:'main'
+	QtGui.QLabel:
+		setText:"***   N U R B S     E D I T O R   ***"
+	VerticalLayout:
+		HorizontalLayout:
+			QtGui.QLabel:
+				setText: "huhuwas 1 3"
+			QtGui.QLabel:
+				setText: "huhuwas 2 3"
+			QtGui.QLabel:
+				setText: "huhuwas 3 3"
+		HorizontalLayout:
+			QtGui.QLabel:
+				setText:"Action "
+			QtGui.QPushButton:
+				setText: "Run Action"
+			VerticalLayout:
+				QtGui.QLineEdit:
+					setText:"edit Axample"
+				QtGui.QLineEdit:
+					setText:"edit B"
+			QtGui.QLineEdit:
+				setText:"horizel "
+	HorizontalLayout:
+		QtGui.QLineEdit:
+			setText:"AA"
+		QtGui.QLineEdit:
+			setText:"BB"
+
+	'''
 
 import FreeCAD,FreeCADGui
 
@@ -322,7 +359,7 @@ def mydialog(run=True):
 	miki.app=app
 	app.root=miki
 
-#	miki.parse2(sdialog)
+	miki.parse2(sdialog)
 	miki.run(sdialog)
 	return app
 
@@ -414,7 +451,6 @@ class ViewProvider:
 def suv(app,u=3,v=5,d=10,la=100,lb=100):
 	'''generate quad on startposition u,v wit size d)'''
 
-	print app
 	st=time.time()
 	tt=Part.BSplineSurface()
 	wb, eb, sb, nb = 0, 0, 0, 0
@@ -430,11 +466,7 @@ def suv(app,u=3,v=5,d=10,la=100,lb=100):
 	pu=[]
 	say([ "(wb,eb,sb,nb,du,dv)", (wb,eb,sb,nb,du,dv)])
 	for k in range(dv):
-		#print ("zeile",k,u+v*lb+la*k,u+v*lb+du+la*k)
-		print ("zeile",k,u+v*la+la*k,u+v*la+du+la*k)
 		pu += app.pts[u+v*la+la*k:u+v*la+du+la*k]
-		#pu += app.pts[u+v*lb+la*k:u+v*lb+du+la*k]
-		# if k%3 <>0 and k>2 and k < dv-4 : continue
 		uu.append(app.pts[u+v*la+la*k:u+v*la+du+la*k])
 
 	color=(1-0.5*random.random(),1-0.5*random.random(),1-0.5*random.random())
@@ -504,11 +536,6 @@ se=time.time()
 print "running time all"
 print round(se-st,1)
 '''
-
-# suv(90,0)
-#suv(0,0)
-#suv(10,0)
-
 
 '''
 Kreuz Koeln Sued

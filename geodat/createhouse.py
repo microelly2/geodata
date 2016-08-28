@@ -85,7 +85,8 @@ def gen_haus(le,wi,hiall,hi,ang,midx=0.7,wx=0.5,midy=0.5,wy=0):
 
 
 s6='''
-VerticalLayout:
+MainWindow:
+	VerticalLayout:
 		id:'main'
 		setFixedHeight: 800
 		setFixedWidth: 600

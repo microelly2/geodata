@@ -18,7 +18,10 @@
 
 
 s6='''
-VerticalLayout:
+#VerticalLayoutTab:
+MainWindow:
+#DockWidget:
+	VerticalLayout:
 		id:'main'
 		setFixedHeight: 600
 		setFixedWidth: 730
@@ -89,7 +92,6 @@ VerticalLayout:
 		QtGui.QRadioButton:
 			setText: "Tokyo near tower"
 			clicked.connect: app.run_tokyo
-
 
 		QtGui.QLabel:
 		QtGui.QLabel:
