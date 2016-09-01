@@ -61,6 +61,11 @@ example data
 
 
 def getShape(pts):
+	sayW("get shape")
+	sayW(len(pts))
+	return 68,73
+	return 73,68
+	
 
 	sx=pts[0][0]
 	sy=pts[0][1]
@@ -78,7 +83,7 @@ def getShape(pts):
 	return i,len(pts)//i
 
 
-def reduceGrid(pts,ku=100,kv=50):
+def reduceGrid(pts,ku=100,kv=50,lu=0,lv=0):
 	''' simplifiy data '''
 
 	wb, eb, sb, nb = 3, 3, 3, 3
@@ -104,6 +109,9 @@ def reduceGrid(pts,ku=100,kv=50):
 
 def showFrame(pts,u=0,v=0,d=10,lu=None,lv=None):
 
+
+	sayErr("show Frame")
+	say(("lu,lv",lu,lv))
 	if lu == None or lv == None:
 		lu,lv=getShape(pts)
 
@@ -111,13 +119,22 @@ def showFrame(pts,u=0,v=0,d=10,lu=None,lv=None):
 	assert(u+d<lu)
 	assert(v+d<lv)
 
+#	lu=lu+1
+#	lv=lv+1
+
 	try:
 		ff=FreeCAD.ActiveDocument.frame
 	except:
 		ff=FreeCAD.ActiveDocument.addObject("Part::FeaturePython","frame")
 		ViewProvider(ff.ViewObject)
+	iix=[u+v*lu,u+v*lu+d,u+v*lu +d*lu +d,u+v*lu +d*lu]
+#	iix=[u+v*lv,u+v*lv+d,u+v*lv +d*lv +d,u+v*lv +d*lv]
+	say(iix)
 
-	a,b,c,d = pts[u+v*lu], pts[u+v*lu+d],  pts[u+v*lu +d*lu +d],pts[u+v*lu +d*lu],
+
+##	a,b,c,d = pts[u+v*lu], pts[u+v*lu+d],  pts[u+v*lu +d*lu +d],pts[u+v*lu +d*lu],
+	a,b,c,d = pts[iix[0]], pts[iix[1]],  pts[iix[2]], pts[iix[3]],
+
 	sha=Part.makePolygon([a,b,c,d,a])
 
 	ff.Shape=sha
@@ -127,7 +144,35 @@ def removeFrame():
 	App.ActiveDocument.removeObject("frame")
 
 
-def import_xyz(filename="/tmp/test.xyz",ku=20, kv=10):
+def import_xyz(mode,filename="/tmp/test.xyz",label='',ku=20, kv=10,lu=0,lv=0):
+
+	if mode:
+		
+		if lu>0 and lv>0:
+			sayErr("read Points001")
+
+		try:
+			App.ActiveDocument.nurbs
+		except:
+			nurbs=App.getDocument("Unnamed").addObject("App::DocumentObjectGroup","nurbs")
+		try:
+			App.ActiveDocument.grids
+		except:
+			grids=App.getDocument("Unnamed").addObject("App::DocumentObjectGroup","grids")
+		try:
+			App.ActiveDocument.points
+		except:
+			points=nurbs=App.getDocument("Unnamed").addObject("App::DocumentObjectGroup","points")
+
+			objs=App.ActiveDocument.getObjectsByLabel(label)
+			say(objs)
+			#pts=App.ActiveDocument.Points001.Points.Points
+			pts=objs[0].Points.Points
+			say(("len pts, lu, lv, lu*lv",len(pts),lu,lv,lu*lv))
+			assert(len(pts)==lu*lv)
+			return pts
+
+		
 
 	say("iport")
 	try:
@@ -135,27 +180,60 @@ def import_xyz(filename="/tmp/test.xyz",ku=20, kv=10):
 		say("use Points")
 		return App.ActiveDocument.Points.Points.Points
 	except:
-		nurbs=App.getDocument("Unnamed").addObject("App::DocumentObjectGroup","nurbs")
-		grids=App.getDocument("Unnamed").addObject("App::DocumentObjectGroup","grids")
-		points=nurbs=App.getDocument("Unnamed").addObject("App::DocumentObjectGroup","points")
+		try:
+			App.ActiveDocument.nurbs
+		except:
+			nurbs=App.getDocument("Unnamed").addObject("App::DocumentObjectGroup","nurbs")
+		try:
+			App.ActiveDocument.grids
+		except:
+			grids=App.getDocument("Unnamed").addObject("App::DocumentObjectGroup","grids")
+		try:
+			App.ActiveDocument.points
+		except:
+			points=nurbs=App.getDocument("Unnamed").addObject("App::DocumentObjectGroup","points")
 
 #		filename='/home/thomas/Dokumente/freecad_buch/b202_gmx_tracks/dgm1/dgm1_32356_5638_2_nw.xyz'
 		f=open(filename)
 		lines=f.readlines()
 		print len(lines)
 
+		'''
+		# utm coords 32356000.00 5638000.00
+
+		# height scale factor
+		hfac=3
+		'''
+		
+		'''
+		if lu>0 and lv>0:
+			sayErr("read Points001")
+			
+			
+			pts=App.ActiveDocument.Points001.Points.Points
+			say(len(pts))
+			assert(len(pts)==lu*lv)
+			
+			
+			pts2=[]
+			for i in range(lu):
+				for j in range(lv):
+					pts2.append(pts[i+j*lu])
+
+			assert(len(pts)==len(pts2))
+			# pts=pts2
+
+		'''
+		
+		
+		'''
 		pts=[]
-		for a in range(2000):
-			for b in range(2000):
-				i=a+2000*b
-				l=lines[i]
-
-				p=l.split()
-				# utm coords 32356000.00 5638000.00
-				# height scale factor
-				hfac=3
-
-				pts.append(FreeCAD.Vector(float(p[0])-32356000.00,float(p[1])-5638000.00,hfac*float(p[2])))
+		sayW(len(lines))
+		for l in lines:
+			p=l.split()
+			hfac=3
+			pts.append(FreeCAD.Vector(float(p[0])-32356000.00,float(p[1])-5638000.00,hfac*float(p[2])))
+		'''
 
 		if ku>1 and kv>1:
 			pts=reduceGrid(pts,ku,kv)
@@ -177,123 +255,153 @@ MainWindow:
 	VerticalLayout:
 		id:'main'
 
+
 		QtGui.QLabel:
 			setText:"***   I M P O R T    Data from xyz   ***"
 
-	QtGui.QPushButton:
-		setText: "Browse for input data filename"
-		clicked.connect: app.getfn
+		QtGui.QCheckBox:
+			id: 'pclMode' 
+			setText: 'Use existing Point Cloud'
+			stateChanged.connect: app.pclMode
+			setChecked: True
 
-	QtGui.QLineEdit:
-		setText:"/home/thomas/Dokumente/freecad_buch/b202_gmx_tracks/dgm1/dgm1_32356_5638_2_nw.xyz"
-		id: 'bl'
 
-	HorizontalLayout:
+	VerticalLayout:
+		id:'img1'
+		setVisible:False
+
+		QtGui.QPushButton:
+			setText: "Browse for input data filename"
+			clicked.connect: app.getfn
+
+		QtGui.QLineEdit:
+			setText:"/home/thomas/Dokumente/freecad_buch/b202_gmx_tracks/dgm1/dgm1_32356_5638_2_nw.xyz"
+			id: 'bl'
+
+		HorizontalLayout:
+			QtGui.QLabel:
+				setText:"Reduction Factor  "
+
+			QtGui.QLineEdit:
+				setText:"10"
+				setText:"1"
+				id: 'ku'
+
+			QtGui.QLineEdit:
+				setText:"10"
+				setText:"1"
+				id: 'kv'
+
+
+	VerticalLayout:
+		id:'img2'
+
 		QtGui.QLabel:
-			setText:"Reduction Factor  "
+			setText:"Point Cloud Name"
 
 		QtGui.QLineEdit:
-			setText:"10"
-			id: 'ku'
+			setText:"Points 110 99"
+			id: 'pclLabel'
+
+
+		HorizontalLayout:
+			QtGui.QLabel:
+				setText:"Size lu,lv  "
 
 		QtGui.QLineEdit:
-			setText:"10"
-			id: 'kv'
+			setText:"0"
+			setText:"110"
+			id: 'lu'
+
+		QtGui.QLineEdit:
+			setText:"0"
+			setText:"99"
+			id: 'lv'
 
 
 	QtGui.QPushButton:
 		setText: "initialize values"
+		id:'run'
 		clicked.connect: app.run
 
-	HorizontalLayout:
+	VerticalLayout:
+		id:'post'
+		setVisible: False
 
 		QtGui.QLabel:
-			setText:"Frame position"
+			setText:"Create Nurbs Surfaces inside a Rectangle"
 
-		QtGui.QDial:
-			setValue: 0
-			id: 'ud'
-			setMinimum: 0
-			setMaximum: 200
-			setTickInterval: 1
-			valueChanged.connect: app.showFrame
+		HorizontalLayout:
 
+			QtGui.QLabel:
+				setText:"Frame position"
 
-		QtGui.QDial:
-			setValue: 0
-			id: 'vd'
-			setMinimum: 0
-			setMaximum: 200
-			setTickInterval: 1
-			valueChanged.connect: app.showFrame
-
-	HorizontalLayout:
-
-		QtGui.QLabel:
-			setText:"Frame size"
+			QtGui.QDial:
+				setValue: 0
+				id: 'ud'
+				setMinimum: 0
+				setMaximum: 200
+				setTickInterval: 1
+				valueChanged.connect: app.showFrame
 
 
-		QtGui.QDial:
-			setValue: 5
-			id: 'dd'
-			setMinimum: 1
-			setMaximum: 100
-			setTickInterval: 1
-			valueChanged.connect: app.update2
+			QtGui.QDial:
+				setValue: 0
+				id: 'vd'
+				setMinimum: 0
+				setMaximum: 200
+				setTickInterval: 1
+				valueChanged.connect: app.showFrame
 
-	HorizontalLayout:
-		QtGui.QPushButton:
-			setText: "hide Frame"
-			clicked.connect: app.hideFrame
+		HorizontalLayout:
 
-		QtGui.QPushButton:
-			setText: "create Nurbs"
-			clicked.connect: app.createNurbs
-		QtGui.QPushButton:
+			QtGui.QLabel:
+				setText:"Frame size"
+
+
+			QtGui.QDial:
+				setValue: 5
+				id: 'dd'
+				setMinimum: 1
+				setMaximum: 100
+				setTickInterval: 1
+				valueChanged.connect: app.update2
+
+		HorizontalLayout:
+			QtGui.QPushButton:
+				setText: "hide Frame"
+				clicked.connect: app.hideFrame
+
+			QtGui.QPushButton:
+				setText: "create Nurbs"
+				clicked.connect: app.createNurbs
+			QtGui.QPushButton:
 
 '''
 
 
 
-Xsdialog='''
-VerticalLayoutTab:
-#	id:'main'
-	QtGui.QLabel:
-		setText:"***   N U R B S     E D I T O R   ***"
-	VerticalLayout:
-		HorizontalLayout:
-			QtGui.QLabel:
-				setText: "huhuwas 1 3"
-			QtGui.QLabel:
-				setText: "huhuwas 2 3"
-			QtGui.QLabel:
-				setText: "huhuwas 3 3"
-		HorizontalLayout:
-			QtGui.QLabel:
-				setText:"Action "
-			QtGui.QPushButton:
-				setText: "Run Action"
-			VerticalLayout:
-				QtGui.QLineEdit:
-					setText:"edit Axample"
-				QtGui.QLineEdit:
-					setText:"edit B"
-			QtGui.QLineEdit:
-				setText:"horizel "
-	HorizontalLayout:
-		QtGui.QLineEdit:
-			setText:"AA"
-		QtGui.QLineEdit:
-			setText:"BB"
-
-	'''
 
 import FreeCAD,FreeCADGui
 
 class MyApp(object):
 
+	def pclMode(self):
+		try:
+			if self.root.ids['pclMode'].isChecked():
+				self.root.ids['img1'].hide()
+				self.root.ids['img2'].show()
+			else:
+				self.root.ids['img1'].show()
+				self.root.ids['img2'].hide()
+		except:
+			pass
+
 	def update(self):
-		lu,lv = getShape(self.pts)
+#		lu,lv = getShape(self.pts)
+		lu=int(self.root.ids['lu'].text())
+		lv=int(self.root.ids['lv'].text())
+
 		dmax = min(lu - self.root.ids['ud'].value(), lv - self.root.ids['vd'].value(),101) -1
 		self.root.ids['dd'].setMaximum(dmax)
 		if self.root.ids['dd'].value() >dmax:
@@ -311,16 +419,26 @@ class MyApp(object):
 		try:
 			ts=time.time()
 			self.pts=import_xyz(
+					self.root.ids['pclMode'].isChecked(),
 					filename,
+					self.root.ids['pclLabel'].text(),
 					int(self.root.ids['ku'].text()),
-					int(self.root.ids['kv'].text())
+					int(self.root.ids['kv'].text()),
+					int(self.root.ids['lu'].text()),
+					int(self.root.ids['lv'].text()),
 			)
 			te=time.time()
 			say("load points time " + str(round(te-ts,2)))
 			say(("points",len(self.pts)))
 			self.update()
+			self.root.ids['post'].show()
+			self.root.ids['run'].hide()
+			self.root.ids['main'].hide()
+			self.root.ids['img1'].hide()
+			self.root.ids['img2'].hide()
 		except:
 				sayexc()
+			
 
 	def getfn(self):
 		fileName = QtGui.QFileDialog.getOpenFileName(None,u"Open File",u"/tmp/");
@@ -335,7 +453,10 @@ class MyApp(object):
 		u=self.root.ids['ud'].value()
 		v=self.root.ids['vd'].value()
 		d=self.root.ids['dd'].value()
-		showFrame(self.pts,u,v,d)
+		lu=int(self.root.ids['lu'].text())
+		lv=int(self.root.ids['lv'].text())
+
+		showFrame(self.pts,u,v,d,lu,lv)
 
 
 	def createNurbs(self):
@@ -343,7 +464,10 @@ class MyApp(object):
 		u=self.root.ids['ud'].value()
 		v=self.root.ids['vd'].value()
 		d=self.root.ids['dd'].value()
-		lu,lv = getShape(self.pts)
+#		lu,lv = getShape(self.pts)
+		lu=int(self.root.ids['lu'].text())
+		lv=int(self.root.ids['lv'].text())
+
 		say((u,v,d,lu,lv))
 		suv(self,u,v,d+1,lu,lv)
 
@@ -434,6 +558,7 @@ def create_grid(pu,du,dv, wb, eb, sb, nb, color=(1.0,0.0,0.0)):
 
 
 def create_pcl(pu,color=(1.0,0.0,0.0)):
+	say(len(pu))
 	p=Points.Points(pu)
 	Points.show(p)
 	App.ActiveDocument.ActiveObject.ViewObject.ShapeColor=color
