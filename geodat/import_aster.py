@@ -90,10 +90,11 @@ def getAST(b=50.26,l=11.39):
 # 50 15 36.0 N+11 23 24.0 E /50.2570152,11.3818337
 
 if __name__ == '__main__':
-	getAST(50.26,11.39)
+	# getAST(50.26,11.39)
 
-	# import geodat.import_aster;geodat.import_aster.getAST()
-
+if 1:
+	import geodat.import_aster
+	geodat.import_aster.getAST()
 	import geodat.import_xyz
 	reload(geodat.import_xyz)
 	pts=App.ActiveDocument.Points.Points.Points
