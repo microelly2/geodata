@@ -577,6 +577,7 @@ class ViewProvider:
 def suv(app,u=3,v=5,d=10,la=100,lb=100):
 	'''generate quad on startposition u,v wit size d)'''
 
+
 	st=time.time()
 	tt=Part.BSplineSurface()
 	wb, eb, sb, nb = 0, 0, 0, 0
@@ -635,6 +636,85 @@ def suv(app,u=3,v=5,d=10,la=100,lb=100):
 	Gui.ActiveDocument.update()
 	return tt
 
+
+def suv2(pts,u=3,v=5,d=10,la=100,lb=100):
+	'''generate quad on startposition u,v wit size d)'''
+
+	try:
+		App.ActiveDocument.nurbs
+	except:
+		nurbs=App.ActiveDocument.addObject("App::DocumentObjectGroup","nurbs")
+	try:
+		App.ActiveDocument.grids
+	except:
+		grids=App.ActiveDocument.addObject("App::DocumentObjectGroup","grids")
+	try:
+		App.ActiveDocument.points
+	except:
+		points=nurbs=App.ActiveDocument.addObject("App::DocumentObjectGroup","points")
+
+
+	st=time.time()
+	tt=Part.BSplineSurface()
+	wb, eb, sb, nb = 0, 0, 0, 0
+	if u>=2: wb=2
+	if u<la-2-d: eb=2
+	if v>=2: sb=2
+	if v<la-2-d: nb=2
+	uu=[]
+	du=d+wb+eb
+	dv=d+nb+sb
+	u=u-wb
+	v=v-sb
+	pu=[]
+	say([ "(wb,eb,sb,nb,du,dv)", (wb,eb,sb,nb,du,dv)])
+	for k in range(dv):
+		pu += pts[u+v*la+la*k:u+v*la+du+la*k]
+		uu.append(pts[u+v*la+la*k:u+v*la+du+la*k])
+
+	color=(1-0.5*random.random(),1-0.5*random.random(),1-0.5*random.random())
+
+	try:
+		App.ActiveDocument.ActiveObject.ViewObject.hide()
+	except: pass
+
+	# create point cloud
+	create_pcl(pu,color)
+	Gui.updateGui()
+	try:
+		App.ActiveDocument.ActiveObject.ViewObject.hide()
+	except:
+		pass
+
+	#create bspline grid
+	create_grid(pu,du,dv, wb, eb, sb, nb, color)
+	Gui.updateGui()
+
+	tt.interpolate(uu)
+	uk=tt.getUKnots()
+	vk=tt.getVKnots()
+	tt.segment(uk[sb],uk[-1-nb],vk[wb],vk[-1-eb])
+	sha=tt.toShape()
+	se=time.time()
+	say(["running time for one shape ", round(se-st,5)])
+
+	# alternative
+	# Part.show(sha)
+
+	App.ActiveDocument.ActiveObject.ViewObject.hide()
+
+	a=FreeCAD.ActiveDocument.addObject("Part::FeaturePython","mynurbs")
+	ViewProvider(a.ViewObject)
+	a.Shape=sha
+
+
+	se=time.time()
+	say([ "running time for show the shape ", round(se-st,5)])
+
+	App.ActiveDocument.ActiveObject.ViewObject.ShapeColor=color
+	App.ActiveDocument.nurbs.addObject(App.ActiveDocument.ActiveObject)
+	Gui.ActiveDocument.update()
+	return tt
 
 
 

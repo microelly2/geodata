@@ -63,7 +63,7 @@ def getAST(b=50.26,l=11.39):
 	print  data[px,py]
 
 	pts=[]
-	d=140
+	d=50
 
 	tm=TransverseMercator()
 	tm.lat=b
@@ -92,3 +92,9 @@ def getAST(b=50.26,l=11.39):
 if __name__ == '__main__':
 	getAST(50.26,11.39)
 
+	# import geodat.import_aster;geodat.import_aster.getAST()
+
+	import geodat.import_xyz
+	reload(geodat.import_xyz)
+	pts=App.ActiveDocument.Points.Points.Points
+	geodat.import_xyz.suv2(pts,u=0,v=0,d=100,la=100,lb=100)
