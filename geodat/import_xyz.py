@@ -146,6 +146,7 @@ def removeFrame():
 
 def import_xyz(mode,filename="/tmp/test.xyz",label='',ku=20, kv=10,lu=0,lv=0):
 
+	print "Import mode=",mode
 	if mode:
 		
 		if lu>0 and lv>0:
@@ -154,25 +155,25 @@ def import_xyz(mode,filename="/tmp/test.xyz",label='',ku=20, kv=10,lu=0,lv=0):
 		try:
 			App.ActiveDocument.nurbs
 		except:
-			nurbs=App.getDocument("Unnamed").addObject("App::DocumentObjectGroup","nurbs")
+			nurbs=App.ActiveDocument.addObject("App::DocumentObjectGroup","nurbs")
 		try:
 			App.ActiveDocument.grids
 		except:
-			grids=App.getDocument("Unnamed").addObject("App::DocumentObjectGroup","grids")
+			grids=App.ActiveDocument.addObject("App::DocumentObjectGroup","grids")
 		try:
 			App.ActiveDocument.points
 		except:
-			points=nurbs=App.getDocument("Unnamed").addObject("App::DocumentObjectGroup","points")
+			points=nurbs=App.ActiveDocument.addObject("App::DocumentObjectGroup","points")
 
-			objs=App.ActiveDocument.getObjectsByLabel(label)
-			say(objs)
-			#pts=App.ActiveDocument.Points001.Points.Points
-			pts=objs[0].Points.Points
-			say(("len pts, lu, lv, lu*lv",len(pts),lu,lv,lu*lv))
-			assert(len(pts)==lu*lv)
-			return pts
+		objs=App.ActiveDocument.getObjectsByLabel(label)
+		say(objs)
+		#pts=App.ActiveDocument.Points001.Points.Points
+		pts=objs[0].Points.Points
+		say(("len pts, lu, lv, lu*lv",len(pts),lu,lv,lu*lv))
+		assert(len(pts)==lu*lv)
+		return pts
 
-		
+
 
 	say("iport")
 	try:
@@ -183,15 +184,15 @@ def import_xyz(mode,filename="/tmp/test.xyz",label='',ku=20, kv=10,lu=0,lv=0):
 		try:
 			App.ActiveDocument.nurbs
 		except:
-			nurbs=App.getDocument("Unnamed").addObject("App::DocumentObjectGroup","nurbs")
+			nurbs=App.ActiveDocument.addObject("App::DocumentObjectGroup","nurbs")
 		try:
 			App.ActiveDocument.grids
 		except:
-			grids=App.getDocument("Unnamed").addObject("App::DocumentObjectGroup","grids")
+			grids=App.ActiveDocument.addObject("App::DocumentObjectGroup","grids")
 		try:
 			App.ActiveDocument.points
 		except:
-			points=nurbs=App.getDocument("Unnamed").addObject("App::DocumentObjectGroup","points")
+			points=nurbs=App.ActiveDocument.addObject("App::DocumentObjectGroup","points")
 
 #		filename='/home/thomas/Dokumente/freecad_buch/b202_gmx_tracks/dgm1/dgm1_32356_5638_2_nw.xyz'
 		f=open(filename)
@@ -226,14 +227,14 @@ def import_xyz(mode,filename="/tmp/test.xyz",label='',ku=20, kv=10,lu=0,lv=0):
 		'''
 		
 		
-		'''
+		
 		pts=[]
 		sayW(len(lines))
 		for l in lines:
 			p=l.split()
 			hfac=3
 			pts.append(FreeCAD.Vector(float(p[0])-32356000.00,float(p[1])-5638000.00,hfac*float(p[2])))
-		'''
+		
 
 		if ku>1 and kv>1:
 			pts=reduceGrid(pts,ku,kv)
@@ -628,7 +629,7 @@ def suv(app,u=3,v=5,d=10,la=100,lb=100):
 
 	se=time.time()
 	say([ "running time for show the shape ", round(se-st,5)])
-	
+
 	App.ActiveDocument.ActiveObject.ViewObject.ShapeColor=color
 	App.ActiveDocument.nurbs.addObject(App.ActiveDocument.ActiveObject)
 	Gui.ActiveDocument.update()

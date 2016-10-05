@@ -40,20 +40,21 @@ windowCreated = 0
 #print "geodat loaded"
 
 
-class import_osm:
-
-	def Activated(self):
-		print "run import ..."
-		import geodat.import_osm
-		geodat.import_osm.import_osm()
-		
-
-	def GetResources(self):
-		return {
-			'Pixmap'  : 'Std_Tool2', 
-			'MenuText': 'Import OSM Map', 
-			'ToolTip': 'Import OSM Map'
-		}
+# kann weg 
+#class import_osm:
+#
+#	def Activated(self):
+#		print "run import ..."
+#		import geodat.import_osm
+#		geodat.import_osm.import_osm()
+#		
+#
+#	def GetResources(self):
+#		return {
+#			'Pixmap'  : 'Std_Tool2', 
+#			'MenuText': 'Import OSM Map', 
+#			'ToolTip': 'Import OSM Map'
+#		}
 
 
 class import_csv:
@@ -92,9 +93,9 @@ class import_image:
 
 	def Activated(self):
 		print "run import ..."
-		import geodat.image_2_nurbs
-		reload(geodat.image_2_nurbs)
-		geodat.image_2_nurbs.mydialog(False)
+		import geodat.import_image
+		reload(geodat.import_image)
+		geodat.import_image.mydialog(False)
 		
 
 	def GetResources(self):
@@ -144,10 +145,14 @@ class mydialog:
 
 	def Activated(self):
 		print "run import ..."
-		import geodat.mydialog
-		reload(geodat.mydialog)
-		geodat.mydialog.mydialog()
-		
+#		import geodat.mydialog
+#		reload(geodat.mydialog)
+#		geodat.mydialog.mydialog()
+		import geodat.import_osm
+		reload(geodat.import_osm)
+		geodat.import_osm.dialog()
+
+
 
 	def GetResources(self):
 		return {
@@ -161,9 +166,9 @@ class importheights:
 
 	def Activated(self):
 		print "run import ..."
-		import geodat.height_dialog
-		reload(geodat.height_dialog)
-		geodat.height_dialog.mydialog()
+		import geodat.import_heights
+		reload(geodat.import_heights)
+		geodat.import_heights.mydialog()
 		
 
 	def GetResources(self):
@@ -177,9 +182,9 @@ class importsrtm:
 
 	def Activated(self):
 		print "run import ..."
-		import geodat.srtm_downloader
-		reload(geodat.srtm_downloader)
-		geodat.srtm_downloader.dialog()
+		import geodat.import_srtm
+		reload(geodat.import_srtm)
+		geodat.import_srtm.dialog()
 		
 
 	def GetResources(self):
