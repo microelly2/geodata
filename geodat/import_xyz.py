@@ -8,7 +8,7 @@
 #-------------------------------------------------
 
 
-from say import *
+from geodat.say import *
 import Points
 
 import geodat.transversmercator
@@ -714,7 +714,8 @@ def suv2(pts,u=3,v=5,d=10,la=100,lb=100):
 	App.ActiveDocument.ActiveObject.ViewObject.ShapeColor=color
 	App.ActiveDocument.nurbs.addObject(App.ActiveDocument.ActiveObject)
 	Gui.ActiveDocument.update()
-	return tt
+	# return tt
+	return a
 
 
 

@@ -7,7 +7,7 @@
 #-- GNU Lesser General Public License (LGPL)
 #-------------------------------------------------
 
-from say import *
+from geodat.say import *
 
 # test-data from https://en.wikipedia.org/wiki/GPS_Exchange_Format
 

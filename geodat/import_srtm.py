@@ -146,7 +146,7 @@ def runfile(fn, xw,xe,ys,yn,ox=0,oy=0):
 # download the file
 import sys, os, zipfile, traceback, time, yaml, urllib, re, platform, pprint 
 
-from say import *
+from geodat.say import *
 
 
 

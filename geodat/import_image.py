@@ -7,7 +7,7 @@
 #-- GNU Lesser General Public License (LGPL)
 #-------------------------------------------------
 
-from say import *
+from geodat.say import *
 import Points
 
 import matplotlib.pyplot as plt

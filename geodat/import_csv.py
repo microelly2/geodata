@@ -8,7 +8,7 @@
 #-------------------------------------------------
 
 
-from say import *
+from geodat.say import *
 
 import FreeCAD,FreeCADGui, Part
 App=FreeCAD

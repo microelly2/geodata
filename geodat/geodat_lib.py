@@ -113,6 +113,7 @@ def genTestImage(fn="/tmp/100_200.png"):
 
 	cv2.imwrite(fn,img)
 
+
 def genSizeImage(size=32):
 	''' create a quadratic test image of given size
 	save it to /tmp/

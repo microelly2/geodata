@@ -81,6 +81,10 @@ def getAST(b=50.26,l=11.39):
 	import Points
 	p=Points.Points(pts)
 	Points.show(p)
+	
+	return FreeCAD.ActiveDocument.ActiveObject
+
+
 
 # friesener berg - zeyerner wand
 #
@@ -89,13 +93,42 @@ def getAST(b=50.26,l=11.39):
 #
 # 50 15 36.0 N+11 23 24.0 E /50.2570152,11.3818337
 
-if __name__ == '__main__':
-	# getAST(50.26,11.39)
+# the ast file is expected in ~/.FreeCAD/geodat/AST
+# 
+# FreeCAD.ConfigGet("UserAppData") +'/geodat/AST/ASTGTM2_' + ff +'_dem.tif'
 
-if 1:
+
+
+if __name__ == '__main__':
+
+	import time
+	ts=time.time()
 	import geodat.import_aster
-	geodat.import_aster.getAST()
+	reload(geodat.import_aster)
+
+	# zeyerner wand **
+	#geodat.import_aster.getAST(50.2570152,11.3818337)
+
+	# outdoor inn *
+	#geodat.import_aster.getAST(50.3737109,11.1891891)
+
+	# roethen **
+	#geodat.import_aster.getAST(50.3902794,11.157629)
+
+	# kreuzung huettengrund nach judenbach ***
+	pcl=geodat.import_aster.getAST(50.368209,11.2016135)
+	
 	import geodat.import_xyz
 	reload(geodat.import_xyz)
-	pts=App.ActiveDocument.Points.Points.Points
-	geodat.import_xyz.suv2(pts,u=0,v=0,d=100,la=100,lb=100)
+
+	pts=pcl.Points.Points
+	nurbs=geodat.import_xyz.suv2(pts,u=0,v=0,d=100,la=100,lb=100)
+	te=time.time()
+	print te-ts
+
+	obj=nurbs
+
+	import geodat.geodat_lib
+	fn=geodat.geodat_lib.genSizeImage(size=512)
+	geodat.geodat_lib.addImageTexture(obj,fn,scale=(8,3))
+	obj.ViewObject.Selectable = False
