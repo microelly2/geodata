@@ -1,15 +1,36 @@
+# -*- coding: utf-8 -*-
+#-------------------------------------------------
+#-- geodat import AST (gdal)
+#--
+#-- microelly 2016 v 0.1
+#--
+#-- GNU Lesser General Public License (LGPL)
+#-------------------------------------------------
+
 #http://geoinformaticstutorial.blogspot.de/2012/09/reading-raster-data-with-python-and-gdal.html
 #http://forum.freecadweb.org/viewtopic.php?f=8&t=17647&start=10#p139201
 
-import FreeCAD
+# the ast file is expected in ~/.FreeCAD/geodat/AST
+# FreeCAD.ConfigGet("UserAppData") +'/geodat/AST/ASTGTM2_' + ff +'_dem.tif'
+
+
+from geodat.say import *
+
 import geodat.transversmercator
 from  geodat.transversmercator import TransverseMercator
-import numpy as np
 
+import geodat.import_xyz
+import geodat.geodat_lib
 
 # apt-get install python-gdal
 import gdal
 from gdalconst import * 
+
+import geodat.miki as miki
+
+import WebGui
+import Points
+
 
 
 def getAST(b=50.26,l=11.39):
@@ -20,12 +41,13 @@ def getAST(b=50.26,l=11.39):
 	# the ast dataset
 	ff="N%02dE%03d" % (int(bs),int(ls))
 	fn=FreeCAD.ConfigGet("UserAppData") +'/geodat/AST/ASTGTM2_' + ff +'_dem.tif'
-	print fn
+	# print fn
 
 	dataset = gdal.Open(fn, GA_ReadOnly) 
-	dataset
 	if dataset == None:
-		FreeCAD.Console.PrintError("\nProblem cannot open " + fn + "\n")
+		msg="\nProblem cannot open " + fn + "\n"
+		FreeCAD.Console.PrintError(msg)
+		errorDialog(msg)
 		return
 
 	cols=dataset.RasterXSize
@@ -37,30 +59,22 @@ def getAST(b=50.26,l=11.39):
 	pixelWidth = geotransform[1]
 	pixelHeight = geotransform[5]
 
-	originX
-	originY
-	pixelWidth
-	pixelHeight
-
 	band = dataset.GetRasterBand(1)
 	data = band.ReadAsArray(0, 0, cols, rows)
 
-	data.shape
+	#data.shape -> 3601 x 3601 secs
 	# erfurt 51,11
-	data[0,0]
+	#data[0,0]
 	# zeitz  51,12
-	data[3600,0]
+	#data[3600,0]
 	# windischletten(zapfendorf) 50,11
-	data[0,3600]
+	#data[0,3600]
 	# troestau fichtelgebirge 50,12
-	data[3600,3600]
+	#data[3600,3600]
 
 	px=int(round((bs+1-b)*3600))
 	py=int(round((l-ls)*3600))
 
-
-	print (px,py)
-	print  data[px,py]
 
 	pts=[]
 	d=50
@@ -70,7 +84,7 @@ def getAST(b=50.26,l=11.39):
 	tm.lon=l
 	center=tm.fromGeographic(tm.lat,tm.lon)
 
-	z0= data[px,py]
+	z0= data[px,py] # relative height to origin px,py
 
 	for x in range(px-d,px+d):
 		for y in range(py-d,py+d):
@@ -78,57 +92,99 @@ def getAST(b=50.26,l=11.39):
 			pt=FreeCAD.Vector(ll[0]-center[0],ll[1]-center[1], 1000.0* (data[x,y]-z0))
 			pts.append(pt)
 
-	import Points
+	# display the point cloud
 	p=Points.Points(pts)
 	Points.show(p)
-	
-	return FreeCAD.ActiveDocument.ActiveObject
+
+	return pts
+
+s6='''
+MainWindow:
+	VerticalLayout:
+		id:'main'
+#		setFixedHeight: 600
+		setFixedWidth: 600
+		move:  PySide.QtCore.QPoint(3000,100)
+
+		QtGui.QLabel:
+			setText:"C O N F I G U R A T I O N"
+		QtGui.QLabel:
+
+
+		QtGui.QLineEdit:
+			id: 'bl'
+
+			# zeyerner wand **
+			#(50.2570152,11.3818337)
+
+			# outdoor inn *
+			#(50.3737109,11.1891891)
+
+			# roethen **
+			#(50.3902794,11.157629)
+
+			# kreuzung huettengrund nach judenbach ***
+			#(50.368209,11.2016135)
+
+			setText:"50.368209,11.2016135"
+
+		QtGui.QPushButton:
+			setText: "Create height models"
+			clicked.connect: app.runbl
+
+		QtGui.QPushButton:
+			setText: "show Map"
+			clicked.connect: app.showMap
+
+'''
+
+
+class App(object):
+
+	def runbl(self):
+		bl=self.root.ids['bl'].text()
+		spli=bl.split(',')
+		b=float(spli[0])
+		l=float(spli[1])
+		s=15
+		import_heights(float(b),float(l),float(s))
+
+	def showMap(self):
+		bl=self.root.ids['bl'].text()
+		spli=bl.split(',')
+		b=float(spli[0])
+		l=float(spli[1])
+		s=15
+		WebGui.openBrowser( "http://www.openstreetmap.org/#map=16/"+str(b)+'/'+str(l))
 
 
 
-# friesener berg - zeyerner wand
-#
-#	b=50.26
-#	l=11.39
-#
-# 50 15 36.0 N+11 23 24.0 E /50.2570152,11.3818337
+def mydialog():
 
-# the ast file is expected in ~/.FreeCAD/geodat/AST
-# 
-# FreeCAD.ConfigGet("UserAppData") +'/geodat/AST/ASTGTM2_' + ff +'_dem.tif'
+	app=App()
+	miki=miki.Miki()
 
+	miki.app=app
+	app.root=miki
+
+	miki.run(s6)
+
+
+def import_heights(b,l,s):
+
+	ts=time.time()
+
+	pcl=getAST(b,l)
+	pts=pcl
+
+	nurbs=geodat.import_xyz.suv2(pts,u=0,v=0,d=100,la=100,lb=100)
+	te=time.time()
+	print "time to create models:",te-ts)
+
+	fn=geodat.geodat_lib.genSizeImage(size=512)
+	geodat.geodat_lib.addImageTexture(nurbs,fn,scale=(8,3))
+	nurbs.ViewObject.Selectable = False
 
 
 if __name__ == '__main__':
-
-	import time
-	ts=time.time()
-	import geodat.import_aster
-	reload(geodat.import_aster)
-
-	# zeyerner wand **
-	#geodat.import_aster.getAST(50.2570152,11.3818337)
-
-	# outdoor inn *
-	#geodat.import_aster.getAST(50.3737109,11.1891891)
-
-	# roethen **
-	#geodat.import_aster.getAST(50.3902794,11.157629)
-
-	# kreuzung huettengrund nach judenbach ***
-	pcl=geodat.import_aster.getAST(50.368209,11.2016135)
-	
-	import geodat.import_xyz
-	reload(geodat.import_xyz)
-
-	pts=pcl.Points.Points
-	nurbs=geodat.import_xyz.suv2(pts,u=0,v=0,d=100,la=100,lb=100)
-	te=time.time()
-	print te-ts
-
-	obj=nurbs
-
-	import geodat.geodat_lib
-	fn=geodat.geodat_lib.genSizeImage(size=512)
-	geodat.geodat_lib.addImageTexture(obj,fn,scale=(8,3))
-	obj.ViewObject.Selectable = False
+	mydialog()
