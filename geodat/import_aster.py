@@ -26,7 +26,7 @@ import geodat.geodat_lib
 import gdal
 from gdalconst import * 
 
-import geodat.miki as miki
+
 
 import WebGui
 import Points
@@ -162,7 +162,9 @@ class App(object):
 def mydialog():
 
 	app=App()
-	miki=miki.Miki()
+	import geodat
+	import geodat.miki as gmiki
+	miki=gmiki.Miki()
 
 	miki.app=app
 	app.root=miki
@@ -176,10 +178,10 @@ def import_heights(b,l,s):
 
 	pcl=getAST(b,l)
 	pts=pcl
-
-	nurbs=geodat.import_xyz.suv2(pts,u=0,v=0,d=100,la=100,lb=100)
+	ff="N" + str(b) + " E" + str(l)
+	nurbs=geodat.import_xyz.suv2(ff,pts,u=0,v=0,d=100,la=100,lb=100)
 	te=time.time()
-	print "time to create models:",te-ts)
+	print ("time to create models:",te-ts)
 
 	fn=geodat.geodat_lib.genSizeImage(size=512)
 	geodat.geodat_lib.addImageTexture(nurbs,fn,scale=(8,3))

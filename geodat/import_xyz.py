@@ -637,7 +637,7 @@ def suv(app,u=3,v=5,d=10,la=100,lb=100):
 	return tt
 
 
-def suv2(pts,u=3,v=5,d=10,la=100,lb=100):
+def suv2(label,pts,u=3,v=5,d=10,la=100,lb=100):
 	'''generate quad on startposition u,v wit size d)'''
 
 	try:
@@ -703,7 +703,7 @@ def suv2(pts,u=3,v=5,d=10,la=100,lb=100):
 
 	App.ActiveDocument.ActiveObject.ViewObject.hide()
 
-	a=FreeCAD.ActiveDocument.addObject("Part::FeaturePython","mynurbs")
+	a=FreeCAD.ActiveDocument.addObject("Part::FeaturePython",label)
 	ViewProvider(a.ViewObject)
 	a.Shape=sha
 
