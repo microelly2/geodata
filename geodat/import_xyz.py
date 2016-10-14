@@ -194,7 +194,7 @@ def import_xyz(mode,filename="/tmp/test.xyz",label='',ku=20, kv=10,lu=0,lv=0):
 		except:
 			points=nurbs=App.ActiveDocument.addObject("App::DocumentObjectGroup","points")
 
-#		filename='/home/thomas/Dokumente/freecad_buch/b202_gmx_tracks/dgm1/dgm1_32356_5638_2_nw.xyz'
+#		filename='/home/microelly2/FCB/b202_gmx_tracks/dgm1/dgm1_32356_5638_2_nw.xyz'
 		f=open(filename)
 		lines=f.readlines()
 		print len(lines)
@@ -276,7 +276,7 @@ MainWindow:
 			clicked.connect: app.getfn
 
 		QtGui.QLineEdit:
-			setText:"/home/thomas/Dokumente/freecad_buch/b202_gmx_tracks/dgm1/dgm1_32356_5638_2_nw.xyz"
+			setText:"/home/microelly2/FCB/b202_gmx_tracks/dgm1/dgm1_32356_5638_2_nw.xyz"
 			id: 'bl'
 
 		HorizontalLayout:
@@ -416,7 +416,7 @@ class MyApp(object):
 
 	def run(self):
 		filename=self.root.ids['bl'].text()
-		filename='/home/thomas/Dokumente/freecad_buch/b202_gmx_tracks/dgm1/dgm1_32356_5638_2_nw.xyz'
+		filename='/home/microelly2/FCB/b202_gmx_tracks/dgm1/dgm1_32356_5638_2_nw.xyz'
 		try:
 			ts=time.time()
 			self.pts=import_xyz(
@@ -703,7 +703,8 @@ def suv2(label,pts,u=3,v=5,d=10,la=100,lb=100):
 
 	App.ActiveDocument.ActiveObject.ViewObject.hide()
 
-	a=FreeCAD.ActiveDocument.addObject("Part::FeaturePython",label)
+	a=FreeCAD.ActiveDocument.addObject("Part::FeaturePython","QuadNurbs")
+	a.Label=label
 	ViewProvider(a.ViewObject)
 	a.Shape=sha
 

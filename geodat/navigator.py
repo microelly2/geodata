@@ -582,15 +582,15 @@ def keypress2(ef,keystring):
 				camera.nearDistance.setValue(nD)
 
 		if keystring=='F2':
-			fn='/home/thomas/Dokumente/freecad_buch/b175_camera_controller/P1170438.JPG'
+			fn='/home/microelly2/FCB/b175_camera_controller/P1170438.JPG'
 			ef.tex.filename = fn
 
 		if keystring=='F3':
-			fn='/home/thomas/Dokumente/freecad_buch/b175_camera_controller/P1170039.JPG'
+			fn='/home/microelly2/FCB/b175_camera_controller/P1170039.JPG'
 			ef.tex.filename = fn
 
 		if keystring=='F4':
-			fn='/home/thomas/Dokumente/freecad_buch/b175_camera_controller/winter.jpg'
+			fn='/home/microelly2/FCB/b175_camera_controller/winter.jpg'
 			ef.tex.filename = fn
 
 
@@ -943,26 +943,26 @@ def huhu():
 import os
 def background1(ef):
 	print "hintergrund 1"
-	fn='/home/thomas/Dokumente/freecad_buch/b175_camera_controller/winter.jpg'
+	fn='/home/microelly2/FCB/b175_camera_controller/winter.jpg'
 	fn=os.path.dirname(__file__) +"/../pics/winter.jpg"
 	ef.tex.filename = fn
 
 def background2(ef):
 	print "hintergrund 2"
-	fn='/home/thomas/Dokumente/freecad_buch/b175_camera_controller/P1170437.JPG'
+	fn='/home/microelly2/FCB/b175_camera_controller/P1170437.JPG'
 	fn=os.path.dirname(__file__) +"/../pics//P1170437.JPG"
 	ef.tex.filename = fn
 
 def background3(ef):
 	print "hintergrund "
-	fn='/home/thomas/Dokumente/freecad_buch/b175_camera_controller/P1170039.JPG'
+	fn='/home/microelly2/FCB/b175_camera_controller/P1170039.JPG'
 	fn=os.path.dirname(__file__) +"/../pics/P1170039.JPG"
 	ef.tex.filename = fn
 
 
 def background4(ef):
 	print "hintergrund "
-	fn='/home/thomas/Dokumente/freecad_buch/b175_camera_controller/transpa.png'
+	fn='/home/microelly2/FCB/b175_camera_controller/transpa.png'
 	fn=os.path.dirname(__file__) +"/../pics/transpa.png"
 	print fn
 	ef.tex.filename = fn
@@ -1030,7 +1030,7 @@ def navi():
 	 
 	# get a jpg filename
 	## jpgfilename = QtGui.QFileDialog.getOpenFileName(QtGui.qApp.activeWindow(),'Open image file','*.jpg')
-	fn='/home/thomas/Dokumente/freecad_buch/b175_camera_controller/winter.jpg'
+	fn='/home/microelly2/FCB/b175_camera_controller/winter.jpg'
 	import os
 	fn=os.path.dirname(__file__) +"/../pics/winter.jpg"
 

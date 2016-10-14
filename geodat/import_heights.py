@@ -92,16 +92,6 @@ def import_heights(b,le,size):
 
 
 
-# -*- coding: utf-8 -*-
-#-------------------------------------------------
-#-- osm map importer
-#--
-#-- microelly 2016 v 0.3
-#--
-#-- GNU Lesser General Public License (LGPL)
-#-------------------------------------------------
-
-
 s6='''
 MainWindow:
 	VerticalLayout:
@@ -203,7 +193,7 @@ ss='''
 
 import FreeCAD,FreeCADGui
 
-class App(object):
+class MyApp(object):
 
 	def radio_0(self):
 		print "clicked"
@@ -294,7 +284,7 @@ class App(object):
 
 
 def mydialog():
-	app=App()
+	app=MyApp()
 
 	import miki
 	reload(miki)

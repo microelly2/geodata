@@ -594,7 +594,7 @@ MainWindow:
 '''
 
 
-class App(object):
+class MyApp(object):
 
 	def runXX(self):
 		print "run app"
@@ -654,7 +654,7 @@ class App(object):
 
 
 def dialog():
-	app=App()
+	app=MyApp()
 
 	import miki
 	reload(miki)

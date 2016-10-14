@@ -22,7 +22,7 @@ import csv,re
 def createNurbsblock(filename=None,n=10,c=2,inverse=False,kx=10,ky=10,kz=60,gengrid=True,genblock=False,genpoles=False):
 
 	if filename==None:
-		filename='/home/thomas/Schreibtisch/test_nurbs3.png'
+		filename='/home/microelly2/Schreibtisch/test_nurbs3.png'
 	img = mpimg.imread(filename)
 
 	ojn=os.path.basename(filename)
@@ -226,15 +226,15 @@ def createNurbsblock(filename=None,n=10,c=2,inverse=False,kx=10,ky=10,kz=60,geng
 	return bs
 
 
-# bs=createNurbsblock('/home/thomas/Schreibtisch/fisch.jpg',5,0,True,1000,1000,10)
+# bs=createNurbsblock('/home/microelly2/Schreibtisch/fisch.jpg',5,0,True,1000,1000,10)
 
 
-#bs=createNurbsblock('/home/thomas/Bilder/fcsw.png',5,0,True,10,10,40)
-#bs=createNurbsblock('/home/thomas/Schreibtisch/freeka.png',10,0,1,100,100,400)
+#bs=createNurbsblock('/home/microelly2/Bilder/fcsw.png',5,0,True,10,10,40)
+#bs=createNurbsblock('/home/microelly2/Schreibtisch/freeka.png',10,0,1,100,100,400)
 
 #jpeg brauch kleiner werte #+#
-#bs=createNurbsblock('/home/thomas/Schreibtisch/quick61.jpg',10,0,True,100,100,3)
-#bs=createNurbsblock('/home/thomas/Schreibtisch/normanc.jpg',10,0,True,100,100,4)
+#bs=createNurbsblock('/home/microelly2/Schreibtisch/quick61.jpg',10,0,True,100,100,3)
+#bs=createNurbsblock('/home/microelly2/Schreibtisch/normanc.jpg',10,0,True,100,100,4)
 
 
 
@@ -256,7 +256,7 @@ MainWindow:
 			clicked.connect: app.getfn
 
 		QtGui.QLineEdit:
-			setText:"/home/thomas/Bilder/fcsw.png"
+			setText:"/home/microelly2/Bilder/fcsw.png"
 			id: 'bl'
 
 		HorizontalLayout:

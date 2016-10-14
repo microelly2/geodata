@@ -43,6 +43,16 @@ def getAST(b=50.26,l=11.39):
 	fn=FreeCAD.ConfigGet("UserAppData") +'/geodat/AST/ASTGTM2_' + ff +'_dem.tif'
 	# print fn
 
+	'''
+	fn='/home/microelly2/FCB/b217_heightmaps/tandemx_daten/Chile-Chuquicatmata.tif'
+	b=-22.3054705
+	l=-68.9259643
+	bs=np.floor(b)
+	ls=np.floor(l)
+	print fn
+	'''
+
+
 	dataset = gdal.Open(fn, GA_ReadOnly) 
 	if dataset == None:
 		msg="\nProblem cannot open " + fn + "\n"
@@ -139,7 +149,7 @@ MainWindow:
 '''
 
 
-class App(object):
+class MyApp(object):
 
 	def runbl(self):
 		bl=self.root.ids['bl'].text()
@@ -161,7 +171,7 @@ class App(object):
 
 def mydialog():
 
-	app=App()
+	app=MyApp()
 	import geodat
 	import geodat.miki as gmiki
 	miki=gmiki.Miki()
@@ -179,6 +189,7 @@ def import_heights(b,l,s):
 	pcl=getAST(b,l)
 	pts=pcl
 	ff="N" + str(b) + " E" + str(l)
+
 	nurbs=geodat.import_xyz.suv2(ff,pts,u=0,v=0,d=100,la=100,lb=100)
 	te=time.time()
 	print ("time to create models:",te-ts)

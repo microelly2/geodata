@@ -81,7 +81,7 @@ def runfile(fn, xw,xe,ys,yn,ox=0,oy=0):
 
 	pb=createProgressBar(label="create Elevations " + os.path.basename(fn) )
 
-	# file = open('/home/thomas/Downloads/Lat50Lon11Lat51Lon12.osm', 'r')
+	# file = open('/home/microelly2/Downloads/Lat50Lon11Lat51Lon12.osm', 'r')
 	file =open(fn)
 #	pb.pb.setValue(10)
 

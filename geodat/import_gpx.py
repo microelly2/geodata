@@ -94,8 +94,8 @@ def import_gpx(filename,orig,hi):
 	global sd
 	# content=trackstring
 	
-#	fn='/home/thomas/Dokumente/freecad_buch/b202_gmx_tracks/im_haus.gpx'
-#	filename='/home/thomas/Dokumente/freecad_buch/b202_gmx_tracks/neufang.gpx'
+#	fn='/home/microelly2/FCB/b202_gmx_tracks/im_haus.gpx'
+#	filename='/home/microelly2/FCB/b202_gmx_tracks/neufang.gpx'
 	
 	
 	f=open(filename,"r")

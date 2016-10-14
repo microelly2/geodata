@@ -777,10 +777,10 @@ class MyDockWidget(QtGui.QDockWidget):
 		b=QtGui.QPushButton(QtGui.QIcon('icons:view-refresh.svg'),'')
 		self.add_top(b)
 
-		b=QtGui.QPushButton(QtGui.QIcon('/home/thomas/.FreeCAD/Mod/reconstruction/icons/std_viewscreenshot.svg'),'Foto Image')
+		b=QtGui.QPushButton(QtGui.QIcon('/home/microelly2/.FreeCAD/Mod/reconstruction/icons/std_viewscreenshot.svg'),'Foto Image')
 		self.add_top(b)
 
-		b=QtGui.QPushButton(QtGui.QIcon('/home/thomas/.FreeCAD/Mod/reconstruction/icons/web-home.svg'),'Foto 3D')
+		b=QtGui.QPushButton(QtGui.QIcon('/home/microelly2/.FreeCAD/Mod/reconstruction/icons/web-home.svg'),'Foto 3D')
 		self.add_top(b)
 
 
