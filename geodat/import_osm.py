@@ -11,6 +11,8 @@
 #http://api.openstreetmap.org/api/0.6/way/384013089
 #http://api.openstreetmap.org/api/0.6/node/3873106739
 
+from say import *
+
 import time, json, os
 
 import urllib2
@@ -255,14 +257,19 @@ def import_osm2(b,l,bk,progressbar,status,elevation):
 		FreeCADGui.updateGui()
 
 	App.newDocument("OSM Map")
-
+	say("Datei erzeugt")
 	area=App.ActiveDocument.addObject("Part::Plane","area")
 	obj = FreeCAD.ActiveDocument.ActiveObject
-	viewprovider = obj.ViewObject
-	root=viewprovider.RootNode
-	myLight = coin.SoDirectionalLight()
-	myLight.color.setValue(coin.SbColor(0,1,0))
-	root.insertChild(myLight, 0)
+	say("grundflaeche erzeugt")
+	try:
+		viewprovider = obj.ViewObject
+		root=viewprovider.RootNode
+		myLight = coin.SoDirectionalLight()
+		myLight.color.setValue(coin.SbColor(0,1,0))
+		root.insertChild(myLight, 0)
+		say("beleuchtung auf grundobjekt eingeschaltet")
+	except:
+		sayexc("Beleuchtung 272")
 
 	cam='''#Inventor V2.1 ascii
 	OrthographicCamera {
@@ -281,11 +288,12 @@ def import_osm2(b,l,bk,progressbar,status,elevation):
 	cam += '\nheight ' + str(height) + '\n}\n\n'
 	FreeCADGui.activeDocument().activeView().setCamera(cam)
 	FreeCADGui.activeDocument().activeView().viewAxonometric()
-
+	say("Kamera gesetzt")
+	
 	area.Length=size[0]*2
 	area.Width=size[1]*2
 	area.Placement=FreeCAD.Placement(FreeCAD.Vector(-size[0],-size[1],0.00),FreeCAD.Rotation(0.00,0.00,0.00,1.00))
-
+	say("Area skaliert")
 	wn=-1
 	coways=len(ways)
 	starttime=time.time()

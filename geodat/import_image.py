@@ -17,6 +17,7 @@ import os.path
 
 import csv,re
 
+import random
 
 
 def createNurbsblock(filename=None,n=10,c=2,inverse=False,kx=10,ky=10,kz=60,gengrid=True,genblock=False,genpoles=False):
@@ -55,7 +56,9 @@ def createNurbsblock(filename=None,n=10,c=2,inverse=False,kx=10,ky=10,kz=60,geng
 	for u in range(lu):
 		ul=[]
 		for v in range(lv):
-			p=FreeCAD.Vector(ky*v,-kx*u,bz-kz*lum_img[u,v])
+			# p=FreeCAD.Vector(ky*v,-kx*u,bz-kz*lum_img[u,v])
+			r=0.001
+			p=FreeCAD.Vector(ky*v+r*random.random(),-kx*u+r*random.random(),bz-kz*lum_img[u,v] +r*random.random())
 			ul.append(p)
 			pts.append(p)
 		uu.append(ul)
@@ -200,7 +203,7 @@ def createNurbsblock(filename=None,n=10,c=2,inverse=False,kx=10,ky=10,kz=60,geng
 		f0=Part.makeFilledFace(p.Edges)
 		Part.show(f0)
 
-	if 0:
+	if 1:
 		Part.show(sha.Face1)
 		App.ActiveDocument.ActiveObject.Label="Nurbs"
 
