@@ -13,6 +13,13 @@
 # the ast file is expected in ~/.FreeCAD/geodat/AST
 # FreeCAD.ConfigGet("UserAppData") +'/geodat/AST/ASTGTM2_' + ff +'_dem.tif'
 
+'''
+ASTER GDEM Policy Agreements
+I agree to redistribute the ASTER GDEM *only* to individuals within my organization or project of intended use or in response to disasters in support of the GEO Disaster Theme.
+When presenting or publishing ASTER GDEM data, I agree to include "ASTER GDEM is a product of METI and NASA."
+
+Because there are known inaccuracies and artifacts in the data set, please use the product with awareness of its limitations. The data are provided "as is" and neither NASA nor METI/ERSDAC will be responsible for any damages resulting from use of the data.
+'''
 
 from geodat.say import *
 
@@ -41,7 +48,7 @@ def getAST(b=50.26,l=11.39):
 	# the ast dataset
 	ff="N%02dE%03d" % (int(bs),int(ls))
 	fn=FreeCAD.ConfigGet("UserAppData") +'/geodat/AST/ASTGTM2_' + ff +'_dem.tif'
-	# print fn
+	print fn
 
 	'''
 	fn='/home/microelly2/FCB/b217_heightmaps/tandemx_daten/Chile-Chuquicatmata.tif'
@@ -87,7 +94,15 @@ def getAST(b=50.26,l=11.39):
 
 
 	pts=[]
-	d=50
+	d=70
+
+	print "----------------------------",d
+
+	d1=20
+	d2=50
+	d1=d
+	d2=d
+
 
 	tm=TransverseMercator()
 	tm.lat=b
@@ -96,8 +111,8 @@ def getAST(b=50.26,l=11.39):
 
 	z0= data[px,py] # relative height to origin px,py
 
-	for x in range(px-d,px+d):
-		for y in range(py-d,py+d):
+	for x in range(px-d1,px+d1):
+		for y in range(py-d2,py+d2):
 			ll=tm.fromGeographic(bs+1-1.0/3600*x,ls+1.0/3600*y)
 			pt=FreeCAD.Vector(ll[0]-center[0],ll[1]-center[1], 1000.0* (data[x,y]-z0))
 			pts.append(pt)
@@ -137,6 +152,8 @@ MainWindow:
 			#(50.368209,11.2016135)
 
 			setText:"50.368209,11.2016135"
+			# coburg zentrum
+			setText:"50.2639926,10.9686946"
 
 		QtGui.QPushButton:
 			setText: "Create height models"
@@ -190,12 +207,12 @@ def import_heights(b,l,s):
 	pts=pcl
 	ff="N" + str(b) + " E" + str(l)
 
-	nurbs=geodat.import_xyz.suv2(ff,pts,u=0,v=0,d=100,la=100,lb=100)
+	nurbs=geodat.import_xyz.suv2(ff,pts,u=0,v=0,d=140,la=140,lb=140)
 	te=time.time()
 	print ("time to create models:",te-ts)
 
 	fn=geodat.geodat_lib.genSizeImage(size=512)
-	geodat.geodat_lib.addImageTexture(nurbs,fn,scale=(8,3))
+	# geodat.geodat_lib.addImageTexture(nurbs,fn,scale=(8,3))
 	nurbs.ViewObject.Selectable = False
 
 

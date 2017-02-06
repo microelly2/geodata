@@ -121,11 +121,30 @@ class import_gpx:
 			'ToolTip': 'Import GPX'
 		}
 
+class import_latlony:
+
+	def Activated(self):
+		print "run import ..."
+		import geodat.import_latlony
+		reload(geodat.import_latlony)
+		#geodat.import_gpx.mydialog()
+		geodat.import_latlony.run()
+
+
+	def GetResources(self):
+		return {
+			'Pixmap'  : 'Std_Tool3', 
+			'MenuText': 'Import Lat Lon Height ', 
+			'ToolTip': 'Import LatLonH'
+		}
+
+
 class import_aster:
 
 	def Activated(self):
 		print "run import ..."
 		import geodat.import_aster
+		reload(geodat.import_aster)
 		geodat.import_aster.mydialog()
 		
 
@@ -234,6 +253,7 @@ FreeCADGui.addCommand('Import GPX', import_gpx())
 FreeCADGui.addCommand('Import Heights', importheights())
 FreeCADGui.addCommand('Import SRTM', importsrtm())
 FreeCADGui.addCommand('Import XYZ', import_xyz())
+FreeCADGui.addCommand('Import LatLonZ', import_latlony())
 FreeCADGui.addCommand('Import Image', import_image())
 FreeCADGui.addCommand('Import ASTER', import_aster())
 FreeCADGui.addCommand('Create House', createHouse())
@@ -253,7 +273,7 @@ class Geodat ( Workbench ):
 	def Initialize(self):
 		
 		cmds= ["Import OSM Map",'Import CSV','Import GPX',
-			'Import Heights','Import SRTM','Import XYZ','Import Image','Import ASTER','Navigator',
+			'Import Heights','Import SRTM','Import XYZ','Import LatLonZ','Import Image','Import ASTER','Navigator',
 			'Create House']
 ##		self.appendToolbar("Geo Data", cmds )
 		self.appendMenu("Geo Data", cmds)
