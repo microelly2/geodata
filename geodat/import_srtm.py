@@ -424,8 +424,9 @@ class MyApp(object):
 def mydialog():
 	app=App()
 
-	import miki
+	import geodat.miki as miki
 	reload(miki)
+
 
 	miki=miki.Miki()
 	miki.app=app
