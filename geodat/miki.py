@@ -80,7 +80,7 @@ import pivy
 from pivy import coin
 
 # a test method
-YourSpecialCreator=Animation.createManager
+##YourSpecialCreator=Animation.createManager
 
 def  fv2(name="vertical",title=''):
 	''' create as a dock widget '''
