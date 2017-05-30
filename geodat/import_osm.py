@@ -2,7 +2,7 @@
 #-------------------------------------------------
 #-- osm map importer
 #--
-#-- microelly 2016 v 0.3
+#-- microelly 2016 v 0.4
 #--
 #-- GNU Lesser General Public License (LGPL)
 #-------------------------------------------------
@@ -135,10 +135,14 @@ def import_osm2(b,l,bk,progressbar,status,elevation):
 		os.makedirs(dn)
 
 	try:
+		print "I try to read data from cache file ..."
+		print fn
 		f=open(fn,"r")
 		content=f.read()
+		print "successful read"
 #		print content
 	except:
+		print "no cache file, so I connect to  openstreetmap.org..."
 		lk=bk # 
 		b1=b-bk/1113*10
 		l1=l-lk/713*10
@@ -178,7 +182,7 @@ def import_osm2(b,l,bk,progressbar,status,elevation):
 			status.setText("got data from openstreetmap.org ...")
 			FreeCADGui.updateGui()
 		print "Beeenden - im zweiten versuch daten auswerten"
-		return
+		return False
 
 	if elevation:
 		baseheight=getheight(b,l)
@@ -193,7 +197,15 @@ def import_osm2(b,l,bk,progressbar,status,elevation):
 		status.setText("parse data ...")
 		FreeCADGui.updateGui()
 
-	sd=parse(content)
+	try:
+		sd=parse(content)
+	except:
+		sayexc("Problem parsing data - abort")
+		status.setText("Problem parsing data - aborted, for details see Report view")
+		return
+
+
+
 	if debug: print(json.dumps(sd, indent=4))
 
 	if status:
@@ -401,6 +413,7 @@ def import_osm2(b,l,bk,progressbar,status,elevation):
 			m=nodesbyid[n['@ref']]
 			llpoints.append([n['@ref'],m['@lat'],m['@lon']])
 		if elevation:
+			print "get heights for " + str(len(llpoints))
 			heights=get_heights(llpoints)
 
 		for n in w['nd']:
@@ -491,6 +504,7 @@ def import_osm2(b,l,bk,progressbar,status,elevation):
 
 	endtime=time.time()
 	print "running time ", int(endtime-starttime),  " count ways ", coways
+	return True
 
 
 
@@ -550,9 +564,23 @@ MainWindow:
 			setValue: 2
 			setTickPosition: QtGui.QSlider.TicksBothSides
 
+		QtGui.QLabel:
+			id:'running'
+			setText:"R U N N I N G   PLEASE WAIT  "
+			setVisible: False
+
 		QtGui.QPushButton:
-			setText: "Run values"
-			clicked.connect: app.runbl
+			id:'runbl1'
+			setText: "Download values"
+			clicked.connect: app.runbl1
+			setVisible: True
+
+		QtGui.QPushButton:
+			id:'runbl2'
+			setText: "Apply values"
+			clicked.connect: app.runbl2
+			setVisible: False
+
 
 		QtGui.QPushButton:
 			setText: "Show openstreet map in web browser"
@@ -649,6 +677,54 @@ class MyApp(object):
 		elevation=self.root.ids['elevation'].isChecked()
 		print [l,b,s]
 		import_osm2(float(b),float(l),float(s)/10,self.root.ids['progb'],self.root.ids['status'],elevation)
+
+	def runbl1(self):
+		print "Run values"
+		button=self.root.ids['runbl1']
+		button.hide()
+		br=self.root.ids['running']
+		br.show()
+
+
+		bl=self.root.ids['bl'].text()
+		spli=bl.split(',')
+		b=float(spli[0])
+		l=float(spli[1])
+		s=self.root.ids['s'].value()
+		elevation=self.root.ids['elevation'].isChecked()
+		print [l,b,s]
+		rc= import_osm2(float(b),float(l),float(s)/10,self.root.ids['progb'],self.root.ids['status'],elevation)
+		if not rc:
+			button=self.root.ids['runbl2']
+			button.show()
+		else:
+			button=self.root.ids['runbl1']
+			button.show()
+		br.hide()
+
+
+
+	def runbl2(self):
+		print "Run values"
+		button=self.root.ids['runbl2']
+		button.hide()
+		br=self.root.ids['running']
+		br.show()
+
+
+		bl=self.root.ids['bl'].text()
+		spli=bl.split(',')
+		b=float(spli[0])
+		l=float(spli[1])
+		s=self.root.ids['s'].value()
+		elevation=self.root.ids['elevation'].isChecked()
+		print [l,b,s]
+		import_osm2(float(b),float(l),float(s)/10,self.root.ids['progb'],self.root.ids['status'],elevation)
+		button=self.root.ids['runbl1']
+		button.show()
+		br.hide()
+
+
 
 	def showMap(self):
 		print "Run values"
