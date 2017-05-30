@@ -57,6 +57,25 @@ windowCreated = 0
 #		}
 
 
+try:
+	import cv2
+except:
+	FreeCAD.Console.PrintWarning("Geodat WB: Cannot import module named cv2\n")
+
+try:
+	import gdal
+	import gdalconst
+except:
+	FreeCAD.Console.PrintWarning("Geodat WB: Cannot import module named gdal gdalconst\n")
+
+
+
+
+
+
+
+
+
 class import_csv:
 
 	def Activated(self):
