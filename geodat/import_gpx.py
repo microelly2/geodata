@@ -1,3 +1,4 @@
+'''gpx path importer'''
 # -*- coding: utf-8 -*-
 #-------------------------------------------------
 #-- gpx importer
@@ -6,6 +7,7 @@
 #--
 #-- GNU Lesser General Public License (LGPL)
 #-------------------------------------------------
+##\cond
 
 from geodat.say import *
 
@@ -90,7 +92,11 @@ debug=0
 
 global sd
 
+##\endcond
+
 def import_gpx(filename,orig,hi):
+	'''import a gpx trackfile''' 
+
 	global sd
 	# content=trackstring
 	
@@ -314,6 +320,7 @@ def import_gpx(filename,orig,hi):
 	return (str(tm.lat)+','+str(tm.lon))
 	return px,py
 
+'''
 if 0: 
 	px,py=import_gpx()
 	count=len(px)
@@ -353,6 +360,7 @@ if 0:
 
 
 # px,py=import_gpx()
+'''
 
 
 
@@ -403,11 +411,14 @@ MainWindow:
 
 '''
 
-import FreeCAD,FreeCADGui
+
+## Gui backend 
 
 class MyApp(object):
+	'''the  execution layer of import_gpx'''
 
 	def run(self):
+		'''calls import_gpx'''
 		filename=self.root.ids['bl'].text()
 		try:
 			rc=import_gpx(
@@ -420,13 +431,16 @@ class MyApp(object):
 				sayexc()
 
 	def getfn(self):
+		''' get the filename of the track'''
 		fileName = QtGui.QFileDialog.getOpenFileName(None,u"Open File",u"/tmp/");
 		print fileName
 		s=self.root.ids['bl']
 		s.setText(fileName[0])
 
+## the dialog to import the file
 
 def mydialog():
+	''' the dialog to import the file'''
 	app=MyApp()
 
 	import geodat

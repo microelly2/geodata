@@ -1,3 +1,4 @@
+'''import data from openstreetmap'''
 # -*- coding: utf-8 -*-
 #-------------------------------------------------
 #-- osm map importer
@@ -11,6 +12,7 @@
 #http://api.openstreetmap.org/api/0.6/way/384013089
 #http://api.openstreetmap.org/api/0.6/node/3873106739
 
+#\cond
 from say import *
 
 import time, json, os
@@ -21,10 +23,6 @@ import pivy
 from pivy import coin
 
 
-import FreeCAD,FreeCADGui, Part
-App=FreeCAD
-Gui=FreeCADGui
-
 import geodat.transversmercator
 from  geodat.transversmercator import TransverseMercator
 
@@ -32,7 +30,7 @@ import inventortools
 
 import xmltodict
 from  xmltodict import parse
-
+#\endcond
 
 #------------------------------
 #
@@ -42,10 +40,9 @@ from  xmltodict import parse
 
 import time
 
+## get the elevation height of a single point
 def getheight(b,l):
-	''' get height of a single point'''
-	# hard coded no height 
-	# return 0.0
+	''' get height of a single point with latitude b, longitude l'''
 	anz=0
 	while anz<4:
 			source="https://maps.googleapis.com/maps/api/elevation/json?locations="+str(b)+','+str(l)
@@ -61,6 +58,7 @@ def getheight(b,l):
 	for r in res:
 		return round(r['elevation']*1000,2)
 
+## get the heights for a list of points
 
 def get_heights(points):
 	''' get heights for a list of points'''
@@ -90,6 +88,9 @@ def get_heights(points):
 
 
 def organize():
+	'''create groups for the different object types
+	GRP_highways, GRP_building, GRP_landuse
+	'''
 	highways=App.activeDocument().addObject("App::DocumentObjectGroup","GRP_highways")
 	landuse=App.activeDocument().addObject("App::DocumentObjectGroup","GRP_landuse")
 	buildings=App.activeDocument().addObject("App::DocumentObjectGroup","GRP_building")
@@ -109,9 +110,11 @@ def organize():
 			pathes.addObject(oj)
 			oj.ViewObject.Visibility=False
 
+## core method to download and import the data
+#
 
-def import_osm(b,l,bk,progressbar,status):
-	import_osm2(b,l,bk,progressbar,status,False)
+#def import_osm(b,l,bk,progressbar,status):
+#	import_osm2(b,l,bk,progressbar,status,False)
 
 def import_osm2(b,l,bk,progressbar,status,elevation):
 
@@ -524,6 +527,8 @@ import WebGui
 
 '''
 
+## the dialog layout as miki string
+#
 
 s6='''
 #VerticalLayoutTab:
@@ -572,13 +577,13 @@ MainWindow:
 		QtGui.QPushButton:
 			id:'runbl1'
 			setText: "Download values"
-			clicked.connect: app.runbl1
+			clicked.connect: app.downloadData
 			setVisible: True
 
 		QtGui.QPushButton:
 			id:'runbl2'
 			setText: "Apply values"
-			clicked.connect: app.runbl2
+			clicked.connect: app.applyData
 			setVisible: False
 
 
@@ -630,61 +635,60 @@ MainWindow:
 '''
 
 
-class MyApp(object):
+## the gui backend
 
-	def runXX(self):
-		print "run app"
-		print self
-		s=self.root.ids['otto']
-		print s
-		s.setText('huhwas')
-		pb=self.root.ids['progb']
-		print s
-		v=pb.value()
-		pb.setValue(v+5)
+class MyApp(object):
+	'''execution layer of the Gui'''
+
 
 	def run(self,b,l):
+		'''run(self,b,l) imports area with center coordinates latitude b, longitude l'''
 		s=self.root.ids['s'].value()
 		key="%0.7f" %(b) + "," + "%0.7f" %(l)
 		self.root.ids['bl'].setText(key)
-		import_osm(b,l,float(s)/10,self.root.ids['progb'],self.root.ids['status'])
+		import_osm2(b,l,float(s)/10,self.root.ids['progb'],self.root.ids['status'],False)
 
 	def run_alex(self):
+		'''imports Berlin Aleancderplatz'''
 		self.run(52.52128,l=13.41646)
 
 	def run_paris(self):
+		'''imports Paris'''
 		self.run(48.85167,2.33669)
 
 	def run_tokyo(self):
+		'''imports Tokyo near tower'''
 		self.run(35.65905,139.74991)
 
 	def run_spandau(self):
+		'''imports Berlin Spandau'''
 		self.run(52.508,13.18)
 
 	def run_co2(self):
+		'''imports  Coburg Univerity and School'''
 		self.run(50.2631171, 10.9483)
 
 	def run_sternwarte(self):
+		'''imports Sonneberg Neufang observatorium'''
 		self.run(50.3736049,11.191643)
 
-	def runbl(self):
-		print "Run values"
-		bl=self.root.ids['bl'].text()
-		spli=bl.split(',')
-		b=float(spli[0])
-		l=float(spli[1])
-		s=self.root.ids['s'].value()
-		elevation=self.root.ids['elevation'].isChecked()
-		print [l,b,s]
-		import_osm2(float(b),float(l),float(s)/10,self.root.ids['progb'],self.root.ids['status'],elevation)
+#	def runbl(self):
+#		print "Run values"
+#		bl=self.root.ids['bl'].text()
+#		spli=bl.split(',')
+#		b=float(spli[0])
+#		l=float(spli[1])
+#		s=self.root.ids['s'].value()
+#		elevation=self.root.ids['elevation'].isChecked()
+#		print [l,b,s]
+#		import_osm2(float(b),float(l),float(s)/10,self.root.ids['progb'],self.root.ids['status'],elevation)
 
-	def runbl1(self):
-		print "Run values"
+	def downloadData(self):
+		'''download data from osm'''
 		button=self.root.ids['runbl1']
 		button.hide()
 		br=self.root.ids['running']
 		br.show()
-
 
 		bl=self.root.ids['bl'].text()
 		spli=bl.split(',')
@@ -704,8 +708,8 @@ class MyApp(object):
 
 
 
-	def runbl2(self):
-		print "Run values"
+	def applyData(self):
+		'''apply downloaded or cached data to create the FreeCAD models'''
 		button=self.root.ids['runbl2']
 		button.hide()
 		br=self.root.ids['running']
@@ -727,7 +731,8 @@ class MyApp(object):
 
 
 	def showMap(self):
-		print "Run values"
+		'''open a webbrowser window and display the openstreetmap presentation of the area'''
+
 		bl=self.root.ids['bl'].text()
 		spli=bl.split(',')
 		b=float(spli[0])
@@ -736,8 +741,10 @@ class MyApp(object):
 		print [l,b,s]
 		WebGui.openBrowser( "http://www.openstreetmap.org/#map=16/"+str(b)+'/'+str(l))
 
+## the gui startup
 
 def dialog():
+	''' starts the gui dialog '''
 	app=MyApp()
 
 	import geodat.miki as miki

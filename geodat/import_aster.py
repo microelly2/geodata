@@ -34,7 +34,6 @@ import gdal
 from gdalconst import * 
 
 
-
 import WebGui
 import Points
 
