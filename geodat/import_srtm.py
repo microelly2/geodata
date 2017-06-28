@@ -1,3 +1,5 @@
+'''import srtm data'''
+
 '''
 
 http://wiki.openstreetmap.org/wiki/DE:SRTM

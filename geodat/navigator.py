@@ -1,3 +1,5 @@
+'''navigation in 3D'''
+
 # -*- coding: utf-8 -*-
 #-------------------------------------------------
 #-- event filter next germ + navigator
@@ -16,10 +18,27 @@ import PySide
 from PySide import QtGui,QtCore
 
 import FreeCAD,FreeCADGui
+
+#\cond
+#
+#
+
 App=FreeCAD
 Err=FreeCAD.Console.PrintError
 Msg=FreeCAD.Console.PrintMessage
 
+import FreeCADGui
+from PySide import QtGui
+from pivy import coin
+
+import sys
+from PySide import QtGui, QtCore
+import os
+
+
+
+
+#\endcond
 
 import time,sys,traceback,math
 from pivy import coin
@@ -89,9 +108,12 @@ def on_windowslist(ef,windowslist):
 	return True
 
 
+## The EventFilter controls the Qt mouse and keybord events
+#
 
 class EventFilter(QtCore.QObject):
 
+	#\cond
 	def __init__(self):
 		QtCore.QObject.__init__(self)
 		self.lastpos=None
@@ -105,7 +127,6 @@ class EventFilter(QtCore.QObject):
 		self.keyPressed2=False
 		self.output=myWidget()
 
-
 		self.keymap={}
 		for t in dir(QtCore.Qt):
 			if t.startswith( 'Key_' ):
@@ -118,10 +139,12 @@ class EventFilter(QtCore.QObject):
 				if t<> 'Modifier':
 					v=eval('QtCore.Qt.'+t)
 					self.modmap[v]=t[:-8]
+	#\endcond
 
 
 
-
+	## the event handler 
+	#
 	def eventFilter(self, o, e):
 
 		# http://doc.qt.io/qt-5/qevent.html
@@ -317,6 +340,8 @@ class EventFilter(QtCore.QObject):
 		return False
 
 
+## stop and delete the EventFilter
+#
 
 def stop():
 	mw=QtGui.qApp
@@ -696,8 +721,6 @@ def on_clicks3(ef,button,count):
 
 
 
-import sys
-from PySide import QtGui, QtCore
 
 class Compass(QtGui.QWidget):
 	
@@ -990,13 +1013,8 @@ def on_windowslist2(ef,windowslist):
 
 
 
-
 def navi():
-
-	import FreeCADGui
-	from PySide import QtGui
-	from pivy import coin
-
+	'''navigator startup'''
 
 
 	mw=QtGui.qApp
@@ -1004,7 +1022,7 @@ def navi():
 	#cursor ausblenden
 	#mw.setOverrideCursor(QtCore.Qt.BlankCursor)
 
-## 	FreeCADGui.activateWorkbench("NoneWorkbench")
+# 	FreeCADGui.activateWorkbench("NoneWorkbench")
 	mw.setOverrideCursor(QtCore.Qt.PointingHandCursor)
 	ef=EventFilter()
 
@@ -1029,9 +1047,8 @@ def navi():
 
 	 
 	# get a jpg filename
-	## jpgfilename = QtGui.QFileDialog.getOpenFileName(QtGui.qApp.activeWindow(),'Open image file','*.jpg')
+	# jpgfilename = QtGui.QFileDialog.getOpenFileName(QtGui.qApp.activeWindow(),'Open image file','*.jpg')
 	fn='/home/microelly2/FCB/b175_camera_controller/winter.jpg'
-	import os
 	fn=os.path.dirname(__file__) +"/../pics/winter.jpg"
 
 	sg = FreeCADGui.ActiveDocument.ActiveView.getSceneGraph()

@@ -1,8 +1,9 @@
+'''import a image as elevation grid'''
 # -*- coding: utf-8 -*-
 #-------------------------------------------------
 #-- geodat import image to nurbs/pcl
 #--
-#-- microelly 2016 v 0.1
+#-- microelly 2016 v 0.2
 #--
 #-- GNU Lesser General Public License (LGPL)
 #-------------------------------------------------
@@ -19,8 +20,32 @@ import csv,re
 
 import random
 
+## create the pointcloud, grid or nurbs surface
+#
+# @param filename image file
+# @param n size of a flat border around the area
+# @param c color channel (not used)
+# @param inverse invert the height
+# @param kx scale the size value 1 means 1 pixel is 1 mm
+# @param ky
+# @param kz
+# @param gengrid create a grid of the isocurves
+# @param genblock create a solid with the surface as the top face
+# @param genpoles create a pointcloud of the poles
+# @param pointsonly create only a point cloud of the pixel points
+#
+# For large images the computation time can be very long, 
+# so the option to run  **pointsonly** first is a good way to inspect the image data.
+#
+# .
 
-def createNurbsblock(filename=None,n=10,c=2,inverse=False,kx=10,ky=10,kz=60,gengrid=True,genblock=False,genpoles=False):
+
+def createNurbsblock(filename=None,n=10,c=2,inverse=False,kx=10,ky=10,kz=60,gengrid=True,genblock=False,genpoles=False,pointsonly=False):
+	'''createNurbsblock(filename=None,n=10,c=2,inverse=False,kx=10,ky=10,kz=60,gengrid=True,genblock=False,genpoles=False,pointsonly=False)
+	'''
+
+	display_mathplot=False
+	dataAsPoles=False
 
 	if filename==None:
 		filename='/home/microelly2/Schreibtisch/test_nurbs3.png'
@@ -37,8 +62,9 @@ def createNurbsblock(filename=None,n=10,c=2,inverse=False,kx=10,ky=10,kz=60,geng
 
 	(lu,lv)=lum_img.shape
 
-	##plt.imshow(lum_img)
-	##plt.show()
+	if display_mathplot:
+		plt.imshow(lum_img)
+		plt.show()
 
 	#create a n points border
 	uu2=np.zeros((lu+2*n)*(lv+2*n))
@@ -71,11 +97,18 @@ def createNurbsblock(filename=None,n=10,c=2,inverse=False,kx=10,ky=10,kz=60,geng
 	say ((("u, v, points"),u,v,len(pts)))
 	Gui.updateGui()
 
+	if pointsonly: return
+	
 	tt=Part.BSplineSurface()
-	tt.interpolate(uu)
+	
+	if dataAsPoles:
+		pols=uu
+	else:
+		tt.interpolate(uu)
+		#  flatten the border
+		pols=tt.getPoles()
 
-	#  flatten the border
-	pols=tt.getPoles()
+
 	pols2=np.array(pols)
 	lup,lvp,la=pols2.shape
 	zz=bz
@@ -114,7 +147,8 @@ def createNurbsblock(filename=None,n=10,c=2,inverse=False,kx=10,ky=10,kz=60,geng
 			ws
 		)
 
-	sha=bs.toShape()
+	if 1:
+		sha=bs.toShape()
 
 	# show the poles
 	if genpoles:
@@ -204,8 +238,9 @@ def createNurbsblock(filename=None,n=10,c=2,inverse=False,kx=10,ky=10,kz=60,geng
 		Part.show(f0)
 
 	if 1:
-		Part.show(sha.Face1)
-		App.ActiveDocument.ActiveObject.Label="Nurbs"
+		nb=App.ActiveDocument.addObject('Part::Spline','Nurbs ' + str(n) +   ' ' + ojn)
+		nb.Shape=sha.Face1
+		
 
 	if genblock:
 
@@ -298,6 +333,12 @@ MainWindow:
 			id: 'color'
 
 		QtGui.QCheckBox:
+			id: 'pointsonly' 
+			setText: 'create only a Pointcloud'
+			setChecked: True
+
+
+		QtGui.QCheckBox:
 			id: 'gengrid' 
 			setText: 'create Nurbs Grid'
 			setChecked: True
@@ -320,14 +361,18 @@ MainWindow:
 
 '''
 
+## the gui backend
+
+
 class MyApp(object):
 
 
 	def run(self):
+		'''load the file and create a nurbs surface'''
 		try:
 			filename=self.root.ids['bl'].text()
 			ts=time.time()
-			self.bs=createNurbsblock(
+			bs=createNurbsblock(
 					filename,
 
 					int(self.root.ids['border'].text()),
@@ -337,10 +382,11 @@ class MyApp(object):
 					int(self.root.ids['kx'].text()),
 					int(self.root.ids['ky'].text()),
 					int(self.root.ids['kz'].text()),
-					
+
 					self.root.ids['gengrid'].isChecked(),
 					self.root.ids['genblock'].isChecked(),
 					self.root.ids['genpoles'].isChecked(),
+					self.root.ids['pointsonly'].isChecked(),
 				)
 			te=time.time()
 			say("load image time " + str(round(te-ts,2)))
@@ -348,11 +394,15 @@ class MyApp(object):
 			sayexc()
 
 	def getfn(self):
+		''' get the filename of the image file'''
 		fileName = QtGui.QFileDialog.getOpenFileName(None,u"Open File",u"/tmp/");
 		print fileName
 		self.root.ids['bl'].setText(fileName[0])
 
+## the gui startup
+
 def mydialog(run=True):
+
 	app=MyApp()
 
 	import geodat
@@ -368,4 +418,3 @@ def mydialog(run=True):
 	return app
 
 
-# app2=mydialog(False)

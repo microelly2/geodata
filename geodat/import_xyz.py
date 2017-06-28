@@ -1,3 +1,5 @@
+'''import data in lan lot elevation format'''
+
 # -*- coding: utf-8 -*-
 #-------------------------------------------------
 #-- geodat import csv
@@ -9,16 +11,19 @@
 
 
 from geodat.say import *
+
 import Points
 
 import geodat.transversmercator
 from  geodat.transversmercator import TransverseMercator
 
+
 import csv,re
 
 
+
 def setNice(flag=True): 
-	''' make smooth skins '''
+	''' make smooth skins by setting the MeshDeviation to 0.05'''
 	p = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Mod/Part")
 	w=p.GetFloat("MeshDeviation")
 	if flag:
@@ -59,29 +64,45 @@ example data
 32356000.00 5638008.00   50.46
 '''
 
+## still hard coded
+
 
 def getShape(pts):
-	sayW("get shape")
-	sayW(len(pts))
-	return 68,73
-	return 73,68
-	
-
-	sx=pts[0][0]
-	sy=pts[0][1]
-	d0=0
-
+	'''given a point cloud of a rectangle area get the shape of a appropriate array'''
+	dists={}
+	ls=[]
 	for i,p in enumerate(pts):
-		ex=p[0]
-		ey=p[1]
-		d=abs(sx-ex)+abs(sy-ey)
-		if d<d0:
-			break
-		d0=d
+		if i>0:
+			pa=pts[i-1]
+			p1=FreeCAD.Vector(p.x,p.y,0)
+			p2=FreeCAD.Vector(pa.x,pa.y,0)
+			dist=(p1-p2).Length
+			dist=round(dist)
+			ls.append(dist)
+			try:dists[dist] += 1
+			except: dists[dist]=1
 
-	assert(len(pts)%i == 0)
-	return i,len(pts)//i
+	mm=np.mean(dists.keys())
 
+	tts=[]
+	ia=-1
+	for i,d in enumerate(ls):
+			if d>mm:
+				tts.append(i-ia)
+				ia=i
+
+	dx=int(np.mean(tts))
+	dy=len(pts)/dx
+	print ("getshape shape: ",dx,dy)
+	return dx,dy
+
+
+
+
+
+## reduce the size of a grid 
+# by deleting data colums and rows
+# on a regular pattern
 
 def reduceGrid(pts,ku=100,kv=50,lu=0,lv=0):
 	''' simplifiy data '''
@@ -108,10 +129,12 @@ def reduceGrid(pts,ku=100,kv=50,lu=0,lv=0):
 
 
 def showFrame(pts,u=0,v=0,d=10,lu=None,lv=None):
+	'''showFrame(pts,u=0,v=0,d=10,lu=None,lv=None)
+	creates a rectangle frame of size u * v  on a rectangle grid point cloud with shape lu * lv
+	if lu or lv is not set, the shape of the point clloud is calculated
+	'''
 
-
-	sayErr("show Frame")
-	say(("lu,lv",lu,lv))
+	say(("showframe u v to u+d v+d  in lu,lv",u,v,d,lu,lv))
 	if lu == None or lv == None:
 		lu,lv=getShape(pts)
 
@@ -119,20 +142,13 @@ def showFrame(pts,u=0,v=0,d=10,lu=None,lv=None):
 	assert(u+d<lu)
 	assert(v+d<lv)
 
-#	lu=lu+1
-#	lv=lv+1
-
 	try:
 		ff=FreeCAD.ActiveDocument.frame
 	except:
 		ff=FreeCAD.ActiveDocument.addObject("Part::FeaturePython","frame")
 		ViewProvider(ff.ViewObject)
+
 	iix=[u+v*lu,u+v*lu+d,u+v*lu +d*lu +d,u+v*lu +d*lu]
-#	iix=[u+v*lv,u+v*lv+d,u+v*lv +d*lv +d,u+v*lv +d*lv]
-	say(iix)
-
-
-##	a,b,c,d = pts[u+v*lu], pts[u+v*lu+d],  pts[u+v*lu +d*lu +d],pts[u+v*lu +d*lu],
 	a,b,c,d = pts[iix[0]], pts[iix[1]],  pts[iix[2]], pts[iix[3]],
 
 	sha=Part.makePolygon([a,b,c,d,a])
@@ -141,14 +157,19 @@ def showFrame(pts,u=0,v=0,d=10,lu=None,lv=None):
 	ff.ViewObject.show()
 
 def removeFrame():
+	'''remove frame object'''
 	App.ActiveDocument.removeObject("frame")
 
 
+
 def import_xyz(mode,filename="/tmp/test.xyz",label='',ku=20, kv=10,lu=0,lv=0):
+	'''import_xyz(mode,filename="/tmp/test.xyz",label='',ku=20, kv=10,lu=0,lv=0)
+	import the point cloud from the file
+	'''
 
 	print "Import mode=",mode
 	if mode:
-		
+
 		if lu>0 and lv>0:
 			sayErr("read Points001")
 
@@ -166,8 +187,10 @@ def import_xyz(mode,filename="/tmp/test.xyz",label='',ku=20, kv=10,lu=0,lv=0):
 			points=nurbs=App.ActiveDocument.addObject("App::DocumentObjectGroup","points")
 
 		objs=App.ActiveDocument.getObjectsByLabel(label)
-		say(objs)
-		#pts=App.ActiveDocument.Points001.Points.Points
+
+		if len(objs)<>1:
+			sayexc("no point cloud with this label found: >"+label+"<")
+
 		pts=objs[0].Points.Points
 		say(("len pts, lu, lv, lu*lv",len(pts),lu,lv,lu*lv))
 		assert(len(pts)==lu*lv)
@@ -178,7 +201,7 @@ def import_xyz(mode,filename="/tmp/test.xyz",label='',ku=20, kv=10,lu=0,lv=0):
 	say("iport")
 	try:
 		App.ActiveDocument.Points
-		say("use Points")
+		say("use existing Points")
 		return App.ActiveDocument.Points.Points.Points
 	except:
 		try:
@@ -194,39 +217,15 @@ def import_xyz(mode,filename="/tmp/test.xyz",label='',ku=20, kv=10,lu=0,lv=0):
 		except:
 			points=nurbs=App.ActiveDocument.addObject("App::DocumentObjectGroup","points")
 
-#		filename='/home/microelly2/FCB/b202_gmx_tracks/dgm1/dgm1_32356_5638_2_nw.xyz'
 		f=open(filename)
 		lines=f.readlines()
 		print len(lines)
 
 		'''
 		# utm coords 32356000.00 5638000.00
-
 		# height scale factor
 		hfac=3
 		'''
-		
-		'''
-		if lu>0 and lv>0:
-			sayErr("read Points001")
-			
-			
-			pts=App.ActiveDocument.Points001.Points.Points
-			say(len(pts))
-			assert(len(pts)==lu*lv)
-			
-			
-			pts2=[]
-			for i in range(lu):
-				for j in range(lv):
-					pts2.append(pts[i+j*lu])
-
-			assert(len(pts)==len(pts2))
-			# pts=pts2
-
-		'''
-		
-		
 		
 		pts=[]
 		sayW(len(lines))
@@ -234,7 +233,7 @@ def import_xyz(mode,filename="/tmp/test.xyz",label='',ku=20, kv=10,lu=0,lv=0):
 			p=l.split()
 			hfac=3
 			pts.append(FreeCAD.Vector(float(p[0])-32356000.00,float(p[1])-5638000.00,hfac*float(p[2])))
-		
+
 
 		if ku>1 and kv>1:
 			pts=reduceGrid(pts,ku,kv)
@@ -276,7 +275,8 @@ MainWindow:
 			clicked.connect: app.getfn
 
 		QtGui.QLineEdit:
-			setText:"/home/microelly2/FCB/b202_gmx_tracks/dgm1/dgm1_32356_5638_2_nw.xyz"
+#			setText:"/home/microelly2/FCB/b202_gmx_tracks/dgm1/dgm1_32356_5638_2_nw.xyz"
+			setText:"/home/thomas/Dokumente/freecad_buch/b202_gmx_tracks/dgm1/dgm1_32356_5638_2_nw.xyz"
 			id: 'bl'
 
 		HorizontalLayout:
@@ -324,6 +324,8 @@ MainWindow:
 		setText: "initialize values"
 		id:'run'
 		clicked.connect: app.run
+
+
 
 	VerticalLayout:
 		id:'post'
@@ -383,11 +385,13 @@ MainWindow:
 
 
 
-import FreeCAD,FreeCADGui
+## Gui backend
 
 class MyApp(object):
+	'''execution layer of the dialog'''
 
 	def pclMode(self):
+		'''toogle the mode point cloud from file/point cloud from document'''
 		try:
 			if self.root.ids['pclMode'].isChecked():
 				self.root.ids['img1'].hide()
@@ -399,6 +403,7 @@ class MyApp(object):
 			pass
 
 	def update(self):
+		'''update dialog values'''
 #		lu,lv = getShape(self.pts)
 		lu=int(self.root.ids['lu'].text())
 		lv=int(self.root.ids['lv'].text())
@@ -411,12 +416,17 @@ class MyApp(object):
 		self.root.ids['ud'].setMaximum(lu-self.root.ids['dd'].value())
 
 	def update2(self):
+		'''update dialog values and frame'''
 		self.update()
 		self.showFrame()
 
+	## read the data from file, create a point clound  
+	# calculate the shape of an expected rectangle point cloud layout
+
 	def run(self):
+		'''load the data'''
 		filename=self.root.ids['bl'].text()
-		filename='/home/microelly2/FCB/b202_gmx_tracks/dgm1/dgm1_32356_5638_2_nw.xyz'
+		#filename='/home/microelly2/FCB/b202_gmx_tracks/dgm1/dgm1_32356_5638_2_nw.xyz'
 		try:
 			ts=time.time()
 			self.pts=import_xyz(
@@ -431,6 +441,10 @@ class MyApp(object):
 			te=time.time()
 			say("load points time " + str(round(te-ts,2)))
 			say(("points",len(self.pts)))
+			lu,lv=getShape(self.pts)
+			self.root.ids['lu'].setText(str(lu))
+			self.root.ids['lv'].setText(str(lv))
+
 			self.update()
 			self.root.ids['post'].show()
 			self.root.ids['run'].hide()
@@ -439,18 +453,24 @@ class MyApp(object):
 			self.root.ids['img2'].hide()
 		except:
 				sayexc()
-			
+
+
+
+
 
 	def getfn(self):
+		''' get the filename dialog'''
 		fileName = QtGui.QFileDialog.getOpenFileName(None,u"Open File",u"/tmp/");
 		print fileName
 		s=self.root.ids['bl']
 		s.setText(fileName[0])
 
 	def hideFrame(self):
+		'''remove the frame from model '''
 		removeFrame()
 
 	def showFrame(self):
+		'''create and display the frame'''
 		u=self.root.ids['ud'].value()
 		v=self.root.ids['vd'].value()
 		d=self.root.ids['dd'].value()
@@ -461,7 +481,7 @@ class MyApp(object):
 
 
 	def createNurbs(self):
-		say("create nurbs")
+		'''create nurbs surface for selected frame'''
 		u=self.root.ids['ud'].value()
 		v=self.root.ids['vd'].value()
 		d=self.root.ids['dd'].value()
@@ -469,16 +489,18 @@ class MyApp(object):
 		lu=int(self.root.ids['lu'].text())
 		lv=int(self.root.ids['lv'].text())
 
-		say((u,v,d,lu,lv))
+		say(("create nurbs for subset",u,v,d,lu,lv))
 		suv(self,u,v,d+1,lu,lv)
 
 
 def mydialog(run=True):
-	app=MyApp()
+	'''the gui startup'''
 
 	import geodat
 	import geodat.miki as miki
 	reload(miki)
+
+	app=MyApp()
 
 	miki=miki.Miki()
 	miki.app=app
@@ -488,21 +510,9 @@ def mydialog(run=True):
 	miki.run(sdialog)
 	return app
 
-import cProfile
 
 
-# app2=mydialog(False)
-# app.run()
-# t=app.root.roots()
-# t[0][7].hide()
-
-
-
-
-# punkte menge 
-# app.pts
-
-
+'''
 # test scheibe und lesen np array file
 def run(app):
 
@@ -519,46 +529,55 @@ def run(app):
 	t=np.load(outfile)
 	print t.shape
 	return t
+'''
+
+
+## create a grid of BSplineSurface bs with ct lines and rows
+#
 
 
 def create_grid(pu,du,dv, wb, eb, sb, nb, color=(1.0,0.0,0.0)):
-		''' create a grid of BSplineSurface bs with ct lines and rows '''
-		ts=time.time()
-		sss=[]
-#		say([ ("du dv",du,dv)])
-#		print "len pu ",len(pu)
+	'''create_grid(pu,du,dv, wb, eb, sb, nb, color=(1.0,0.0,0.0)'''
 
+	ts=time.time()
+	sss=[]
+
+	# u direction curves
+	for iu in range(sb,dv-nb):
+		pps=[]
+		for iv in range(wb,du-eb):
+			pps.append(pu[iu*du+iv])
+		tt=Part.BSplineCurve()
+		tt.interpolate(pps)
+		ss=tt.toShape()
+		sss.append(ss)
+
+	# v direction curves
+	for iv in range(wb,du-eb):
+		pps=[]
 		for iu in range(sb,dv-nb):
-			pps=[]
-			for iv in range(wb,du-eb):
-				pps.append(pu[iu*du+iv])
-			tt=Part.BSplineCurve()
-			tt.interpolate(pps)
-			ss=tt.toShape()
-			sss.append(ss)
-#			if iu > sb+3: break
+			pps.append(pu[iu*du+iv])
+		tt=Part.BSplineCurve()
+		tt.interpolate(pps)
+		ss=tt.toShape()
+		sss.append(ss)
 
-		if 1:
-			for iv in range(wb,du-eb):
-				pps=[]
-				for iu in range(sb,dv-nb):
-					pps.append(pu[iu*du+iv])
-				tt=Part.BSplineCurve()
-				tt.interpolate(pps)
-				ss=tt.toShape()
-				sss.append(ss)
-		
-		comp=Part.Compound(sss)
+	comp=Part.Compound(sss)
 
-		Part.show(comp)
-		App.ActiveDocument.ActiveObject.ViewObject.LineColor=color
-		App.ActiveDocument.grids.addObject(App.ActiveDocument.ActiveObject)
-		te=time.time()
-		say(["create grid time ",round(te-ts,5) ])
-		return App.ActiveDocument.ActiveObject
+	Part.show(comp)
+	App.ActiveDocument.ActiveObject.ViewObject.LineColor=color
+	App.ActiveDocument.grids.addObject(App.ActiveDocument.ActiveObject)
+	te=time.time()
+	say(["create grid time ",round(te-ts,5) ])
+	return App.ActiveDocument.ActiveObject
 
+
+## create a point cloud
+#
 
 def create_pcl(pu,color=(1.0,0.0,0.0)):
+	'''create_pcl(pu,color=(1.0,0.0,0.0))'''
+
 	say(len(pu))
 	p=Points.Points(pu)
 	Points.show(p)
@@ -566,17 +585,16 @@ def create_pcl(pu,color=(1.0,0.0,0.0)):
 	App.ActiveDocument.points.addObject(App.ActiveDocument.ActiveObject)
 	Gui.updateGui()
 
-
+#\cond
 class ViewProvider:
 	def __init__(self, obj):
 		obj.Proxy = self
 		self.Object=obj
-		# obj.hide()
+#\\endcond
 
 
 def suv(app,u=3,v=5,d=10,la=100,lb=100):
-	'''generate quad on startposition u,v wit size d)'''
-
+	'''generate a quadratic bspline surface on startposition u,v wit size d)'''
 
 	st=time.time()
 	tt=Part.BSplineSurface()
@@ -617,28 +635,24 @@ def suv(app,u=3,v=5,d=10,la=100,lb=100):
 	sha=tt.toShape()
 	se=time.time()
 	say(["running time for one shape ", round(se-st,5)])
-
-	# alternative
-	# Part.show(sha)
-
 	App.ActiveDocument.ActiveObject.ViewObject.hide()
 
 	a=FreeCAD.ActiveDocument.addObject("Part::FeaturePython","mynurbs")
 	ViewProvider(a.ViewObject)
 	a.Shape=sha
-
-
 	se=time.time()
 	say([ "running time for show the shape ", round(se-st,5)])
-
 	App.ActiveDocument.ActiveObject.ViewObject.ShapeColor=color
 	App.ActiveDocument.nurbs.addObject(App.ActiveDocument.ActiveObject)
 	Gui.ActiveDocument.update()
+
+	# return the BSpline geometry
 	return tt
 
 
+'''
+alt - kann weg
 def suv2(label,pts,u=3,v=5,d=10,la=100,lb=100):
-	'''generate quad on startposition u,v wit size d)'''
 
 	try:
 		App.ActiveDocument.nurbs
@@ -717,10 +731,11 @@ def suv2(label,pts,u=3,v=5,d=10,la=100,lb=100):
 
 	# return tt
 	return a
-
+'''
 
 
 # generate 100 quads with each 100 interpolation points
+
 '''
 st=time.time()
 for vx in range(10):

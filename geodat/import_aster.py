@@ -1,3 +1,4 @@
+''' geodat import AST (gdal)'''
 # -*- coding: utf-8 -*-
 #-------------------------------------------------
 #-- geodat import AST (gdal)
@@ -40,6 +41,11 @@ import Points
 
 
 def getAST(b=50.26,l=11.39):
+	'''get the data from a downloaded file
+	the file is expected in FreeCAD.ConfigGet("UserAppData") + '/geodat/AST/'
+	with the common filename for lan/lot parameters 
+	example .../.FreeCAD/geodat/AST/ASTGTM2_N51E010_dem.tif
+	'''
 
 	bs=np.floor(b)
 	ls=np.floor(l)
@@ -94,8 +100,6 @@ def getAST(b=50.26,l=11.39):
 
 	pts=[]
 	d=70
-
-	print "----------------------------",d
 
 	d1=20
 	d2=50
@@ -184,8 +188,10 @@ class MyApp(object):
 		WebGui.openBrowser( "http://www.openstreetmap.org/#map=16/"+str(b)+'/'+str(l))
 
 
+## the dialog to import a gdal file
 
 def mydialog():
+	'''the dialog to import a gdal file'''
 
 	app=MyApp()
 	import geodat
