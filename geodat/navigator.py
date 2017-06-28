@@ -14,6 +14,7 @@
 #http://doc.qt.io/qt-5/qcolor.html#setNamedColor
 #http://doc.qt.io/qt-5/richtext-html-subset.html
 
+from geodat.say import *
 import PySide
 from PySide import QtGui,QtCore
 
@@ -36,13 +37,11 @@ from PySide import QtGui, QtCore
 import os
 
 
-
-
 #\endcond
 
 import time,sys,traceback,math
 from pivy import coin
-
+'''
 def sayexc(mess='',last=False):
 	exc_type, exc_value, exc_traceback = sys.exc_info()
 	ttt=repr(traceback.format_exception(exc_type, exc_value,exc_traceback))
@@ -50,12 +49,15 @@ def sayexc(mess='',last=False):
 	if last:
 		lls=[lls[-1]]
 	Err(mess + "\n" +"-->  ".join(lls))
+'''
 
+# whenever the module is loaded stop an old eventserver
 try:
 	stop()
 except:
 	pass
 
+## the debug window for runtime parameter
 
 def myWidget():
 	liste=QtGui.QWidget()
@@ -82,6 +84,7 @@ def myWidget():
 	liste.show()
 	return liste
 
+##callback when a key is pressed
 def on_key_press(ef,keystring):
 	print "on_key_press:", keystring
 	if keystring=='Escape':
@@ -90,22 +93,14 @@ def on_key_press(ef,keystring):
 		stop()
 	return True
 
+##callback when a key is released
 def on_key_release(ef,keystring):
 	print "on_key_release:", keystring
 	return True
 
-def on_move(ef,globalVector,localVector):
-	print "on_move:"
-	print globalVector
-	print localVector
-	return True
 
-def on_clicks(ef,button,count):
-	print "on_mouse:", button, str(count)
-	return True
 
-def on_windowslist(ef,windowslist):
-	return True
+
 
 
 ## The EventFilter controls the Qt mouse and keybord events
@@ -673,6 +668,11 @@ def keypress2(ef,keystring):
 		stop()
 	return True
 
+def on_move(ef,globalVector,localVector):
+	print "on_move:"
+	print globalVector
+	print localVector
+	return True
 
 def on_move2(ef,globalVector,localVector):
 #	print "on_move2:"
@@ -696,6 +696,15 @@ def on_move2(ef,globalVector,localVector):
 
 	return True
 
+def on_move3(ef,globalVector,localVector):
+	return True
+
+## the old click callback
+
+def on_clicks(ef,button,count):
+	print "on_mouse:", button, str(count)
+	return True
+
 def on_clicks2(ef,button,count):
 	print "on_clicks2:", button, str(count)
 	if button=='Release':
@@ -703,11 +712,9 @@ def on_clicks2(ef,button,count):
 	if button=='Left':
 			ef.mouseMode=True
 			ef.v=None
-	#return False
 	return True
 
-def on_move3(ef,globalVector,localVector):
-	return True
+## click callback for debug 
 
 def on_clicks3(ef,button,count):
 	print "on clicks 3",button
@@ -720,10 +727,11 @@ def on_clicks3(ef,button,count):
 		return True
 
 
+## a widget to display the yaw direction inside a circle
 
 
 class Compass(QtGui.QWidget):
-	
+
 	def __init__(self):
 		super(Compass, self).__init__()
 		self.rect= (0, 0, 100, 100)
@@ -762,6 +770,7 @@ class Compass(QtGui.QWidget):
 		self.repaint()
   
 
+## a widget to display the pitch of the view
 
 class Horizon(QtGui.QWidget):
    
@@ -804,9 +813,10 @@ class Horizon(QtGui.QWidget):
       self.nick=-n-180
       self.repaint()
 
+## a widget to dispay the xy position of the camera in the scene
 
 class Map(QtGui.QWidget):
-	
+
 	def __init__(self):
 		super(Map, self).__init__()
 		self.rect= (0, 0, 100, 100)
@@ -857,6 +867,7 @@ class Map(QtGui.QWidget):
   
   
 
+##creates and returns the navigator display widget
 
 
 def myNaviWidget(ef):
@@ -884,6 +895,7 @@ def myNaviWidget(ef):
 	layout.addWidget(liste2)
 	liste2.setMinimumHeight(130)
 	liste2.setMinimumWidth(360)
+
 	# drei Anzeiger ...
 	# compass
 	ex = Compass()
@@ -930,10 +942,10 @@ def myNaviWidget(ef):
 	bt.setText("Stop Navigation")
 	layout.addWidget(bt)
 
-	bt= QtGui.QPushButton()
-	bt.setText("Testme")
-	layout.addWidget(bt)
-	bt.clicked.connect(huhu) 
+#	bt= QtGui.QPushButton()
+#	bt.setText("Testme")
+#	layout.addWidget(bt)
+#	bt.clicked.connect(huhu) 
 
 	bt= QtGui.QPushButton()
 	bt.setText("Background 1 Snowland")
@@ -960,22 +972,23 @@ def myNaviWidget(ef):
 	liste.show()
 	return liste
 
-def huhu():
-	print "Ich bin huhu"
 
-import os
+
+## background image winter
 def background1(ef):
 	print "hintergrund 1"
 	fn='/home/microelly2/FCB/b175_camera_controller/winter.jpg'
 	fn=os.path.dirname(__file__) +"/../pics/winter.jpg"
 	ef.tex.filename = fn
 
+## background image dune
 def background2(ef):
 	print "hintergrund 2"
 	fn='/home/microelly2/FCB/b175_camera_controller/P1170437.JPG'
 	fn=os.path.dirname(__file__) +"/../pics//P1170437.JPG"
 	ef.tex.filename = fn
 
+## background image city
 def background3(ef):
 	print "hintergrund "
 	fn='/home/microelly2/FCB/b175_camera_controller/P1170039.JPG'
@@ -983,6 +996,7 @@ def background3(ef):
 	ef.tex.filename = fn
 
 
+## background partially transparent
 def background4(ef):
 	print "hintergrund "
 	fn='/home/microelly2/FCB/b175_camera_controller/transpa.png'
@@ -990,7 +1004,10 @@ def background4(ef):
 	print fn
 	ef.tex.filename = fn
 
+def on_windowslist(ef,windowslist):
+	return True
 
+## callback to set the mode or to do some other useful things
 def on_windowslist2(ef,windowslist):
 	for t in windowslist:
 		if  t==['QPushButton','Stop Navigation']:
@@ -1012,6 +1029,7 @@ def on_windowslist2(ef,windowslist):
 		return
 
 
+## initialize and start the Eventfilter
 
 def navi():
 	'''navigator startup'''
