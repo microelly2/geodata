@@ -72,6 +72,30 @@ except:
 
 
 
+import FreeCAD,FreeCADGui
+import sys
+
+#---------------------------------------------------------------------------
+# define the Commands of the Test Application module
+#---------------------------------------------------------------------------
+class MyTestCmd2:
+    """Opens a Qt dialog with all inserted unit tests"""
+    def Activated(self):
+        import QtUnitGui
+        QtUnitGui.addTest("geodat.TestGeodatGui")
+        QtUnitGui.addTest("geodat.TestGeodat")
+#       QtUnitGui.addTest("nurbswb.TestMeinAll.Col1")
+#       QtUnitGui.addTest("nurbswb.TestMeinAll.Col2")
+#       QtUnitGui.addTest("TestMeinAll.Col2")
+
+    def GetResources(self):
+        return {'MenuText': 'Test-test...', 'ToolTip': 'Runs the self-test for the workbench'}
+
+
+FreeCADGui.addCommand('My_Test Geodat'        ,MyTestCmd2())
+
+
+
 
 
 
@@ -82,7 +106,7 @@ class import_csv:
 		print "run import ..."
 		import geodat.import_csv
 		geodat.import_csv.mydialog()
-		
+
 
 	def GetResources(self):
 		return {
@@ -202,7 +226,7 @@ class mydialog:
 #		geodat.mydialog.mydialog()
 		import geodat.import_osm
 		reload(geodat.import_osm)
-		geodat.import_osm.dialog()
+		geodat.import_osm.mydialog()
 
 
 
@@ -236,7 +260,7 @@ class importsrtm:
 		print "run import ..."
 		import geodat.import_srtm
 		reload(geodat.import_srtm)
-		geodat.import_srtm.dialog()
+		geodat.import_srtm.mydialog()
 		
 
 	def GetResources(self):
@@ -294,7 +318,7 @@ class Geodat ( Workbench ):
 		cmds= ["Import OSM Map",'Import CSV','Import GPX',
 			'Import Heights','Import SRTM','Import XYZ','Import LatLonZ','Import Image','Import ASTER','Navigator',
 			'Create House']
-##		self.appendToolbar("Geo Data", cmds )
+		self.appendToolbar("Geo Data Test", ['My_Test Geodat'])
 		self.appendMenu("Geo Data", cmds)
 		Log ("Loading Goe Data Workbench ... done\n")
 

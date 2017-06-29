@@ -743,7 +743,7 @@ class MyApp(object):
 
 ## the gui startup
 
-def dialog():
+def mydialog():
 	''' starts the gui dialog '''
 	app=MyApp()
 
@@ -757,5 +757,5 @@ def dialog():
 
 	miki.parse2(s6)
 	miki.run(s6)
-
+	return miki
 

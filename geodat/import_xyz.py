@@ -215,7 +215,7 @@ def import_xyz(mode,filename="/tmp/test.xyz",label='',ku=20, kv=10,lu=0,lv=0):
 		try:
 			App.ActiveDocument.points
 		except:
-			points=nurbs=App.ActiveDocument.addObject("App::DocumentObjectGroup","points")
+			points=App.ActiveDocument.addObject("App::DocumentObjectGroup","points")
 
 		f=open(filename)
 		lines=f.readlines()
@@ -508,7 +508,7 @@ def mydialog(run=True):
 
 	miki.parse2(sdialog)
 	miki.run(sdialog)
-	return app
+	return miki
 
 
 

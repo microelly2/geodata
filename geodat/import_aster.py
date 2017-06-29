@@ -202,6 +202,8 @@ def mydialog():
 	app.root=miki
 
 	miki.run(s6)
+	FreeCAD.mm=miki
+	return miki
 
 
 def import_heights(b,l,s):

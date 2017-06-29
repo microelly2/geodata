@@ -424,7 +424,7 @@ class MyApp(object):
 
 
 def mydialog():
-	app=App()
+	app=MyApp()
 
 	import geodat.miki as miki
 	reload(miki)
@@ -439,8 +439,9 @@ def mydialog():
 
 	miki.run(s6)
 	m=miki.ids['main']
+	return miki
 
-
+'''
 def dialog():
 	app=MyApp()
 
@@ -456,6 +457,7 @@ def dialog():
 
 	miki.run(s6)
 	m=miki.ids['main']
+'''
 
 
 

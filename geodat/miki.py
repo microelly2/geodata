@@ -550,10 +550,10 @@ class Miki():
 					else:
 						print "nicht implementierter typ"
 						ex=''
-#					print "//*** "+ex
+					print "//*** "+ex
 					exec(ex)
 #					print parent
-		print "Ende build"
+		print "Ende build 2"
 
 
 	def showSo(self):
@@ -888,6 +888,7 @@ def testme():
 
 	miki.parse2(layout)
 	miki.run(layout)
+	FreeCAD.mm=miki
 
 
 
