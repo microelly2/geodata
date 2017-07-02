@@ -1,31 +1,44 @@
-# Unit test for the Nurbs module
+# Unit test for the Geodat module
 
 
-import FreeCAD, os, unittest, FreeCADGui, Draft
+import FreeCAD, os, unittest, FreeCADGui
 
-class NurbsTest(unittest.TestCase):
+App=FreeCAD
+Gui=FreeCADGui
 
-    def setUp(self):
-        # setting a new document to hold the tests
-        if FreeCAD.ActiveDocument:
-            if FreeCAD.ActiveDocument.Name != "DraftTest":
-                FreeCAD.newDocument("DraftTest")
-        else:
-            FreeCAD.newDocument("DraftTest")
-        FreeCAD.setActiveDocument("DraftTest")
+class GeodatTest(unittest.TestCase):
 
-    def testPivy(self):
-        FreeCAD.Console.PrintLog ('Checking Pivy...\n')
-        from pivy import coin
-        c = coin.SoCube()
-        FreeCADGui.ActiveDocument.ActiveView.getSceneGraph().addChild(c)
-        self.failUnless(c,"Pivy is not working properly")
+	def setUp(self):
+		if FreeCAD.ActiveDocument:
+			if FreeCAD.ActiveDocument.Name != "Test":
+				FreeCAD.newDocument("Test")
+		else:
+			FreeCAD.newDocument("Test")
+		FreeCAD.setActiveDocument("Test")
 
 
+	def XtestPivy(self):
+		FreeCAD.Console.PrintLog ('Checking Pivy...\n')
+		from pivy import coin
+		c = coin.SoCube()
+		FreeCADGui.ActiveDocument.ActiveView.getSceneGraph().addChild(c)
+		self.failUnless(c,"Pivy is not working properly")
 
-    def tearDown(self):
-        FreeCAD.closeDocument("DraftTest")
-        pass
+	def testInventortools(self):
+		import geodat.inventortools
+		print "test inventortools"
+		obj=App.ActiveDocument.addObject("Part::Box","Box")
+		geodat.inventortools.setcolorlights(obj)
+
+	def testInventortools2(self):
+		import geodat.inventortools
+		obj=App.ActiveDocument.Box
+		geodat.inventortools.setcolors2(obj)
+
+
+	def tearDown(self):
+		# FreeCAD.closeDocument("Test")
+		pass
 
 
 

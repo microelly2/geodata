@@ -40,8 +40,8 @@ import random
 # .
 
 
-def createNurbsblock(filename=None,n=10,c=2,inverse=False,kx=10,ky=10,kz=60,gengrid=True,genblock=False,genpoles=False,pointsonly=False):
-	'''createNurbsblock(filename=None,n=10,c=2,inverse=False,kx=10,ky=10,kz=60,gengrid=True,genblock=False,genpoles=False,pointsonly=False)
+def import_image(filename=None,n=10,c=2,inverse=False,kx=10,ky=10,kz=60,gengrid=True,genblock=False,genpoles=False,pointsonly=False):
+	'''import_image(filename=None,n=10,c=2,inverse=False,kx=10,ky=10,kz=60,gengrid=True,genblock=False,genpoles=False,pointsonly=False)
 	'''
 
 	display_mathplot=False
@@ -372,7 +372,7 @@ class MyApp(object):
 		try:
 			filename=self.root.ids['bl'].text()
 			ts=time.time()
-			bs=createNurbsblock(
+			bs=import_image(
 					filename,
 
 					int(self.root.ids['border'].text()),
@@ -415,6 +415,16 @@ def mydialog(run=True):
 
 	miki.parse2(sdialog)
 	miki.run(sdialog)
-	return app
+	return miki
 
+
+
+
+def runtest():
+	m=mydialog()
+	m.objects[0].hide()
+
+
+if __name__ == '__main__':
+	runtest()
 

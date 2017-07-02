@@ -40,7 +40,7 @@ import Points
 
 
 
-def getAST(b=50.26,l=11.39):
+def import_ast(b=50.26,l=11.39):
 	'''get the data from a downloaded file
 	the file is expected in FreeCAD.ConfigGet("UserAppData") + '/geodat/AST/'
 	with the common filename for lan/lot parameters 
@@ -210,7 +210,7 @@ def import_heights(b,l,s):
 
 	ts=time.time()
 
-	pcl=getAST(b,l)
+	pcl=import_ast(b,l)
 	pts=pcl
 	ff="N" + str(b) + " E" + str(l)
 
@@ -223,5 +223,12 @@ def import_heights(b,l,s):
 	nurbs.ViewObject.Selectable = False
 
 
+
+
+def runtest():
+	m=mydialog()
+	m.objects[0].hide()
+
+
 if __name__ == '__main__':
-	mydialog()
+	runtest()

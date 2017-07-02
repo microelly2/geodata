@@ -8,7 +8,7 @@
 #-- GNU Lesser General Public License (LGPL)
 #-------------------------------------------------
 
-
+#\cond
 import Draft
 import FreeCADGui,FreeCAD
 App=FreeCAD
@@ -21,10 +21,13 @@ import geodat
 import time
 import cv2
 import matplotlib
+#\endcond
 
 
-
-def getHeights(nsf,size=16):
+def getHeights(nsf,size=16,scale=0.001,normalized=True):
+	'''arr = getHeights(nsf,size=16,,scale=0.001,normalized=True) 
+	calculates an array with the shape 16 * 16 
+	the values are the heights of the bsplinesurface nsf at the grid points'''
 
 	kzs=np.zeros((size+1,size+1),np.float)
 	for ux in range(size+1):
@@ -34,15 +37,19 @@ def getHeights(nsf,size=16):
 			p=nsf.value(u,v)
 			kzs[ux,vx]=p[2]
 
-	kzs *= 0.001
+	kzs *= scale
 
-	# normalize
-	kzs -= kzs.min()
-	kzs /= kzs.max()
+	if normalized:
+		kzs -= kzs.min()
+		kzs /= kzs.max()
+
 	return kzs
 
+## @return array shape size x size x 3 (grid of vectors)
 
 def getNormals(nsf,size=16,direction=FreeCAD.Vector(0,0,1)):
+	'''arr = getNormals(nsf,size=16,direction=FreeCAD.Vector(0,0,1))
+	calculate the difference of the normal vector on a size *size grid for the grid points on the surface nsf'''
 
 	direction.normalize()
 	kzs=np.zeros((size+1,size+1),np.float)
@@ -58,9 +65,16 @@ def getNormals(nsf,size=16,direction=FreeCAD.Vector(0,0,1)):
 	return kzs
 
 
+## @return filename of the colormap image
 
 
 def createColor(kzs,size,mode):
+	'''filename=createColor(kzs,size,mode)
+	creates a colormap for the values of the array
+	mode 1 cmap(1-t)
+	mode 2 cmap(t)
+	the colormap is stored as a temp file and the filepath is returned
+	'''
 
 	img= np.zeros((size+1,size+1,3), np.uint8)
 
@@ -188,3 +202,34 @@ for h in range(61):
 	Gui.updateGui()
 
 '''
+
+
+
+
+
+
+
+def runtest():
+	import geodat.testdata
+	reload(geodat.testdata)
+
+	nurbs=geodat.testdata.bspline()
+	pcl=geodat.testdata.pcl()
+
+	import geodat.geodat_lib
+	fn=geodat.testdata.image(mirroru=True)
+
+	geodat.geodat_lib.addImageTexture(nurbs,fn,scale=(1,2))
+	Gui.updateGui()
+
+
+	fn=geodat.testdata.image(mirroru=False)
+	geodat.geodat_lib.addImageTexture(nurbs,fn,scale=(1,1))
+	App.ActiveDocument.recompute()
+	Gui.updateGui()
+
+
+if __name__ == '__main__':
+	runtest()
+
+

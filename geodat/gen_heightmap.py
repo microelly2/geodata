@@ -1,3 +1,4 @@
+'''create height map image'''
 # -*- coding: utf-8 -*-
 #-------------------------------------------------
 #-- geodat height map texture
@@ -13,22 +14,13 @@ import matplotlib.pyplot as plt
 import matplotlib.mlab as ml
 from mpl_toolkits.mplot3d.axes3d import *
 
-## @package gen_heightmap
-#  Doku dazu
-#
-#  noch mehr
-#  www
-#  wwww
-# wwww
 
-## docu fuer gengrid
-#
-#  noch mehr dazu
-#  noch mehr dazu
+
+
 def gengrid(pcl):
-	'''create grid from pcl
-	
-	,moresfdsf 
+	'''transforms the pointcloud pcl into a rectangle grid
+	assume the points are arranged in xy directions
+	returns a numpy array
 	'''
 
 	xmin=pcl.Points.BoundBox.XMin
@@ -63,11 +55,11 @@ def gengrid(pcl):
 	print ("dim grind ", len(pcl.Points.Points),lx,ly)
 	return grid
 
-## doku fuer fun
-#
-#  usw
+
+## create and display a matplotlib plot
+
 def mpl3Dplot(grid):
-	''' matplot 3D '''
+	'''mpl3Dplot(grid)'''
 
 	xs=grid[0,:,0]
 	ys=grid[:,0,1]
@@ -77,7 +69,7 @@ def mpl3Dplot(grid):
 	zs *= -1
 
 	X, Y = np.meshgrid(xs, ys)
-#	fig = plt.figure()
+	fig = plt.figure()
 	ax = Axes3D(fig)
 	ax.plot_surface(X, Y, zs, rstride=1, cstride=1, cmap=cm.jet,linewidth=1, antialiased=True)
 	plt.show()
@@ -85,6 +77,8 @@ def mpl3Dplot(grid):
 
 
 import cv2
+
+## create cv2 image file
 
 def cv2plot(grid,fn="/tmp/foo.png",cmap=cv2.COLORMAP_JET):
 	''' create cv2 image file 
@@ -133,9 +127,8 @@ import geodat.geodat_lib as geodat_lib
 reload(geodat_lib)
 
 
-## test function
-#
-# more details
+## test case
+
 def run(testnumber):
 	''' run a test '''
 
@@ -175,7 +168,7 @@ def run(testnumber):
 	im=cv2plot(grid, cv2.COLORMAP_RAINBOW)
 	# cv2.COLORMAP_HSV
 	#im=cv2plot(grid, cv2.COLORMAP_JET)
-	
+
 
 	geodat_lib.addImageTexture(nurbs,"/tmp/foo.png",scale=(1,1))
 	#add(nurbs,"/tmp/100_200.png")

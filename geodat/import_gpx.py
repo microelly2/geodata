@@ -453,9 +453,18 @@ def mydialog():
 
 	miki.parse2(s6)
 	miki.run(s6)
+	return miki
 
 
-mydialog()
+def runtest():
+	m=mydialog()
+	m.objects[0].hide()
+
+
+
+
+if __name__ == '__main__':
+	runtest()
 
 
 

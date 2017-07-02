@@ -590,7 +590,7 @@ class ViewProvider:
 	def __init__(self, obj):
 		obj.Proxy = self
 		self.Object=obj
-#\\endcond
+#\endcond
 
 
 def suv(app,u=3,v=5,d=10,la=100,lb=100):
@@ -795,3 +795,12 @@ for i in range(10,110,10):
 '''
 
 
+
+
+def runtest():
+	m=mydialog()
+	m.objects[0].hide()
+
+
+if __name__ == '__main__':
+	runtest()

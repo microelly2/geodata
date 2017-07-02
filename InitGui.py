@@ -82,6 +82,8 @@ class MyTestCmd2:
     """Opens a Qt dialog with all inserted unit tests"""
     def Activated(self):
         import QtUnitGui
+        QtUnitGui.addTest("geodat.TestFirst") # the running dev tests
+        QtUnitGui.addTest("geodat.TestFiles") # the running dev tests
         QtUnitGui.addTest("geodat.TestGeodatGui")
         QtUnitGui.addTest("geodat.TestGeodat")
 #       QtUnitGui.addTest("nurbswb.TestMeinAll.Col1")
@@ -89,7 +91,7 @@ class MyTestCmd2:
 #       QtUnitGui.addTest("TestMeinAll.Col2")
 
     def GetResources(self):
-        return {'MenuText': 'Test-test...', 'ToolTip': 'Runs the self-test for the workbench'}
+        return {'MenuText': 'Test', 'ToolTip': 'Runs the self-test for the workbench'}
 
 
 FreeCADGui.addCommand('My_Test Geodat'        ,MyTestCmd2())

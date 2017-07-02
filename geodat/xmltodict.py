@@ -412,3 +412,6 @@ def unparse(input_dict, output=None, encoding='utf-8', full_document=True,
             pass
         return value
 
+
+def runtest():
+	pass

@@ -461,10 +461,11 @@ def dialog():
 
 
 
+def runtest():
+	m=mydialog()
+	m.objects[0].hide()
 
-# dialog()
 
-
-
-
+if __name__ == '__main__':
+	runtest()
 

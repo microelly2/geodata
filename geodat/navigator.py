@@ -21,8 +21,6 @@ from PySide import QtGui,QtCore
 import FreeCAD,FreeCADGui
 
 #\cond
-#
-#
 
 App=FreeCAD
 Err=FreeCAD.Console.PrintError
@@ -59,7 +57,7 @@ except:
 
 ## the debug window for runtime parameter
 
-def myWidget():
+def myDebugWidget():
 	liste=QtGui.QWidget()
 	liste.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
 	layout=QtGui.QVBoxLayout()
@@ -85,6 +83,7 @@ def myWidget():
 	return liste
 
 ##callback when a key is pressed
+
 def on_key_press(ef,keystring):
 	print "on_key_press:", keystring
 	if keystring=='Escape':
@@ -120,7 +119,7 @@ class EventFilter(QtCore.QObject):
 		self.keyTimeout=0.1
 		self.keyset=0
 		self.keyPressed2=False
-		self.output=myWidget()
+		self.output=myDebugWidget()
 
 		self.keymap={}
 		for t in dir(QtCore.Qt):
@@ -396,7 +395,7 @@ def keypress(ef,keystring):
 
 
 
-def keypress2(ef,keystring):
+def on_keypress2(ef,keystring):
 	print
 	print
 	print
@@ -731,7 +730,7 @@ def on_clicks3(ef,button,count):
 
 
 class Compass(QtGui.QWidget):
-
+	#\cond
 	def __init__(self):
 		super(Compass, self).__init__()
 		self.rect= (0, 0, 100, 100)
@@ -768,50 +767,48 @@ class Compass(QtGui.QWidget):
 	def direction(self,arc):
 		self.arc=arc-90
 		self.repaint()
-  
+	#\endcond
 
 ## a widget to display the pitch of the view
 
 class Horizon(QtGui.QWidget):
-   
-   def __init__(self):
-      super(Horizon, self).__init__()
-      self.rect= (0, 0, 100, 100)
-      self.arc=0
-      self.nick=0
-      self.resize(100, 100)
-      
-   def initUI(self):     
-      self.setGeometry(300, 300, 350, 100)
-      self.setWindowTitle('Colors')
+	#\cond
+	def __init__(self):
+		super(Horizon, self).__init__()
+		self.rect= (0, 0, 100, 100)
+		self.arc=0
+		self.nick=0
+		self.resize(100, 100)
 
-   def paintEvent(self, e):
+	def initUI(self):
+		self.setGeometry(300, 300, 350, 100)
+		self.setWindowTitle('Colors')
 
-      qp = QtGui.QPainter()
-      qp.begin(self)
-      self.drawRectangles(qp)
-      qp.end()
-      
-   def drawRectangles(self, qp):
-      color = QtGui.QColor(0, 0, 0)
-      color.setNamedColor('#d4d4d4')
-      qp.setBrush(QtGui.QColor(100, 100, 100, 255))
-      qp.drawEllipse(0, 0, 100, 100);
-      qp.setPen(color)
-      qp.setBrush(QtGui.QColor(220, 220, 255,200))
+	def paintEvent(self, e):
+		qp = QtGui.QPainter()
+		qp.begin(self)
+		self.drawRectangles(qp)
+		qp.end()
 
-      rect = QtCore.QRectF(0.0, 0.0, 100.0, 100.0)
-      startAngle = (90+self.arc-0.5*self.nick) * 16
-      spanAngle = (self.nick) * 16
-      qp.drawChord(rect, startAngle, spanAngle)
+	def drawRectangles(self, qp):
+		color = QtGui.QColor(0, 0, 0)
+		color.setNamedColor('#d4d4d4')
+		qp.setBrush(QtGui.QColor(100, 100, 100, 255))
+		qp.drawEllipse(0, 0, 100, 100);
+		qp.setPen(color)
+		qp.setBrush(QtGui.QColor(220, 220, 255,200))
+		rect = QtCore.QRectF(0.0, 0.0, 100.0, 100.0)
+		startAngle = (90+self.arc-0.5*self.nick) * 16
+		spanAngle = (self.nick) * 16
+		qp.drawChord(rect, startAngle, spanAngle)
 
-
-   def direction(self,arc):
-      self.arc=arc
-      self.repaint()
-   def setnick(self,n):
-      self.nick=-n-180
-      self.repaint()
+	def direction(self,arc):
+		self.arc=arc
+		self.repaint()
+	def setnick(self,n):
+		self.nick=-n-180
+		self.repaint()
+	#\endcond
 
 ## a widget to dispay the xy position of the camera in the scene
 
@@ -870,7 +867,7 @@ class Map(QtGui.QWidget):
 ##creates and returns the navigator display widget
 
 
-def myNaviWidget(ef):
+def myNavigatorWidget(ef):
 	liste=QtGui.QWidget()
 	liste.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
 	layout=QtGui.QVBoxLayout()
@@ -1053,7 +1050,7 @@ def navi():
 	ef.firstCall=True
 
 	ef.mode="turn"
-	ef.navi=myNaviWidget(ef)
+	ef.navi=myNavigatorWidget(ef)
 
 
 	ef.speed=100
@@ -1154,8 +1151,6 @@ def navi():
 
 
 	tex =  coin.SoTexture2()
-	# fn=str(jpgfilename[0])
-
 	tex.filename = fn
 	myCustomNode.insertChild(tex,0)
 
@@ -1170,16 +1165,12 @@ def navi():
 	FreeCAD.eventfilter=ef
 	mw.installEventFilter(ef)
 
-	FreeCAD.eventfilter.on_key_press=keypress2
+	FreeCAD.eventfilter.on_key_press=on_keypress2
 	FreeCAD.eventfilter.on_move=on_move3
 	FreeCAD.eventfilter.on_clicks=on_clicks3
 	FreeCAD.eventfilter.on_windowslist=on_windowslist2
 
-
-
-
-
-	keypress2(FreeCAD.eventfilter,'O')
+	on_keypress2(FreeCAD.eventfilter,'O')
 
 	view=FreeCADGui.activeDocument().activeView()
 
@@ -1192,4 +1183,11 @@ def navi():
 	print "1!!"
 
 	return ef
+
+
+def runtest():
+	navi()
+	ef=navi()
+	ef.navi.hide()
+	ef.output.hide()
 

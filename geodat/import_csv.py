@@ -177,6 +177,13 @@ def mydialog():
 
 	miki.parse2(s6)
 	miki.run(s6)
+	return miki
 
 
-mydialog()
+# mydialog()
+
+
+
+def runtest():
+	m=mydialog()
+	m.objects[0].hide()

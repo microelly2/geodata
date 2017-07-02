@@ -41,7 +41,7 @@ from  xmltodict import parse
 import time
 
 ## get the elevation height of a single point
-def getheight(b,l):
+def getHeight(b,l):
 	''' get height of a single point with latitude b, longitude l'''
 	anz=0
 	while anz<4:
@@ -60,7 +60,7 @@ def getheight(b,l):
 
 ## get the heights for a list of points
 
-def get_heights(points):
+def getHeights(points):
 	''' get heights for a list of points'''
 	i=0
 	size=len(points)
@@ -188,7 +188,7 @@ def import_osm2(b,l,bk,progressbar,status,elevation):
 		return False
 
 	if elevation:
-		baseheight=getheight(b,l)
+		baseheight=getHeight(b,l)
 	else:
 		baseheight=0 
 
@@ -417,7 +417,7 @@ def import_osm2(b,l,bk,progressbar,status,elevation):
 			llpoints.append([n['@ref'],m['@lat'],m['@lon']])
 		if elevation:
 			print "get heights for " + str(len(llpoints))
-			heights=get_heights(llpoints)
+			heights=getHeights(llpoints)
 
 		for n in w['nd']:
 			p=points[str(n['@ref'])]

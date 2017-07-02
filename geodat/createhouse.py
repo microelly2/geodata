@@ -1,7 +1,24 @@
+'''create a house lod2 a'''
+
+## Haus
+# @todo : make the house parametric
+#
+#
+
+class house():
+	pass
+
+
+import FreeCAD,FreeCADGui
 import Part
+import math
 
+
+
+
+#\cond
 def viereck(le,wi,he,inlea=0,inleb=0,inwia=0,inwib=0):
-
+	'''gugu'''
 	liste=[
 		(0+inlea,inwia,he),
 		(le-inleb,inwia,he),
@@ -12,22 +29,20 @@ def viereck(le,wi,he,inlea=0,inleb=0,inwia=0,inwib=0):
 	return liste
 
 
+#\endcond
 
 
 
+def gen_haus0(le=30,wi=20,hiall,hi,midx,wx,midy,wy):
 
-def gen_haus0(le,wi,hiall,hi,midx,wx,midy,wy):
-
-#	le=30
-#	wi=20
 	he=hiall
 	he3=hi
-	
+
 	inle=8
 	inwi=2
 	if wx==0: wx=0.0001
 	if wy==0: wy=0.0001
-	
+
 	if midx<0.5:
 		bix=le*midx
 	else:
@@ -40,12 +55,11 @@ def gen_haus0(le,wi,hiall,hi,midx,wx,midy,wy):
 
 	list1=viereck(le,wi,0)
 	list2=viereck(le,wi,he)
-	# list3=viereck(le,wi,he3,inle,inwi)
 	list3=viereck(le,wi,he3,
 		le*midx-bix*wx,le-(le*midx+bix*wx),
 		wi*midy-biy*wy,wi-(wi*midy+biy*wy),
 	)
-	
+
 	poly1 = Part.makePolygon( list1)
 	poly3 = Part.makePolygon( list3)
 	face1 = Part.Face(poly1)
@@ -68,7 +82,6 @@ def gen_haus0(le,wi,hiall,hi,midx,wx,midy,wy):
 	mySolid = Part.makeSolid(myShell)
 	return mySolid
 
-import math
 
 def gen_haus(le,wi,hiall,hi,ang,midx=0.7,wx=0.5,midy=0.5,wy=0):
 	h=gen_haus0(le,wi,hiall,hi,midx,wx,midy,wy)
@@ -78,10 +91,6 @@ def gen_haus(le,wi,hiall,hi,ang,midx=0.7,wx=0.5,midy=0.5,wy=0):
 	p.Placement.Rotation.Angle=ang*math.pi/180
 	return p
 
-
-
-#s= gen_haus(40,30,40,50,90)
-#Gui.SendMsgToActiveView("ViewFit")
 
 
 s6='''
@@ -207,8 +216,6 @@ MainWindow:
 
 '''
 
-import FreeCAD,FreeCADGui
-
 
 class MyApp(object):
 
@@ -218,39 +225,13 @@ class MyApp(object):
 		wi=float(self.root.ids['wi'].text())
 		hiall=float(self.root.ids['hiall'].text())
 		hi=float(self.root.ids['hi'].text())
-		
 		midy=1-float(self.root.ids['midx'].value())/100
 		midx=float(self.root.ids['midy'].value())/100
 		wy=float(self.root.ids['wx'].value())/100
 		wx=float(self.root.ids['wy'].value())/100
+
 		s= gen_haus(le,wi,hiall,hi,90,midx,wx,midy,wy)
 		s.ViewObject.ShapeColor=(1.0,0.0,0.0)
-		FreeCADGui.activeDocument().activeView().viewAxonometric()
-		# FreeCADGui.SendMsgToActiveView("ViewFit")
-
-	def runbl(self):
-		print "Run values"
-		bl=self.root.ids['bl'].text()
-		spli=bl.split(',')
-		b=float(spli[0])
-		l=float(spli[1])
-		s=self.root.ids['s'].value()
-		print [l,b,s]
-		import WebGui
-#		WebGui.openBrowser( "http://www.openstreetmap.org/#map=19/"+str(b)+'/'+str(l))
-		import geodat.import_osm
-		reload(geodat.import_osm)
-		print "Start"
-		geodat.import_osm.import_osm(float(b),float(l),float(s)/10,self.root.ids['progb'],self.root.ids['status'])
-
-	def showMap(self):
-		print "Run values"
-		b=self.root.ids['b'].text()
-		l=self.root.ids['l'].text()
-		s=self.root.ids['s'].value()
-		print [l,b,s]
-		import WebGui
-		WebGui.openBrowser( "http://www.openstreetmap.org/#map=16/"+str(b)+'/'+str(l))
 
 
 
@@ -271,10 +252,11 @@ def mydialog():
 
 	miki.run(s6)
 	m=miki.ids['main']
+	return miki
 
 
-# eichitz
-# 50.3387726, 11.2381936
+def runtest():
+	m=mydialog()
+	m.objects[0].hide()
 
-# 50.3377879, 11.2104096
 
