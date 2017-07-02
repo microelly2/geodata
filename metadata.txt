@@ -1,0 +1,74 @@
+
+[general]
+name=Geodata Workbench
+email=microelly2@freecadbuch.de
+author=Thomas Gundermann
+FreeCADMinimumVersion=0.17.xxxx
+
+description=Support for geodata in FreeCAD
+    create terrain models as BSpline Surfaces or Mesh 
+    add buildings to the modes 
+    import data from openstreeetmap and other common data sources
+about=geodata support for FreeCAD
+
+version=version 0.01
+
+tracker=https://github.com/microelly2/geodata/issues
+repository=https://github.com/microelly2/geodata
+license=GNU LGPL
+
+; end of mandatory metadata
+
+
+; start of optional metadata
+;category=Raster
+changelog=
+    0.02
+    - added metadata.txt
+    0.01 - First release relase
+
+tags=openstreeetmap,google,terrain,contour,nurbs
+
+; these metadata can be empty, they will eventually become mandatory.
+homepage=http://freecadbuch.de/doku.php?id=geodat
+
+; icon size should be: ?????
+icon=icon.png
+screenshot=screenshot.png
+
+; animated gifs are recommended
+#screencast=screencast.gif
+
+; experimental flag (applies to the single version)
+experimental=True
+
+; deprecated flag (applies to the whole plugin and not only to the uploaded version)
+deprecated=False
+
+; if empty, it will be automatically set to major version + .99
+:FreeCADMaximumVersion=0.17.xxxx
+
+
+
+; start of dependency section
+[dependencies]
+workbenches=Part, Draft, Points
+
+; specific python version we need to work with?
+python=2.7.6
+
+; add 3rd party python libs
+;pylibs=numpy vX.y.z
+;pylibs=scipy vX.y.z
+
+; add 3rd party optional python libs
+;optionalpylibs=scikit vX.y.z
+
+; add 3rd party applications
+;3rdparty=VTK vX.y.z
+;3rdparty=OCC v7.1.1
+
+; add dependencies of other FC addons
+;FCaddon=assembly2@g3425fdr,part-o-magic@f32sed43
+
+; end of dependency section
