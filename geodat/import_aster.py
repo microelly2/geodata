@@ -169,8 +169,10 @@ MainWindow:
 '''
 
 
+## the gui backend
 class MyApp(object):
 
+	## create the height model
 	def runbl(self):
 		bl=self.root.ids['bl'].text()
 		spli=bl.split(',')
@@ -179,6 +181,7 @@ class MyApp(object):
 		s=15
 		import_heights(float(b),float(l),float(s))
 
+	## display the location in openstreeetmap
 	def showMap(self):
 		bl=self.root.ids['bl'].text()
 		spli=bl.split(',')
@@ -206,6 +209,8 @@ def mydialog():
 	return miki
 
 
+## import heigjs using import_xyz
+
 def import_heights(b,l,s):
 
 	ts=time.time()
@@ -224,7 +229,7 @@ def import_heights(b,l,s):
 
 
 
-
+## test start and hide the dialog
 def runtest():
 	m=mydialog()
 	m.objects[0].hide()

@@ -456,6 +456,7 @@ def mydialog():
 	return miki
 
 
+## tst open and hide dialog
 def runtest():
 	m=mydialog()
 	m.objects[0].hide()

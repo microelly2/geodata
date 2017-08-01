@@ -208,7 +208,7 @@ for h in range(61):
 
 
 
-
+## test create a surface and add a elevation image testure 
 def runtest():
 	import geodat.testdata
 	reload(geodat.testdata)
@@ -223,7 +223,7 @@ def runtest():
 	Gui.updateGui()
 
 
-	fn=geodat.testdata.image(mirroru=False)
+	fn=geodat.testdata.image(mirroru=True)
 	geodat.geodat_lib.addImageTexture(nurbs,fn,scale=(1,1))
 	App.ActiveDocument.recompute()
 	Gui.updateGui()

@@ -279,7 +279,7 @@ class createHouse:
 		print "run import ..."
 		import geodat.createhouse
 		reload(geodat.createhouse)
-		geodat.createhouse.mydialog()
+		FreeCAD.rc=geodat.createhouse.mydialog()
 		
 
 	def GetResources(self):
@@ -289,6 +289,23 @@ class createHouse:
 			'ToolTip': 'Create House '
 		}
 
+
+class ElevationGrid:
+
+	def Activated(self):
+		print "run import ..."
+		import geodat.elevationgrid
+		reload(geodat.elevationgrid)
+		geodat.elevationgrid.run()
+		# FreeCAD.rc=geodat.createhouse.mydialog()
+
+
+	def GetResources(self):
+		return {
+			'Pixmap'  : 'Std_Tool1', 
+			'MenuText': 'Elevation Grid', 
+			'ToolTip': 'create Elevation Grid '
+		}
 
 
 
@@ -303,7 +320,7 @@ FreeCADGui.addCommand('Import Image', import_image())
 FreeCADGui.addCommand('Import ASTER', import_aster())
 FreeCADGui.addCommand('Create House', createHouse())
 FreeCADGui.addCommand('Navigator', navigator())
-
+FreeCADGui.addCommand('ElevationGrid', ElevationGrid())
 
 
 class Geodat ( Workbench ):
@@ -319,7 +336,7 @@ class Geodat ( Workbench ):
 		
 		cmds= ["Import OSM Map",'Import CSV','Import GPX',
 			'Import Heights','Import SRTM','Import XYZ','Import LatLonZ','Import Image','Import ASTER','Navigator',
-			'Create House']
+			'Create House','ElevationGrid']
 		self.appendToolbar("Geo Data Test", ['My_Test Geodat'])
 		self.appendMenu("Geo Data", cmds)
 		Log ("Loading Goe Data Workbench ... done\n")

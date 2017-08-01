@@ -429,6 +429,7 @@ class MyApp(object):
 		#filename='/home/microelly2/FCB/b202_gmx_tracks/dgm1/dgm1_32356_5638_2_nw.xyz'
 		try:
 			ts=time.time()
+			#\cond
 			self.pts=import_xyz(
 					self.root.ids['pclMode'].isChecked(),
 					filename,
@@ -438,6 +439,7 @@ class MyApp(object):
 					int(self.root.ids['lu'].text()),
 					int(self.root.ids['lv'].text()),
 			)
+			#\endcond
 			te=time.time()
 			say("load points time " + str(round(te-ts,2)))
 			say(("points",len(self.pts)))
@@ -796,7 +798,7 @@ for i in range(10,110,10):
 
 
 
-
+## test start and hide the dialog
 def runtest():
 	m=mydialog()
 	m.objects[0].hide()

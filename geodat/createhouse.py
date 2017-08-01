@@ -32,8 +32,9 @@ def viereck(le,wi,he,inlea=0,inleb=0,inwia=0,inwib=0):
 #\endcond
 
 
+#\cond
+def gen_haus0(le,wi,hiall,hi,midx,wx,midy,wy):
 
-def gen_haus0(le=30,wi=20,hiall,hi,midx,wx,midy,wy):
 
 	he=hiall
 	he3=hi
@@ -81,8 +82,11 @@ def gen_haus0(le=30,wi=20,hiall,hi,midx,wx,midy,wy):
 	myShell = Part.makeShell(faceListe)   
 	mySolid = Part.makeSolid(myShell)
 	return mySolid
+#\endcond
 
 
+## create a house as part
+ 
 def gen_haus(le,wi,hiall,hi,ang,midx=0.7,wx=0.5,midy=0.5,wy=0):
 	h=gen_haus0(le,wi,hiall,hi,midx,wx,midy,wy)
 	print h
@@ -216,10 +220,11 @@ MainWindow:
 
 '''
 
+## Gui backend
 
 class MyApp(object):
 
-
+	## create a house
 	def gen_house(self):
 		le=float(self.root.ids['le'].text())
 		wi=float(self.root.ids['wi'].text())
@@ -234,6 +239,7 @@ class MyApp(object):
 		s.ViewObject.ShapeColor=(1.0,0.0,0.0)
 
 
+## the dialog to create a house
 
 def mydialog():
 	app=MyApp()
@@ -254,7 +260,7 @@ def mydialog():
 	m=miki.ids['main']
 	return miki
 
-
+## test start and hide the dialog
 def runtest():
 	m=mydialog()
 	m.objects[0].hide()

@@ -186,6 +186,7 @@ def import_image(filename=None,n=10,c=2,inverse=False,kx=10,ky=10,kz=60,gengrid=
 		ttt.Shape=com
 		ttt.Placement.Base.z=10
 		Gui.updateGui()
+		return
 
 
 	#create the solid
@@ -419,7 +420,7 @@ def mydialog(run=True):
 
 
 
-
+## start and hide the gui dialog
 def runtest():
 	m=mydialog()
 	m.objects[0].hide()

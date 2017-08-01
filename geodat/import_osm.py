@@ -192,9 +192,10 @@ def import_osm2(b,l,bk,progressbar,status,elevation):
 	else:
 		baseheight=0 
 
-	print "-------Data---------"
-	print content
-	print "--------------------"
+	if debug:
+		print "-------Data---------"
+		print content
+		print "--------------------"
 
 	if status:
 		status.setText("parse data ...")
@@ -327,7 +328,7 @@ def import_osm2(b,l,bk,progressbar,status,elevation):
 		#if wn <2000: continue
 
 		nowtime=time.time()
-		if wn<>0: print "way ---- # " + str(wn) + "/" + str(coways) + " time per house: " +  str(round((nowtime-starttime)/wn,2))
+		if wn<>0 and (nowtime-starttime)/wn > 0.5: print "way ---- # " + str(wn) + "/" + str(coways) + " time per house: " +  str(round((nowtime-starttime)/wn,2))
 		if progressbar:
 			progressbar.setValue(int(0+100.0*wn/coways))
 

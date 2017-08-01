@@ -7,6 +7,7 @@ http://geoweb.hft-stuttgart.de/SRTM/srtm_as_osm/Lat50Lon11Lat51Lon12.osm.zip
 
 '''
 
+#\cond
 testsatz='''
 	<node id="1000213963" lat="50.0004166666667" lon="11.31925" />
 	<node id="1000213964" lat="50.00125" lon="11.3195833333333" />
@@ -26,9 +27,10 @@ testsatz='''
 		<tag k="contour_ext" v="elevation_minor" />
 	</way>
 '''
+#\endcond
 
 
-
+## create a QProgressBar widget for long running process
 def createProgressBar(label=None):
 	w=QtGui.QWidget()
 	hbox = QtGui.QHBoxLayout()
@@ -53,6 +55,7 @@ import re, math
 import geodat.transversmercator
 from  geodat.transversmercator import TransverseMercator
 
+## create contour curve points list
 
 def runfile(fn, xw,xe,ys,yn,ox=0,oy=0):
 	f= 100000000
@@ -152,7 +155,7 @@ from geodat.say import *
 
 
 
-
+## download the data files from /geoweb.hft-stuttgart.de/SRTM
 
 def getdata(directory,dat):
 
@@ -175,6 +178,7 @@ def getdata(directory,dat):
 		fh.close()
 
 
+## get the date from files,create a point cloud
 
 def run(mx,my,dx,dy):
 
@@ -325,8 +329,11 @@ MainWindow:
 
 import FreeCAD,FreeCADGui
 
+## the gui backend
+
 class MyApp(object):
 
+	#\cond
 	def run_nizza(self):
 		self.root.ids['bl'].setText("43.6827455,7.255056")
 
@@ -421,14 +428,15 @@ class MyApp(object):
 		import WebGui
 		WebGui.openBrowser( "http://www.openstreetmap.org/#map=9/"+str(b)+'/'+str(l))
 
+	#\endcond
 
+##the gui startup
 
 def mydialog():
 	app=MyApp()
 
 	import geodat.miki as miki
 	reload(miki)
-
 
 	miki=miki.Miki()
 	miki.app=app
@@ -441,26 +449,8 @@ def mydialog():
 	m=miki.ids['main']
 	return miki
 
-'''
-def dialog():
-	app=MyApp()
 
-	import geodat.miki as miki
-	reload(miki)
-
-	miki=miki.Miki()
-	miki.app=app
-	app.root=miki
-
-
-	miki.parse2(s6)
-
-	miki.run(s6)
-	m=miki.ids['main']
-'''
-
-
-
+## testcase start and hide the dialog
 def runtest():
 	m=mydialog()
 	m.objects[0].hide()

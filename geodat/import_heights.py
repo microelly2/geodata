@@ -19,9 +19,14 @@ import geodat.transversmercator
 from  geodat.transversmercator import TransverseMercator
 import inventortools
 
-
+#\cond
 tm=TransverseMercator()
+#\endcond
 
+
+## get the height of point 
+# @param b latitude
+# @param l longitude
 
 def getheight(b,l):
 
@@ -33,6 +38,9 @@ def getheight(b,l):
 	res=s['results']
 	for r in res:
 		return round(r['elevation']*1000,2)
+
+
+## download the heights from google
 
 def run(b0=50.35,l0=11.17,b=50.35,le=11.17,size=40):
 
@@ -76,6 +84,8 @@ def run(b0=50.35,l0=11.17,b=50.35,le=11.17,size=40):
 	return FreeCAD.activeDocument().ActiveObject
 	
 
+## import the heights of a rectangle area
+
 def import_heights(b,le,size):
 
 	size=int(size)
@@ -118,8 +128,10 @@ MainWindow:
 '''
 
 
+## the gui backend
 class MyApp(object):
 
+	## download the heights
 	def runbl(self):
 		bl=self.root.ids['bl'].text()
 		spli=bl.split(',')
@@ -131,6 +143,7 @@ class MyApp(object):
 		import_heights(float(b),float(l),float(s))
 
 
+## the gui startup
 def mydialog():
 	app=MyApp()
 
@@ -150,6 +163,7 @@ def mydialog():
 	return miki
 
 
+## test start the gui 
 def mytest():
 	app=App()
 
