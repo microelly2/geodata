@@ -6,9 +6,6 @@
 #--
 #-- GNU Lesser General Public License (LGPL)
 #-------------------------------------------------
-'''gpx path importer'''
-
-##\cond
 
 from geodat.say import *
 
@@ -88,16 +85,18 @@ from  geodat.xmltodict import parse
 import time
 debug=0
 
-
+import numpy as np
 
 
 global sd
 
-##\endcond
+def run():
+	filename='/home/thomas/.FreeCAD/Mod/geodat/testdata/latlonh.txt'
+	orig='102.0793929 13.82877942'
+	import_latlon(filename,orig,0)
 
-def import_gpx(filename,orig,hi):
-	'''import a gpx trackfile''' 
 
+def import_latlon(filename,orig,hi):
 	global sd
 	# content=trackstring
 	
@@ -108,8 +107,8 @@ def import_gpx(filename,orig,hi):
 	f=open(filename,"r")
 	c1=f.read()
 	import re
-	content = re.sub('^\<\?[^\>]+\?\>', '', c1)
-#	print content
+	#content = re.sub('^\<\?[^\>]+\?\>', '', c1)
+	print c1
 
 
 	tm=TransverseMercator()
@@ -118,15 +117,16 @@ def import_gpx(filename,orig,hi):
 	tm.lat,tm.lon = 50.3736049,11.191643
 	
 	if orig<>'auto':
-		yy=orig.split(',')
+		yy=orig.split(' ')
 		origin=(float(yy[0]),float(yy[1]))
 		tm.lat=origin[0]
 		tm.lon=origin[1]
-#	center=tm.fromGeographic(tm.lat,tm.lon)
-	
-	sd=parse(content)
-	if debug: print(json.dumps(sd, indent=4))
-	
+	center=tm.fromGeographic(tm.lat,tm.lon)
+
+	FreeCAD.c=c1
+	vals=np.array([float(c) for c in c1.split()])
+	vals=vals.reshape(len(vals)/3,3)
+	'''
 	points=[]
 	points2=[]
 	points0=[]
@@ -134,7 +134,7 @@ def import_gpx(filename,orig,hi):
 	py=[]
 	pz=[]
 	pt=[]
-	
+
 	startx=None
 	starty=None
 	starth=None
@@ -146,19 +146,33 @@ def import_gpx(filename,orig,hi):
 		seg=[ss]
 	except:
 		pass
+	'''
+
 	lats=[]
 	lons=[]
 
-	for s in seg:
-		trkpts=s['trkpt']
-		for n in trkpts:
-			lats.append(float(n['@lat']))
-			lons.append(float(n['@lon']))
+	points=[]
+	
+	for v in vals:
+		lats.append(float(v[0]))
+		lons.append(float(v[1]))
+		ll=tm.fromGeographic(float(v[0]),float(v[1]))
+
+		points.append(FreeCAD.Vector(ll[0]-center[0],ll[1]-center[1],1000*(float(v[2]))))
+
 
 	print (min(lats),max(lats))
 	print (min(lons),max(lons))
 	print ((max(lats)+min(lats))/2,(max(lons)+min(lons))/2)
 	print ((max(lats)-min(lats))/2,(max(lons)-min(lons))/2)
+
+	import Draft
+	Draft.makeWire(points)
+	print points
+
+
+	return
+
 
 	if orig == 'auto':
 		tm.lat, tm.lon = (max(lats)+min(lats))/2,(max(lons)+min(lons))/2
@@ -321,7 +335,6 @@ def import_gpx(filename,orig,hi):
 	return (str(tm.lat)+','+str(tm.lon))
 	return px,py
 
-'''
 if 0: 
 	px,py=import_gpx()
 	count=len(px)
@@ -361,7 +374,8 @@ if 0:
 
 
 # px,py=import_gpx()
-'''
+
+inn=FreeCAD.ConfigGet("UserAppData")
 
 
 
@@ -371,18 +385,18 @@ MainWindow:
 		id:'main'
 
 		QtGui.QLabel:
-			setText:"***   I M P O R T    GPX  T R A C K    ***"
+			setText:"***   I M P O R T    LAT LON Height     ***"
 		QtGui.QLabel:
 
 		QtGui.QLabel:
 			setText:"Track input filename"
 
 		QtGui.QLineEdit:
-			setText:"/tmp/track.gpx"
+			setText:"{}Mod/geodat/testdata/latlonh.txt"
 			id: 'bl'
 
 		QtGui.QPushButton:
-			setText: "Get GPX File Name"
+			setText: "Get LatLon Height File Name"
 			clicked.connect: app.getfn
 
 		QtGui.QLabel:
@@ -410,19 +424,16 @@ MainWindow:
 			setText: "Run values"
 			clicked.connect: app.run
 
-'''
+'''.format(inn)
 
-
-## Gui backend 
+import FreeCAD,FreeCADGui
 
 class MyApp(object):
-	'''the  execution layer of import_gpx'''
 
 	def run(self):
-		'''calls import_gpx'''
 		filename=self.root.ids['bl'].text()
 		try:
-			rc=import_gpx(
+			rc=import_latlon(
 					filename,
 					self.root.ids['orig'].text(),
 					self.root.ids['h'].text(),
@@ -432,16 +443,13 @@ class MyApp(object):
 				sayexc()
 
 	def getfn(self):
-		''' get the filename of the track'''
 		fileName = QtGui.QFileDialog.getOpenFileName(None,u"Open File",u"/tmp/");
 		print fileName
 		s=self.root.ids['bl']
 		s.setText(fileName[0])
 
-## the dialog to import the file
 
 def mydialog():
-	''' the dialog to import the file'''
 	app=MyApp()
 
 	import geodat
@@ -454,19 +462,9 @@ def mydialog():
 
 	miki.parse2(s6)
 	miki.run(s6)
-	return miki
 
 
-## tst open and hide dialog
-def runtest():
-	m=mydialog()
-	m.objects[0].hide()
-
-
-
-
-if __name__ == '__main__':
-	runtest()
+# mydialog()
 
 
 

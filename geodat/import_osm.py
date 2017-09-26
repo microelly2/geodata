@@ -1,4 +1,3 @@
-'''import data from openstreetmap'''
 # -*- coding: utf-8 -*-
 #-------------------------------------------------
 #-- osm map importer
@@ -7,6 +6,8 @@
 #--
 #-- GNU Lesser General Public License (LGPL)
 #-------------------------------------------------
+'''import data from openstreetmap'''
+
 
 #http://api.openstreetmap.org/api/0.6/map?bbox=11.74182,50.16413,11.74586,50.16561
 #http://api.openstreetmap.org/api/0.6/way/384013089

@@ -172,8 +172,8 @@ class import_latlony:
 		print "run import ..."
 		import geodat.import_latlony
 		reload(geodat.import_latlony)
-		#geodat.import_gpx.mydialog()
-		geodat.import_latlony.run()
+		geodat.import_latlony.mydialog()
+		#geodat.import_latlony.run()
 
 
 	def GetResources(self):

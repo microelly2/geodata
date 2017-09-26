@@ -215,12 +215,19 @@ def interpolate(x,y,z, gridsize,mode='thin_plate',rbfmode=True,shape=None):
 	xi, yi = np.linspace(np.min(x), np.max(x), gridx), np.linspace(np.min(y), np.max(y), gridy)
 	xi, yi = np.meshgrid(xi, yi)
 
+
 	if rbfmode:
 		rbf = scipy.interpolate.Rbf(x, y, z, function=mode)
 		rbf2 = scipy.interpolate.Rbf( y,x, z, function=mode)
 	else:
 		print "interp2d nicht implementiert"
+		x=np.array(x)
+		y=np.array(y)
+		z=np.array(z)
+		xi, yi = np.linspace(np.min(x), np.max(x), gridx), np.linspace(np.min(y), np.max(y), gridy)
+
 		rbf = scipy.interpolate.interp2d(x, y, z, kind=mode)
+		rbf2 = scipy.interpolate.interp2d(y, x, z, kind=mode)
 
 	zi=rbf2(yi,xi)
 	return [rbf,xi,yi,zi]
@@ -352,6 +359,7 @@ def createElevationGrid(mode,rbfmode=True,source=None,gridCount=20,zfactor=20,bo
 			# point cloud
 
 			pts=source.Points.Points
+		#	pts=pts[:-2]
 
 		elif source.__class__.__name__ == 'DocumentObjectGroup':
 			hls=App.ActiveDocument.hoehenlinien
