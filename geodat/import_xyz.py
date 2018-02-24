@@ -227,13 +227,24 @@ def import_xyz(mode,filename="/tmp/test.xyz",label='',ku=20, kv=10,lu=0,lv=0):
 		hfac=3
 		'''
 		
+		
 		pts=[]
 		sayW(len(lines))
-		for l in lines:
+		Gui.updateGui()
+		for i,l in enumerate(lines):
 			p=l.split()
 			hfac=3
-			pts.append(FreeCAD.Vector(float(p[0])-32356000.00,float(p[1])-5638000.00,hfac*float(p[2])))
-
+			try:
+				pts.append(FreeCAD.Vector(float(p[0])-32356000.00,float(p[1])-5638000.00,hfac*float(p[2])))
+			except: 
+				print ("error line ",i)
+				print p
+				print l
+				print 
+			if i % 1000 == 0:
+				print i
+				Gui.updateGui()
+#			if i >100: break
 
 		if ku>1 and kv>1:
 			pts=reduceGrid(pts,ku,kv)
@@ -276,6 +287,7 @@ MainWindow:
 
 		QtGui.QLineEdit:
 #			setText:"/home/microelly2/FCB/b202_gmx_tracks/dgm1/dgm1_32356_5638_2_nw.xyz"
+			setText:"/home/thomas/Dokumente/freecad_buch/b202_gmx_tracks/dgm1/dgm1_32356_5638_2_nw.xyz"
 			setText:"/home/thomas/Dokumente/freecad_buch/b202_gmx_tracks/dgm1/dgm1_32356_5638_2_nw.xyz"
 			id: 'bl'
 
@@ -378,7 +390,11 @@ MainWindow:
 			QtGui.QPushButton:
 				setText: "create Nurbs"
 				clicked.connect: app.createNurbs
+
 			QtGui.QPushButton:
+				setText: "create Mesh"
+				clicked.connect: app.createMesh
+
 
 '''
 
@@ -462,7 +478,9 @@ class MyApp(object):
 
 	def getfn(self):
 		''' get the filename dialog'''
-		fileName = QtGui.QFileDialog.getOpenFileName(None,u"Open File",u"/tmp/");
+		ddir=u"/tmp/"
+		ddir="/media/thomas/b08575a9-0252-47ca-971e-f94c20b33801/geodat_DATEN/xyz_lee_county"
+		fileName = QtGui.QFileDialog.getOpenFileName(None,u"Open File",ddir);
 		print fileName
 		s=self.root.ids['bl']
 		s.setText(fileName[0])
@@ -493,6 +511,19 @@ class MyApp(object):
 
 		say(("create nurbs for subset",u,v,d,lu,lv))
 		suv(self,u,v,d+1,lu,lv)
+
+
+	def createMesh(self):
+		print "NOT IMPLEMENTED"
+		u=self.root.ids['ud'].value()
+		v=self.root.ids['vd'].value()
+		d=self.root.ids['dd'].value()
+#		lu,lv = getShape(self.pts)
+		lu=int(self.root.ids['lu'].text())
+		lv=int(self.root.ids['lv'].text())
+
+		muv(self,u,v,d+1,lu,lv)
+
 
 
 def mydialog(run=True):
@@ -574,6 +605,42 @@ def create_grid(pu,du,dv, wb, eb, sb, nb, color=(1.0,0.0,0.0)):
 	return App.ActiveDocument.ActiveObject
 
 
+
+def create_mgrid(pu,du,dv, wb, eb, sb, nb, color=(1.0,0.0,0.0)):
+	'''create_grid(pu,du,dv, wb, eb, sb, nb, color=(1.0,0.0,0.0)'''
+
+	ts=time.time()
+	sss=[]
+
+	# mesh generieren #+#
+	#alles 0,0 bis 2000, 2000
+
+	# u direction curves
+	for iu in range(sb,dv-nb):
+		pps=[]
+		for iv in range(wb,du-eb):
+			pps.append(pu[iu*du+iv])
+		ss=Part.makePolygon(pps)
+		sss.append(ss)
+
+	# v direction curves
+	for iv in range(wb,du-eb):
+		pps=[]
+		for iu in range(sb,dv-nb):
+			pps.append(pu[iu*du+iv])
+		ss=Part.makePolygon(pps)
+		sss.append(ss)
+
+	comp=Part.Compound(sss)
+
+	Part.show(comp)
+	App.ActiveDocument.ActiveObject.ViewObject.LineColor=color
+	App.ActiveDocument.grids.addObject(App.ActiveDocument.ActiveObject)
+	te=time.time()
+	say(["create grid time ",round(te-ts,5) ])
+	return App.ActiveDocument.ActiveObject
+
+
 ## create a point cloud
 #
 
@@ -593,6 +660,39 @@ class ViewProvider:
 		obj.Proxy = self
 		self.Object=obj
 #\endcond
+
+def muv(app,u=3,v=5,d=10,la=100,lb=100):
+	'''generate a quadratic mesh on startposition u,v wit size d)'''
+	st=time.time()
+	tt=Part.BSplineSurface()
+	wb, eb, sb, nb = 0, 0, 0, 0
+	if u>=2: wb=2
+	if u<la-2-d: eb=2
+	if v>=2: sb=2
+	if v<la-2-d: nb=2
+	uu=[]
+	du=d+wb+eb
+	dv=d+nb+sb
+	u=u-wb
+	v=v-sb
+	pu=[]
+	say([ "(wb,eb,sb,nb,du,dv)", (wb,eb,sb,nb,du,dv)])
+	for k in range(dv):
+		pu += app.pts[u+v*la+la*k:u+v*la+du+la*k]
+		uu.append(app.pts[u+v*la+la*k:u+v*la+du+la*k])
+
+	color=(1-0.5*random.random(),1-0.5*random.random(),1-0.5*random.random())
+
+	App.ActiveDocument.ActiveObject.ViewObject.hide()
+
+
+	App.ActiveDocument.ActiveObject.ViewObject.hide()
+
+	#create bspline grid
+	create_mgrid(pu,du,dv, wb, eb, sb, nb, color)
+	Gui.updateGui()
+	
+
 
 
 def suv(app,u=3,v=5,d=10,la=100,lb=100):

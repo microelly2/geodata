@@ -220,7 +220,10 @@ def import_osm2(b,l,bk,progressbar,status,elevation):
 	bounds=sd['osm']['bounds']
 	nodes=sd['osm']['node']
 	ways=sd['osm']['way']
-	relations=sd['osm']['relation']
+	try:
+		relations=sd['osm']['relation']
+	except:
+		relations=[]
 
 
 	# center of the scene

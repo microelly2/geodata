@@ -201,6 +201,24 @@ class import_aster:
 		}
 
 
+class import_lidar:
+
+	def Activated(self):
+		print "run import ..."
+		import geodat.import_lidar
+		reload(geodat.import_lidar)
+		geodat.import_lidar.mydialog()
+		
+
+	def GetResources(self):
+		return {
+#			'Pixmap'  : 'Std_Tool3', 
+			'MenuText': 'Import LIDAR ', 
+			'ToolTip': 'Import LIDAR'
+		}
+
+
+
 class navigator:
 
 	def Activated(self):
@@ -229,6 +247,13 @@ class mydialog:
 		import geodat.import_osm
 		reload(geodat.import_osm)
 		geodat.import_osm.mydialog()
+
+	# logger version for paulee
+	def XXXActivated(self):
+		print "run import ..."
+		import geodat.import_osm_logger
+		reload(geodat.import_osm_logger)
+		geodat.import_osm_logger.mydialog()
 
 
 
@@ -318,6 +343,7 @@ FreeCADGui.addCommand('Import XYZ', import_xyz())
 FreeCADGui.addCommand('Import LatLonZ', import_latlony())
 FreeCADGui.addCommand('Import Image', import_image())
 FreeCADGui.addCommand('Import ASTER', import_aster())
+FreeCADGui.addCommand('Import LIDAR', import_lidar())
 FreeCADGui.addCommand('Create House', createHouse())
 FreeCADGui.addCommand('Navigator', navigator())
 FreeCADGui.addCommand('ElevationGrid', ElevationGrid())
@@ -335,9 +361,9 @@ class Geodat ( Workbench ):
 	def Initialize(self):
 		
 		cmds= ["Import OSM Map",'Import CSV','Import GPX',
-			'Import Heights','Import SRTM','Import XYZ','Import LatLonZ','Import Image','Import ASTER','Navigator',
+			'Import Heights','Import SRTM','Import XYZ','Import LatLonZ','Import Image','Import ASTER','Import LIDAR','Navigator',
 			'Create House','ElevationGrid']
-		self.appendToolbar("Geo Data Test", ['My_Test Geodat'])
+		self.appendToolbar("Geo Data Test", ['My_Test Geodat','Import LIDAR'])
 		self.appendMenu("Geo Data", cmds)
 		Log ("Loading Goe Data Workbench ... done\n")
 
