@@ -546,8 +546,9 @@ MainWindow:
 		setFixedWidth: 654
 		move:  PySide.QtCore.QPoint(3000,100)
 
+
 		QtGui.QLabel:
-			setText:"C O N F I G U R A T I O N"
+			setText:"C O N F I G U R A T I O N A"
 		QtGui.QLabel:
 		QtGui.QLineEdit:
 			setText:"50.340722, 11.232647"
@@ -636,6 +637,15 @@ MainWindow:
 
 		QtGui.QProgressBar:
 			id: "progb"
+
+
+	GroupBox:
+		setTitle: "oiiio"
+		QtGui.QLabel:
+			setText:"AAA TEST GroupBox"
+		QtGui.QLabel:
+			setText:"BBB Group Box"
+
 
 '''
 

@@ -169,7 +169,7 @@ def  fh(name="horizontal",title=''):
 	w.layout=layout
 	return w
 
-	
+
 def  fh2(name="vertik horizontal",title=''):
 	w=QtGui.QWidget()
 	#w.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
@@ -186,7 +186,23 @@ def  fh2(name="vertik horizontal",title=''):
 	#ComboViewShowWidget(w,False)
 	w.layout=layout
 	return w
-	
+
+def fh3(name="vertik group box",title=''):
+	print "got FH§"
+	w=QtGui.QGroupBox()
+	w.setStyleSheet("QGroupBox { border: 3px solid red; border-radius: 5px; margin: 7px; margin-bottom: 7px; padding: 0px} QGroupBox::title {top:-7 ex;left: 10px; subcontrol-origin: border}")
+	w.setTitle("wasdenn titzle")
+	layout = QtGui.QVBoxLayout()
+	layout.setAlignment(QtCore.Qt.AlignLeft)
+	w.setLayout(layout)
+	if title <>'': w.setWindowTitle(title)
+	w.layout=layout
+	return w
+
+
+
+
+
 
 def  ftab2(name="horizontal"):
 	w=QtGui.QWidget()
@@ -238,6 +254,8 @@ def  ftab2(name="horizontal"):
 # name mappings from layout string to methods
 
 VerticalLayout=fh2
+GroupBox=fh3
+
 VerticalLayoutTab=fv2
 HorizontalLayout=fh
 DockWidget=fv

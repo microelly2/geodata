@@ -26,17 +26,21 @@ def import_lidar(fn,obj,createPCL=False,useOrigin=False):
 
 	I = inFile.Classification == 2
 
+#	I=0
+#	FreeCAD.infile=inFile
 
 	pts=inFile.points[I]
 
 	if 10:
 
-		ptsa=[(p[0][0],p[0][1],p[0][2]) for p in pts[0:100]]
-		ptsa=[(p[0][0],p[0][1],p[0][2]) for p in pts]
+		scalez=0.001
+		scalez=1.
+		ptsa=[(p[0][0],p[0][1],p[0][2]*scalez) for p in pts]
 
+	if 1:
 		import Points
-		#p=Points.Points(ptsa)
-		#Points.show(p)
+		p=Points.Points(ptsa)
+		Points.show(p)
 
 
 	print pts[0]

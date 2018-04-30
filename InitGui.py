@@ -117,6 +117,22 @@ class import_csv:
 			'ToolTip': 'Import CSV'
 		}
 
+class import_emir:
+
+	def Activated(self):
+		print "run import ..."
+		import geodat.import_emir
+		reload(geodat.import_emir)
+		geodat.import_emir.mydialog()
+
+
+	def GetResources(self):
+		return {
+			'Pixmap'  : 'Std_Tool3', 
+			'MenuText': 'Import EMIR ', 
+			'ToolTip': 'Import EMIR'
+		}
+
 
 class import_xyz:
 
@@ -347,7 +363,7 @@ FreeCADGui.addCommand('Import LIDAR', import_lidar())
 FreeCADGui.addCommand('Create House', createHouse())
 FreeCADGui.addCommand('Navigator', navigator())
 FreeCADGui.addCommand('ElevationGrid', ElevationGrid())
-
+FreeCADGui.addCommand('Import EMIR', import_emir())
 
 class Geodat ( Workbench ):
 	"Geo data"
@@ -362,7 +378,7 @@ class Geodat ( Workbench ):
 		
 		cmds= ["Import OSM Map",'Import CSV','Import GPX',
 			'Import Heights','Import SRTM','Import XYZ','Import LatLonZ','Import Image','Import ASTER','Import LIDAR','Navigator',
-			'Create House','ElevationGrid']
+			'Create House','ElevationGrid','Import EMIR']
 		self.appendToolbar("Geo Data Test", ['My_Test Geodat','Import LIDAR'])
 		self.appendMenu("Geo Data", cmds)
 		Log ("Loading Goe Data Workbench ... done\n")
