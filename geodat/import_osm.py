@@ -20,7 +20,7 @@ import time, json, os
 
 import urllib2
 
-import pivy 
+import pivy
 from pivy import coin
 
 
@@ -147,7 +147,7 @@ def import_osm2(b,l,bk,progressbar,status,elevation):
 #		print content
 	except:
 		print "no cache file, so I connect to  openstreetmap.org..."
-		lk=bk # 
+		lk=bk #
 		b1=b-bk/1113*10
 		l1=l-lk/713*10
 		b2=b+bk/1113*10
@@ -165,7 +165,7 @@ def import_osm2(b,l,bk,progressbar,status,elevation):
 			for line in response:
 				if status:
 					if z>5000:
-						status.setText("read data ..." + str(l)) 
+						status.setText("read data ..." + str(l))
 						z=0
 					FreeCADGui.updateGui()
 					l+=1
@@ -191,7 +191,7 @@ def import_osm2(b,l,bk,progressbar,status,elevation):
 	if elevation:
 		baseheight=getHeight(b,l)
 	else:
-		baseheight=0 
+		baseheight=0
 
 	if debug:
 		print "-------Data---------"
@@ -256,7 +256,7 @@ def import_osm2(b,l,bk,progressbar,status,elevation):
 			try:
 				res += str(tk)
 			except:
-				
+
 				if ord(tk)==223:
 					res += 'ß'
 				elif ord(tk)==246:
@@ -309,7 +309,7 @@ def import_osm2(b,l,bk,progressbar,status,elevation):
 	FreeCADGui.activeDocument().activeView().setCamera(cam)
 	FreeCADGui.activeDocument().activeView().viewAxonometric()
 	say("Kamera gesetzt")
-	
+
 	area.Length=size[0]*2
 	area.Width=size[1]*2
 	area.Placement=FreeCAD.Placement(FreeCAD.Vector(-size[0],-size[1],0.00),FreeCAD.Rotation(0.00,0.00,0.00,1.00))
@@ -322,13 +322,13 @@ def import_osm2(b,l,bk,progressbar,status,elevation):
 #		print w
 		wid=w['@id']
 #		print wid
-		
+
 		building=False
 		landuse=False
 		highway=False
 		wn += 1
 
-		# nur teile testen 
+		# nur teile testen
 		#if wn <2000: continue
 
 		nowtime=time.time()
@@ -415,7 +415,7 @@ def import_osm2(b,l,bk,progressbar,status,elevation):
 		#generate pointlist of the way
 		polis=[]
 		height=None
-		
+
 		llpoints=[]
 		for n in w['nd']:
 			m=nodesbyid[n['@ref']]
@@ -488,7 +488,7 @@ def import_osm2(b,l,bk,progressbar,status,elevation):
 			g.Label=name
 		refresh += 1
 		if os.path.exists("/tmp/stop"):
-			
+
 			print("notbremse gezogen")
 			FreeCAD.w=w
 			raise Exception("Notbremse Manager main loop")
@@ -558,14 +558,16 @@ MainWindow:
 
 		QtGui.QLabel:
 		QtGui.QCheckBox:
-			id: 'elevation' 
+			id:'elevation'
 			setText: 'Process Elevation Data'
 
 		QtGui.QLabel:
 		QtGui.QLabel:
 			setText:"Length of the Square 0 km ... 4 km, default 0.5 km  "
+
 		QtGui.QLabel:
-			setText:"0*2_4_6_8*#*2_4_6_8*1*2_4_6_8*#*2_4_6_8*2*2_4_6_8*#*2_4_6_8*3*2_4_6_8*#*2_4_6_8*4"
+			setText:"Distance is 2km."
+			id: "showDistanceLabel"
 		QtGui.QSlider:
 			id:'s'
 			setOrientation: PySide.QtCore.Qt.Orientation.Horizontal
@@ -574,6 +576,7 @@ MainWindow:
 			setTickInterval: 1
 			setValue: 2
 			setTickPosition: QtGui.QSlider.TicksBothSides
+			valueChanged.connect: app.showDistanceOnLabel
 
 		QtGui.QLabel:
 			id:'running'
@@ -634,7 +637,6 @@ MainWindow:
 		QtGui.QLabel:
 			setText:"---"
 			id: "status"
-
 		QtGui.QProgressBar:
 			id: "progb"
 
@@ -755,6 +757,11 @@ class MyApp(object):
 		s=self.root.ids['s'].value()
 		print [l,b,s]
 		WebGui.openBrowser( "http://www.openstreetmap.org/#map=16/"+str(b)+'/'+str(l))
+
+        def showDistanceOnLabel(self):
+		distance=self.root.ids['s'].value()
+                showDistanceLabel=self.root.ids['showDistanceLabel']
+                showDistanceLabel.setText('Distance is '+str(distance)+'km.')
 
 ## the gui startup
 
