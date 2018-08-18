@@ -708,9 +708,35 @@ class MyApp(object):
 		br.show()
 
 		bl=self.root.ids['bl'].text()
-		spli=bl.split(',')
-		b=float(spli[0])
-		l=float(spli[1])
+		if bl.find('openstreetmap.org') != -1:
+			spli=bl.split('/')
+			n=len(spli)
+			b=float(spli[n-2])
+			l=float(spli[n-1])
+		elif bl.find('google.co') != -1:
+			import re
+			spli=re.split('@|,',bl)
+			n=len(spli)
+			b=float(spli[n-3])
+			l=float(spli[n-2])
+		elif bl.find('bing.com') != -1:
+			import re
+                        spli=re.split('=|~|&',bl)
+			n=len(spli)
+			b=float(spli[3])
+			l=float(spli[4])
+		elif bl.find('wego.here.com') != -1:
+			import re;
+			spli=re.split('=|,',bl)
+			n=len(spli)
+			b=float(spli[n-4])
+			l=float(spli[n-3])
+		else:
+			spli=bl.split(',')
+			b=float(spli[0])
+			l=float(spli[1])
+
+
 		s=self.root.ids['s'].value()
 		elevation=self.root.ids['elevation'].isChecked()
 		print [l,b,s]
@@ -731,12 +757,36 @@ class MyApp(object):
 		button.hide()
 		br=self.root.ids['running']
 		br.show()
-
-
 		bl=self.root.ids['bl'].text()
-		spli=bl.split(',')
-		b=float(spli[0])
-		l=float(spli[1])
+		if bl.find('openstreetmap.org') != -1:
+                        spli=bl.split('/')
+                        n=len(spli)
+                        b=float(spli[n-2])
+                        l=float(spli[n-1])
+                elif bl.find('google.co') != -1:
+                        import re
+                        spli=re.split('@|,',bl)
+                        n=len(spli)
+                        b=float(spli[n-3])
+                        l=float(spli[n-2])
+                elif bl.find('bing.com') != -1:
+			import re
+                        spli=re.split('=|~|&',bl)
+                        n=len(spli)
+                        b=float(spli[3])
+                        l=float(spli[4])
+                elif bl.find('wego.here.com') != -1:
+                        import re;
+                        spli=re.split('=|,',bl)
+                        n=len(spli)
+                        b=float(spli[n-4])
+                        l=float(spli[n-3])
+                else:
+                        spli=bl.split(',')
+			b=float(spli[0])
+                        l=float(spli[1])
+
+
 		s=self.root.ids['s'].value()
 		elevation=self.root.ids['elevation'].isChecked()
 		print [l,b,s]
