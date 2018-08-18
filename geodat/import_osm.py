@@ -566,7 +566,7 @@ MainWindow:
 			setText:"Length of the Square 0 km ... 4 km, default 0.5 km  "
 
 		QtGui.QLabel:
-			setText:"Distance is 2km."
+			setText:"Distance is 0.5km."
 			id: "showDistanceLabel"
 		QtGui.QSlider:
 			id:'s'
@@ -574,7 +574,7 @@ MainWindow:
 			setMinimum: 0
 			setMaximum: 40
 			setTickInterval: 1
-			setValue: 2
+			setValue: 5
 			setTickPosition: QtGui.QSlider.TicksBothSides
 			valueChanged.connect: app.showDistanceOnLabel
 
@@ -801,9 +801,34 @@ class MyApp(object):
 		'''open a webbrowser window and display the openstreetmap presentation of the area'''
 
 		bl=self.root.ids['bl'].text()
-		spli=bl.split(',')
-		b=float(spli[0])
-		l=float(spli[1])
+		if bl.find('openstreetmap.org') != -1:
+                        spli=bl.split('/')
+                        n=len(spli)
+                        b=float(spli[n-2])
+                        l=float(spli[n-1])
+                elif bl.find('google.co') != -1:
+                        import re
+                        spli=re.split('@|,',bl)
+                        n=len(spli)
+                        b=float(spli[n-3])
+                        l=float(spli[n-2])
+                elif bl.find('bing.com') != -1:
+                        import re
+                        spli=re.split('=|~|&',bl)
+                        n=len(spli)
+                        b=float(spli[3])
+                        l=float(spli[4])
+                elif bl.find('wego.here.com') != -1:
+                        import re;
+                        spli=re.split('=|,',bl)
+                        n=len(spli)
+                        b=float(spli[n-4])
+                        l=float(spli[n-3])
+                else:
+                        spli=bl.split(',')
+                        b=float(spli[0])
+                        l=float(spli[1])
+
 		s=self.root.ids['s'].value()
 		print [l,b,s]
 		WebGui.openBrowser( "http://www.openstreetmap.org/#map=16/"+str(b)+'/'+str(l))
@@ -811,7 +836,7 @@ class MyApp(object):
         def showDistanceOnLabel(self):
 		distance=self.root.ids['s'].value()
                 showDistanceLabel=self.root.ids['showDistanceLabel']
-                showDistanceLabel.setText('Distance is '+str(distance)+'km.')
+                showDistanceLabel.setText('Distance is '+str(float(distance)/10)+'km.')
 
 ## the gui startup
 
