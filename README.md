@@ -11,7 +11,7 @@ e.g. https://www.openstreetmap.org/#map=15/30.8611/75.8610
 e.g. https://www.google.co.in/maps/@30.8611,75.8610,5z
 * Bing Map  
 e.g. https://www.bing.com/maps?osid=339f4dc6-92ea-4f25-b25c-f98d8ef9bc45&cp=30.8611~75.8610&lvl=17&v=2&sV=2&form=S00027
-* Wego Map  
+* Here Map  
 e.g. https://wego.here.com/?map=30.8611,75.8610,15,normal
 * (latitude,longitude)
 
