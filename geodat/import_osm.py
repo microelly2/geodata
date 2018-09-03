@@ -772,6 +772,10 @@ class MyApp(object):
 			self.root.ids['sep'].setText('=|,')
 		elif bl.find(',') != -1:
 			self.root.ids['sep'].setText(',')
+		elif bl.find(':') != -1:
+			self.root.ids['sep'].setText(':')
+		elif bl.find('/') != -1:
+			self.root.ids['sep'].setText('/')
 
 
 
