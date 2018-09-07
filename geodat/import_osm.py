@@ -558,7 +558,8 @@ MainWindow:
 				clicked.connect: app.showHelpBox
 			
 		QtGui.QLabel:
-			setText:"C O N F I G U R A T I O N S"
+			setText:"C o n f i g u r a t i o n s"
+			setFixedHeight: 20
 		QtGui.QLineEdit:
 			setText:"50.340722, 11.232647"
 #			setText:"50.3736049,11.191643"
@@ -568,7 +569,8 @@ MainWindow:
 			textChanged.connect: app.getSeparator
 		QtGui.QLabel:
 		QtGui.QLabel:
-			setText:"S E P A R A T O R"
+			setText:"S e p a r a t o r"
+			setFixedHeight: 20
 		QtGui.QLineEdit:
 			id:'sep'
 			setPlaceholderText:"Enter separators separated by symbol: |   example: @|,|:"
@@ -623,10 +625,11 @@ MainWindow:
 			setText:"Length of the Square 0 km ... 4 km, default 0.5 km  "
 
 		QtGui.QLabel:
-			setText:"Distance is 0.5km."
+			setText:"Distance is 0.5 km."
 			id: "showDistanceLabel"
 		QtGui.QSlider:
 			id:'s'
+			setFixedHeight: 20
 			setOrientation: PySide.QtCore.Qt.Orientation.Horizontal
 			setMinimum: 0
 			setMaximum: 40
@@ -636,8 +639,9 @@ MainWindow:
 			valueChanged.connect: app.showDistanceOnLabel
 
 		QtGui.QLabel:
+		QtGui.QLabel:
 			id:'running'
-			setText:"R U N N I N G   PLEASE WAIT  "
+			setText:"R u n n i n g   Please Wait  "
 			setVisible: False
 
 		QtGui.QPushButton:
@@ -662,7 +666,7 @@ MainWindow:
 
 		QtGui.QLabel:
 		QtGui.QLabel:
-			setText:"P R E D E F I N E D   L O C A T I O N S"
+			setText:"P r e d e f i n e d   L o c a t i o n s"
 #		QtGui.QLabel:
 
 		QtGui.QRadioButton:
@@ -691,8 +695,9 @@ MainWindow:
 
 		QtGui.QLabel:
 		QtGui.QLabel:
-			setText:"P R O C E S S I N G:"
+			setText:"P r o c e s s i n g:"
 			id: "status"
+			setFixedHeight: 20
 
 		QtGui.QLabel:
 			setText:"---"
@@ -755,7 +760,7 @@ class MyApp(object):
 	def showHelpBox(self):
 		msg=PySide.QtGui.QMessageBox()
 		msg.setText("<b>Help</b>")
-		msg.setInformativeText("Import_osm map dialogue box can also accept links from following sites in addition to (latitude, longitude)<ul><li>OpenStreetMap</li><br>e.g. https://www.openstreetmap.org/#map=15/30.8611/75.8610<br><li>Google Maps</li><br>e.g. https://www.google.co.in/maps/@30.8611,75.8610,5z<br><li>Bing Map</li><br>e.g. https://www.bing.com/maps?osid=339f4dc6-92ea-4f25-b25c-f98d8ef9bc45&cp=30.8611~75.8610&lvl=17&v=2&sV=2&form=S00027<br><li>Here Map</li><br>e.g. https://wego.here.com/?map=30.8611,75.8610,15,normal<br><li>(latitude,longitude)</li></ul><br>If in any case, the latitude & longitudes are estimated incorrectly, you can use different separators in separator box or can put latitude & longitude directly into their respective boxes.")
+		msg.setInformativeText("Import_osm map dialogue box can also accept links from following sites in addition to (latitude, longitude)<ul><li>OpenStreetMap</li><br>e.g. https://www.openstreetmap.org/#map=15/30.8611/75.8610<br><li>Google Maps</li><br>e.g. https://www.google.co.in/maps/@30.8611,75.8610,5z<br><li>Bing Map</li><br>e.g. https://www.bing.com/maps?osid=339f4dc6-92ea-4f25-b25c-f98d8ef9bc45&cp=30.8611~75.8610&lvl=17&v=2&sV=2&form=S00027<br><li>Here Map</li><br>e.g. https://wego.here.com/?map=30.8611,75.8610,15,normal<br><li>(latitude,longitude)</li><br>e.g. 30.8611,75.8610</ul><br>If in any case, the latitude & longitudes are estimated incorrectly, you can use different separators in separator box or can put latitude & longitude directly into their respective boxes.")
 		msg.exec_()
 
 
@@ -895,4 +900,5 @@ def mydialog():
 	miki.parse2(s6)
 	miki.run(s6)
 	return miki
+
 
