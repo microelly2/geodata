@@ -85,16 +85,16 @@ def myDebugWidget():
 ##callback when a key is pressed
 
 def on_key_press(ef,keystring):
-	print "on_key_press:", keystring
+	print("on_key_press:", keystring)
 	if keystring=='Escape':
-		print "stoppe eventserver ..."
+		print("stoppe eventserver ...")
 		ef.output.hide()
 		stop()
 	return True
 
 ##callback when a key is released
 def on_key_release(ef,keystring):
-	print "on_key_release:", keystring
+	print("on_key_release:", keystring)
 	return True
 
 
@@ -130,7 +130,7 @@ class EventFilter(QtCore.QObject):
 		self.modmap={}
 		for t in dir(QtCore.Qt):
 			if t.endswith('Modifier'):
-				if t<> 'Modifier':
+				if t!= 'Modifier':
 					v=eval('QtCore.Qt.'+t)
 					self.modmap[v]=t[:-8]
 	#\endcond
@@ -259,17 +259,17 @@ class EventFilter(QtCore.QObject):
 							try: 
 #								Msg( p.__class__.__name__ +" objectName:" + p.objectName()+ "\n" )
 								label2=p.objectName()
-								if label2<>'': label=label2
+								if label2!='': label=label2
 							except: pass
 							try: 
 #								Msg( p.__class__.__name__ +" windowTitle" + p.windowTitle()+ "\n" )
 								label2=p.windowTitle()
-								if label2<>'': label=label2
+								if label2!='': label=label2
 							except: pass
 							try: 
 #								Msg( p.__class__.__name__ +" tabTExt" + p.tabText()+ "\n" )
 								label2=p.tabText()
-								if label2<>'': label=label2
+								if label2!='': label=label2
 							except: pass
 							windowlist.append([p.__class__.__name__ ,str(label)])
 							p=widget.parent()
@@ -356,7 +356,7 @@ def stop():
 def keypress(ef,keystring):
 	print
 	print
-	print "!on_key_press:", keystring
+	print("!on_key_press:", keystring)
 
 	camera=FreeCAD.ActiveDocument.Wedge
 
@@ -387,7 +387,7 @@ def keypress(ef,keystring):
 	FreeCAD.activeDocument().recompute()
 
 	if keystring=='Escape':
-		print "stoppe eventserver ..."
+		print("stoppe eventserver ...")
 		ef.output.hide()
 		stop()
 	return True
@@ -399,7 +399,7 @@ def on_keypress2(ef,keystring):
 	print
 	print
 	print
-	print "on_key_press:", keystring
+	print("on_key_press:", keystring)
 	try:
 		camera=FreeCADGui.activeDocument().activeView().getCameraNode()
 
@@ -547,8 +547,8 @@ def on_keypress2(ef,keystring):
 		
 		
 		print
-		print ef.direction
-		print "ef.campos", ef.campos
+		print(ef.direction)
+		print("ef.campos", ef.campos)
 		ef.map.setPos(ef.campos.x,ef.campos.y,ef.campos.z)
 
 		
@@ -561,7 +561,7 @@ def on_keypress2(ef,keystring):
 #		c.Placement.Base=ef.campos
 		camera.position.setValue(ef.campos) 
 		camera.pointAt(coin.SbVec3f(ppos),coin.SbVec3f(0,0.0+math.sin(math.pi*ef.roll/180),0.0+math.cos(math.pi*ef.roll/180)))
-		print "Roll ", ef.roll
+		print("Roll ", ef.roll)
 
 #		#hud
 #		panel.Placement.Base=ppos
@@ -576,7 +576,7 @@ def on_keypress2(ef,keystring):
 
 		if keystring=='F9':
 			a=camera.heightAngle.getValue()
-			print a
+			print(a)
 			a += 0.01
 			camera.heightAngle.setValue(a)
 		if keystring=='F10':
@@ -590,14 +590,14 @@ def on_keypress2(ef,keystring):
 		if keystring=='F5':
 			nD=camera.nearDistance.getValue()
 			nD *=1.03
-			print "near Distance",nD
+			print("near Distance",nD)
 			camera.nearDistance.setValue(nD)
 
 		if keystring=='F6':
 			nD=camera.nearDistance.getValue()
 			nD /=1.03
 			if nD >0:
-				print "near Distance",nD
+				print("near Distance",nD)
 				camera.nearDistance.setValue(nD)
 
 		if keystring=='F2':
@@ -627,13 +627,13 @@ def on_keypress2(ef,keystring):
 			
 			campos2=(round(ef.campos[0]),round(ef.campos[1]),round(ef.campos[2]))
 			print 
-			print "Camera position   ",campos2
-			print "Camera direction  ",(round(t.x,2),round(t.y,2),round(t.z,2))
-			nD=camera.nearDistance.getValue()
-			print "near Distance     ",round(nD)
-			a=camera.heightAngle.getValue()
-			print "height Angle      ", round(a/math.pi*180)
-			print "focal length      ", round(10/math.tan(a/2))
+			print("Camera position   ",campos2)
+			print("Camera direction  ",(round(t.x,2),round(t.y,2),round(t.z,2)))
+			nD=camera.nearDistance.getValue())
+			print("near Distance     ",round(nD))
+			a=camera.heightAngle.getValue())
+			print("height Angle      ", round(a/math.pi*180))
+			print("focal length      ", round(10/math.tan(a/2)))
 			print 
 
 			out=''
@@ -655,7 +655,7 @@ def on_keypress2(ef,keystring):
 		FreeCADGui.updateGui() 
 
 		if keystring=='Escape':
-			print "stoppe eventserver ..."
+			print("stoppe eventserver ...")
 			stop()
 			sg = FreeCADGui.ActiveDocument.ActiveView.getSceneGraph()
 			
@@ -668,19 +668,19 @@ def on_keypress2(ef,keystring):
 	return True
 
 def on_move(ef,globalVector,localVector):
-	print "on_move:"
-	print globalVector
-	print localVector
+	print("on_move:")
+	print(globalVector)
+	print(localVector)
 	return True
 
 def on_move2(ef,globalVector,localVector):
-#	print "on_move2:"
-	print ef.mouseMode,globalVector,localVector
-#	print localVector
+#	print("on_move2:")
+	print(ef.mouseMode,globalVector,localVector)
+#	print(localVector)
 	if ef.mouseMode:
-#		print "Mouse mode  !!" ,  globalVector
-#		print globalVector
-#		print localVector
+#		print("Mouse mode  !!" ,  globalVector)
+#		print(globalVector)
+#		print(localVector)
 		d=3
 		if ef.v:
 			if ef.v[0]>globalVector[0]+d:
@@ -701,11 +701,11 @@ def on_move3(ef,globalVector,localVector):
 ## the old click callback
 
 def on_clicks(ef,button,count):
-	print "on_mouse:", button, str(count)
+	print("on_mouse:", button, str(count))
 	return True
 
 def on_clicks2(ef,button,count):
-	print "on_clicks2:", button, str(count)
+	print("on_clicks2:", button, str(count))
 	if button=='Release':
 			ef.mouseMode=False
 	if button=='Left':
@@ -716,11 +716,11 @@ def on_clicks2(ef,button,count):
 ## click callback for debug 
 
 def on_clicks3(ef,button,count):
-	print "on clicks 3",button
-	print ef.windowlist
+	print("on clicks 3",button)
+	print(ef.windowlist)
 	try: 
 		if ef.windowlist[0][1]=='Testme':
-			print "call HUHU"
+			print("call HUHU")
 			return False
 	except:
 		return True
@@ -859,7 +859,7 @@ class Map(QtGui.QWidget):
 		self.z=-z/fak+50
 		self.x=x/fak+50
 		self.y=-y/fak+50
-		print "setpos",x,y
+		print("setpos",x,y)
 		self.repaint()
   
   
@@ -973,21 +973,21 @@ def myNavigatorWidget(ef):
 
 ## background image winter
 def background1(ef):
-	print "hintergrund 1"
+	print("hintergrund 1")
 	fn='/home/microelly2/FCB/b175_camera_controller/winter.jpg'
 	fn=os.path.dirname(__file__) +"/../pics/winter.jpg"
 	ef.tex.filename = fn
 
 ## background image dune
 def background2(ef):
-	print "hintergrund 2"
+	print("hintergrund 2")
 	fn='/home/microelly2/FCB/b175_camera_controller/P1170437.JPG'
 	fn=os.path.dirname(__file__) +"/../pics//P1170437.JPG"
 	ef.tex.filename = fn
 
 ## background image city
 def background3(ef):
-	print "hintergrund "
+	print("hintergrund ")
 	fn='/home/microelly2/FCB/b175_camera_controller/P1170039.JPG'
 	fn=os.path.dirname(__file__) +"/../pics/P1170039.JPG"
 	ef.tex.filename = fn
@@ -995,10 +995,10 @@ def background3(ef):
 
 ## background partially transparent
 def background4(ef):
-	print "hintergrund "
+	print("hintergrund ")
 	fn='/home/microelly2/FCB/b175_camera_controller/transpa.png'
 	fn=os.path.dirname(__file__) +"/../pics/transpa.png"
-	print fn
+	print(fn)
 	ef.tex.filename = fn
 
 def on_windowslist(ef,windowslist):
@@ -1012,15 +1012,15 @@ def on_windowslist2(ef,windowslist):
 			ef.output.deleteLater()
 			ef.navi.deleteLater()
 		if  t==['QPushButton','Walk Mode']:
-			print "Walk mode"
+			print("Walk mode")
 			ef.mode="walk"
 			ef.navi.modelabel.setText("Walk")
 		if  t==['QPushButton','Frontal Mode']:
-			print "Frontal mode"
+			print("Frontal mode")
 			ef.mode="xyz"
 			ef.navi.modelabel.setText("Frontal")
 		if  t==['QPushButton','Turn Mode']:
-			print "Turn mode"
+			print("Turn mode")
 			ef.mode="turn"
 			ef.navi.modelabel.setText("Turn")
 		return
@@ -1067,7 +1067,7 @@ def navi():
 	fn=os.path.dirname(__file__) +"/../pics/winter.jpg"
 
 	sg = FreeCADGui.ActiveDocument.ActiveView.getSceneGraph()
-	print sg
+	print(sg)
 
 	col = coin.SoBaseColor()
 	#col.rgb=(1,0,0)
@@ -1179,8 +1179,8 @@ def navi():
 	mgr.setAutoClipping(0)
 	FreeCAD.ActiveDocument.recompute()
 	FreeCADGui.updateGui() 
-	print "File ", __file__
-	print "1!!"
+	print("File ", __file__)
+	print("1!!")
 
 	return ef
 

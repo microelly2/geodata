@@ -26,7 +26,7 @@ class GeodatTest(unittest.TestCase):
 
 	def testInventortools(self):
 		import geodat.inventortools
-		print "test inventortools"
+		print("test inventortools")
 		obj=App.ActiveDocument.addObject("Part::Box","Box")
 		geodat.inventortools.setcolorlights(obj)
 

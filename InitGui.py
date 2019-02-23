@@ -32,19 +32,19 @@ windowCreated = 0
 # http://www.bkg.bund.de/nn_159902/EN/FederalOffice/Products/Geo-Data/Geo__Data__node.html__nnn=true
 #import sys
 #for p in sys.path:
-#	print p
+#	print(p)
 
-#print "------------------"
+#print("------------------")
 #import geodat
-#print geodat
-#print "geodat loaded"
+#print(geodat)
+#print("geodat loaded")
 
 
 # kann weg 
 #class import_osm:
 #
 #	def Activated(self):
-#		print "run import ..."
+#		print("run import ...")
 #		import geodat.import_osm
 #		geodat.import_osm.import_osm()
 #		
@@ -105,7 +105,7 @@ FreeCADGui.addCommand('My_Test Geodat'        ,MyTestCmd2())
 class import_csv:
 
 	def Activated(self):
-		print "run import ..."
+		print("run import ...")
 		import geodat.import_csv
 		geodat.import_csv.mydialog()
 
@@ -120,7 +120,7 @@ class import_csv:
 class import_emir:
 
 	def Activated(self):
-		print "run import ..."
+		print("run import ...")
 		import geodat.import_emir
 		reload(geodat.import_emir)
 		geodat.import_emir.mydialog()
@@ -137,7 +137,7 @@ class import_emir:
 class import_xyz:
 
 	def Activated(self):
-		print "run import ..."
+		print("run import ...")
 		import geodat.import_xyz
 		reload(geodat.import_xyz)
 		geodat.import_xyz.mydialog(False)
@@ -153,7 +153,7 @@ class import_xyz:
 class import_image:
 
 	def Activated(self):
-		print "run import ..."
+		print("run import ...")
 		import geodat.import_image
 		reload(geodat.import_image)
 		geodat.import_image.mydialog(False)
@@ -170,7 +170,7 @@ class import_image:
 class import_gpx:
 
 	def Activated(self):
-		print "run import ..."
+		print("run import ...")
 		import geodat.import_gpx
 		geodat.import_gpx.mydialog()
 		
@@ -185,7 +185,7 @@ class import_gpx:
 class import_latlony:
 
 	def Activated(self):
-		print "run import ..."
+		print("run import ...")
 		import geodat.import_latlony
 		reload(geodat.import_latlony)
 		geodat.import_latlony.mydialog()
@@ -203,7 +203,7 @@ class import_latlony:
 class import_aster:
 
 	def Activated(self):
-		print "run import ..."
+		print("run import ...")
 		import geodat.import_aster
 		reload(geodat.import_aster)
 		geodat.import_aster.mydialog()
@@ -220,7 +220,7 @@ class import_aster:
 class import_lidar:
 
 	def Activated(self):
-		print "run import ..."
+		print("run import ...")
 		import geodat.import_lidar
 		reload(geodat.import_lidar)
 		geodat.import_lidar.mydialog()
@@ -238,7 +238,7 @@ class import_lidar:
 class navigator:
 
 	def Activated(self):
-		print "run import ..."
+		print("run import ...")
 		import geodat.navigator
 		FreeCADGui.activeDocument().activeView().setCameraType("Perspective")
 		FreeCADGui.updateGui() 
@@ -256,7 +256,7 @@ class navigator:
 class mydialog:
 
 	def Activated(self):
-		print "run import ..."
+		print("run import ...")
 #		import geodat.mydialog
 #		reload(geodat.mydialog)
 #		geodat.mydialog.mydialog()
@@ -266,7 +266,7 @@ class mydialog:
 
 	# logger version for paulee
 	def XXXActivated(self):
-		print "run import ..."
+		print("run import ...")
 		import geodat.import_osm_logger
 		reload(geodat.import_osm_logger)
 		geodat.import_osm_logger.mydialog()
@@ -284,7 +284,7 @@ class mydialog:
 class importheights:
 
 	def Activated(self):
-		print "run import ..."
+		print("run import ...")
 		import geodat.import_heights
 		reload(geodat.import_heights)
 		geodat.import_heights.mydialog()
@@ -300,7 +300,7 @@ class importheights:
 class importsrtm:
 
 	def Activated(self):
-		print "run import ..."
+		print("run import ...")
 		import geodat.import_srtm
 		reload(geodat.import_srtm)
 		geodat.import_srtm.mydialog()
@@ -317,7 +317,7 @@ class importsrtm:
 class createHouse:
 
 	def Activated(self):
-		print "run import ..."
+		print("run import ...")
 		import geodat.createhouse
 		reload(geodat.createhouse)
 		FreeCAD.rc=geodat.createhouse.mydialog()
@@ -334,7 +334,7 @@ class createHouse:
 class ElevationGrid:
 
 	def Activated(self):
-		print "run import ..."
+		print("run import ...")
 		import geodat.elevationgrid
 		reload(geodat.elevationgrid)
 		geodat.elevationgrid.run()

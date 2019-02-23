@@ -37,7 +37,7 @@ def createProgressBar(label=None):
 	w.setLayout(hbox)
 	pb=QtGui.QProgressBar()
 	w.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
-	if label<>None:
+	if label!=None:
 		lab=QtGui.QLabel(label)
 		hbox.addWidget(lab)
 	hbox.addWidget(pb)
@@ -97,7 +97,7 @@ def runfile(fn, xw,xe,ys,yn,ox=0,oy=0):
 		pb.pb.setValue((c/100)%100)
 		
 		
-	#	print "!", line
+	#	print("!", line)
 		#if c % 10 == 0:
 		#	Gui.updateGui()
 		#	Gui.SendMsgToActiveView("ViewFit")
@@ -123,7 +123,7 @@ def runfile(fn, xw,xe,ys,yn,ox=0,oy=0):
 
 		m = re.match(r'.*/way.*', line)
 		if m:
-			print "erzeuge pfad"
+			print("erzeuge pfad")
 			for nd in nds:
 				x=poss[nd][0]
 				y=poss[nd][1]
@@ -170,7 +170,7 @@ def getdata(directory,dat):
 			targetfile=tg[0]
 			say("targetfile:"+targetfile)
 		else:
-			print "schon osda"
+			print("schon osda")
 
 		fh = open(zipfilename, 'rb')
 		zfile = zipfile.ZipFile(fh)
@@ -193,7 +193,7 @@ def run(mx,my,dx,dy):
 	for ix in range(int(math.floor(xw)),int(math.floor(xe))+1):
 		for iy in range(int(math.floor(ys)),int(math.floor(yn))+1):
 			dat="Lat"+str(iy)+"Lon"+str(ix)+"Lat"+str(iy+1)+"Lon"+str(ix+1)
-			print dat
+			print(dat)
 			dats.append(dat)
 
 	directory=FreeCAD.ConfigGet("UserAppData") + "/geodat_SRTM/"
@@ -201,7 +201,7 @@ def run(mx,my,dx,dy):
 
 
 	if not os.path.isdir(directory):
-		print "create " + directory
+		print("create " + directory)
 		os.makedirs(directory)
 
 	for dat in dats:
@@ -389,12 +389,12 @@ class MyApp(object):
 
 
 	def runbl(self):
-		print "Run values"
+		print("Run values")
 		bl=self.root.ids['bl'].text()
 		spli=bl.split(',')
 		my=float(spli[0])
 		mx=float(spli[1])
-		print "Start"
+		print("Start")
 #		dy=0.09
 #		dx=0.09
 
@@ -407,24 +407,24 @@ class MyApp(object):
 
 
 	def runValues(self):
-		print "Run values"
+		print("Run values")
 		b=self.root.ids['b'].text()
 		l=self.root.ids['l'].text()
 		s=self.root.ids['s'].value()
-		print [l,b,s]
+		print([l,b,s])
 		import WebGui
 #		WebGui.openBrowser( "http://www.openstreetmap.org/#map=19/"+str(b)+'/'+str(l))
 		import geodat.import_osm
-		print "Start"
+		print("Start")
 		geodat.import_osm.import_osm(float(b),float(l),float(s)/10,self.root.ids['progb'],self.root.ids['status'])
 
 
 	def showMap(self):
-		print "Run values"
+		print("Run values")
 		b=self.root.ids['b'].text()
 		l=self.root.ids['l'].text()
 		s=self.root.ids['s'].value()
-		print [l,b,s]
+		print([l,b,s])
 		import WebGui
 		WebGui.openBrowser( "http://www.openstreetmap.org/#map=9/"+str(b)+'/'+str(l))
 

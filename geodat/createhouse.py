@@ -89,7 +89,7 @@ def gen_haus0(le,wi,hiall,hi,midx,wx,midy,wy):
  
 def gen_haus(le,wi,hiall,hi,ang,midx=0.7,wx=0.5,midy=0.5,wy=0):
 	h=gen_haus0(le,wi,hiall,hi,midx,wx,midy,wy)
-	print h
+	print(h)
 	Part.show(h)
 	p=FreeCAD.ActiveDocument.ActiveObject
 	p.Placement.Rotation.Angle=ang*math.pi/180

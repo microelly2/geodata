@@ -108,7 +108,7 @@ def import_latlon(filename,orig,hi):
 	c1=f.read()
 	import re
 	#content = re.sub('^\<\?[^\>]+\?\>', '', c1)
-	print c1
+	print(c1)
 
 
 	tm=TransverseMercator()
@@ -116,7 +116,7 @@ def import_latlon(filename,orig,hi):
 	# outdoor inn ...
 	tm.lat,tm.lon = 50.3736049,11.191643
 	
-	if orig<>'auto':
+	if orig!='auto':
 		yy=orig.split(' ')
 		origin=(float(yy[0]),float(yy[1]))
 		tm.lat=origin[0]
@@ -168,7 +168,7 @@ def import_latlon(filename,orig,hi):
 
 	import Draft
 	Draft.makeWire(points)
-	print points
+	print(points)
 
 
 	return
@@ -176,7 +176,7 @@ def import_latlon(filename,orig,hi):
 
 	if orig == 'auto':
 		tm.lat, tm.lon = (max(lats)+min(lats))/2,(max(lons)+min(lons))/2
-		print "origin:"
+		print("origin:")
 		print(tm.lat,tm.lon)
 		print ("----------")
 
@@ -190,18 +190,18 @@ def import_latlon(filename,orig,hi):
 
 		center=tm.fromGeographic(tm.lat,tm.lon)
 
-#		print trkpts
+#		print(trkpts)
 #		for p in  trkpts:
-#			print p
+#			print(p)
 
 		# map all points to xy-plane
 		for n in trkpts:
-#			print n['@lat'],n['@lon']
+#			print(n['@lat'],n['@lon'])
 			lats.append(float(n['@lat']))
 			lons.append(float(n['@lon']))
 			ll=tm.fromGeographic(float(n['@lat']),float(n['@lon']))
 			h=n['ele']
-#			print h
+#			print(h)
 			tim=n['time']
 			t2=re.sub('^.*T', '', tim)
 			t3=re.sub('Z', '', t2)
@@ -220,7 +220,7 @@ def import_latlon(filename,orig,hi):
 			px.append(ll[0]-center[0])
 			py.append(ll[1]-center[1])
 			pz.append(1000*(float(h)-starth))
-#			print ll
+#			print(ll)
 
 
 	if 1:
@@ -331,7 +331,7 @@ def import_latlon(filename,orig,hi):
 	except:
 		sayexc()
 
-	print "!",orig,"!"
+	print("!",orig,"!")
 	return (str(tm.lat)+','+str(tm.lon))
 	return px,py
 
@@ -444,7 +444,7 @@ class MyApp(object):
 
 	def getfn(self):
 		fileName = QtGui.QFileDialog.getOpenFileName(None,u"Open File",u"/tmp/");
-		print fileName
+		print(fileName)
 		s=self.root.ids['bl']
 		s.setText(fileName[0])
 

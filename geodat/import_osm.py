@@ -14,7 +14,7 @@
 #http://api.openstreetmap.org/api/0.6/node/3873106739
 
 #\cond
-from say import *
+from geodat.say import *
 
 import time, json, os
 
@@ -135,25 +135,25 @@ def import_osm2(b,l,bk,progressbar,status,elevation):
 	fn=dn+str(b)+'-'+str(l)+'-'+str(bk)
 	import os
 	if not os.path.isdir(dn):
-		print "create " + dn
+		print("create " + dn)
 		os.makedirs(dn)
 
 	try:
-		print "I try to read data from cache file ..."
-		print fn
+		print("I try to read data from cache file ...")
+		print(fn)
 		f=open(fn,"r")
 		content=f.read()
-		print "successful read"
-#		print content
+		print("successful read")
+#		print(content)
 	except:
-		print "no cache file, so I connect to  openstreetmap.org..."
+		print("no cache file, so I connect to  openstreetmap.org...")
 		lk=bk #
 		b1=b-bk/1113*10
 		l1=l-lk/713*10
 		b2=b+bk/1113*10
 		l2=l+lk/713*10
 		source='http://api.openstreetmap.org/api/0.6/map?bbox='+str(l1)+','+str(b1)+','+str(l2)+','+str(b2)
-		print source
+		print(source)
 		try:
 			response = urllib2.urlopen(source)
 			first=True
@@ -181,11 +181,11 @@ def import_osm2(b,l,bk,progressbar,status,elevation):
 				FreeCADGui.updateGui()
 			response.close()
 		except:
-			print "Fehler beim Lesen"
+			print("Fehler beim Lesen")
 		if status:
 			status.setText("got data from openstreetmap.org ...")
 			FreeCADGui.updateGui()
-		print "Beeenden - im zweiten versuch daten auswerten"
+		print("Beeenden - im zweiten versuch daten auswerten")
 		return False
 
 	if elevation:
@@ -194,9 +194,9 @@ def import_osm2(b,l,bk,progressbar,status,elevation):
 		baseheight=0
 
 	if debug:
-		print "-------Data---------"
-		print content
-		print "--------------------"
+		print("-------Data---------")
+		print(content)
+		print("--------------------")
 
 	if status:
 		status.setText("parse data ...")
@@ -268,7 +268,7 @@ def import_osm2(b,l,bk,progressbar,status,elevation):
 				elif ord(tk)==242:
 					res += 'ü'
 				else:
-					print ["error sign",tk,ord(tk),string]
+					print(["error sign",tk,ord(tk),string])
 					res +="#"
 		return res
 
@@ -319,9 +319,9 @@ def import_osm2(b,l,bk,progressbar,status,elevation):
 	starttime=time.time()
 	refresh=1000
 	for w in ways:
-#		print w
+#		print(w)
 		wid=w['@id']
-#		print wid
+#		print(wid)
 
 		building=False
 		landuse=False
@@ -332,25 +332,25 @@ def import_osm2(b,l,bk,progressbar,status,elevation):
 		#if wn <2000: continue
 
 		nowtime=time.time()
-		if wn<>0 and (nowtime-starttime)/wn > 0.5: print "way ---- # " + str(wn) + "/" + str(coways) + " time per house: " +  str(round((nowtime-starttime)/wn,2))
+		if wn!=0 and (nowtime-starttime)/wn > 0.5: print("way ---- # " + str(wn) + "/" + str(coways) + " time per house: " +  str(round((nowtime-starttime)/wn,2)))
 		if progressbar:
 			progressbar.setValue(int(0+100.0*wn/coways))
 
-		if debug: print "w=", w
-		if debug: print "tags ..."
+		if debug: print("w=", w)
+		if debug: print("tags ...")
 		st=""
 		nr=""
 		h=0
 		try:
 			w['tag']
 		except:
-			print "no tags found."
+			print("no tags found.")
 			continue
 
 		for t in w['tag']:
 			if t.__class__.__name__ == 'OrderedDict':
 				try:
-					if debug: print t
+					if debug: print(t)
 
 					if str(t['@k'])=='building':
 						building=True
@@ -385,10 +385,10 @@ def import_osm2(b,l,bk,progressbar,status,elevation):
 						h=int(str(t['@v']))*1000
 
 				except:
-					print "unexpected error ################################################################"
+					print("unexpected error ################################################################")
 
 			else:
-				if debug: print [w['tag']['@k'],w['tag']['@v']]
+				if debug: print([w['tag']['@k'],w['tag']['@v']])
 				if str(w['tag']['@k'])=='building':
 					building=True
 					st='building'
@@ -410,7 +410,7 @@ def import_osm2(b,l,bk,progressbar,status,elevation):
 			name=str(st) + " " + str(nr)
 			if name==' ':
 				name='landuse xyz'
-			if debug: print "name ",name
+			if debug: print("name ",name)
 
 		#generate pointlist of the way
 		polis=[]
@@ -421,7 +421,7 @@ def import_osm2(b,l,bk,progressbar,status,elevation):
 			m=nodesbyid[n['@ref']]
 			llpoints.append([n['@ref'],m['@lat'],m['@lon']])
 		if elevation:
-			print "get heights for " + str(len(llpoints))
+			print("get heights for " + str(len(llpoints)))
 			heights=getHeights(llpoints)
 
 		for n in w['nd']:
@@ -431,7 +431,7 @@ def import_osm2(b,l,bk,progressbar,status,elevation):
 					try:
 						height=heights[m['@lat']+' '+m['@lon']]*1000 - baseheight
 					except:
-						print "---no height avaiable for " + m['@lat']+' '+m['@lon']
+						print("---no height avaiable for " + m['@lat']+' '+m['@lon'])
 						height=0
 				p.z=height
 			polis.append(p)
@@ -511,7 +511,7 @@ def import_osm2(b,l,bk,progressbar,status,elevation):
 	organize()
 
 	endtime=time.time()
-	print "running time ", int(endtime-starttime),  " count ways ", coways
+	print("running time ", int(endtime-starttime),  " count ways ", coways)
 	return True
 
 
@@ -750,14 +750,14 @@ class MyApp(object):
 		self.run(50.3736049,11.191643)
 
 #	def runbl(self):
-#		print "Run values"
+#		print("Run values")
 #		bl=self.root.ids['bl'].text()
 #		spli=bl.split(',')
 #		b=float(spli[0])
 #		l=float(spli[1])
 #		s=self.root.ids['s'].value()
 #		elevation=self.root.ids['elevation'].isChecked()
-#		print [l,b,s]
+#		print([l,b,s])
 #		import_osm2(float(b),float(l),float(s)/10,self.root.ids['progb'],self.root.ids['status'],elevation)
 
 	def showHelpBox(self):
@@ -768,7 +768,7 @@ class MyApp(object):
 
 	def showHelpBoxY(self):
 		#self.run_sternwarte()
-		print "showHelpBox called"
+		print("showHelpBox called")
 
 	def getSeparator(self):
 		bl=self.root.ids['bl'].text()
@@ -835,7 +835,7 @@ class MyApp(object):
 
 		s=self.root.ids['s'].value()
 		elevation=self.root.ids['elevation'].isChecked()
-		print [l,b,s]
+		print([l,b,s])
 		rc= import_osm2(float(b),float(l),float(s)/10,self.root.ids['progb'],self.root.ids['status'],elevation)
 		if not rc:
 			button=self.root.ids['runbl2']
@@ -862,7 +862,7 @@ class MyApp(object):
 
 		s=self.root.ids['s'].value()
 		elevation=self.root.ids['elevation'].isChecked()
-		print [l,b,s]
+		print([l,b,s])
 		import_osm2(float(b),float(l),float(s)/10,self.root.ids['progb'],self.root.ids['status'],elevation)
 		button=self.root.ids['runbl1']
 		button.show()
@@ -880,13 +880,13 @@ class MyApp(object):
 		
 		
 		s=self.root.ids['s'].value()
-		print [l,b,s]
+		print([l,b,s])
 		WebGui.openBrowser( "http://www.openstreetmap.org/#map=16/"+str(b)+'/'+str(l))
 
-        def showDistanceOnLabel(self):
+	def showDistanceOnLabel(self):
 		distance=self.root.ids['s'].value()
-                showDistanceLabel=self.root.ids['showDistanceLabel']
-                showDistanceLabel.setText('Distance is '+str(float(distance)/10)+'km.')
+		showDistanceLabel=self.root.ids['showDistanceLabel']
+		showDistanceLabel.setText('Distance is '+str(float(distance)/10)+'km.')
 
 ## the gui startup
 

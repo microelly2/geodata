@@ -43,7 +43,7 @@ def import_lidar(fn,obj,createPCL=False,useOrigin=False):
 		Points.show(p)
 
 
-	print pts[0]
+	print(pts[0])
 
 
 	ptsb=np.array(ptsa)
@@ -226,8 +226,8 @@ def createFace(obj):
 
 
 	tc=time.time()
-	print "nurbs ",tb-ta
-	print "mesh ",tc-tb
+	print("nurbs ",tb-ta)
+	print("mesh ",tc-tb)
 
 
 #-----------------------------------
@@ -261,7 +261,7 @@ class LIDAR:
 #		self.Object = vobj.Object
 
 	def onChanged(self,obj,prop):
-		print "prop ",prop
+		print("prop ",prop)
 		if prop=='anim':
 			runAnimation(obj)
 		if prop=='useOrigin':
@@ -430,7 +430,7 @@ class MyApp(object):
 		ddir=u"/tmp/"
 		ddir="/media/thomas/b08575a9-0252-47ca-971e-f94c20b33801/geodat_DATEN/las_lee_county"
 		fileName = QtGui.QFileDialog.getOpenFileName(None,u"Open File",ddir);
-		print fileName
+		print(fileName)
 		s=self.root.ids['bl']
 		s.setText(fileName[0])
 
