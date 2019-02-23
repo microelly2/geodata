@@ -11,6 +11,8 @@
 import FreeCAD,FreeCADGui
 import FreeCAD, FreeCADGui, Draft
 
+from importlib import reload
+
 import urllib2, json, time
 import pivy
 from pivy import coin

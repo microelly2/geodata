@@ -16,6 +16,8 @@
 #\cond
 from geodat.say import *
 
+from importlib import reload
+
 import time, json, os
 
 import urllib2

@@ -1,5 +1,6 @@
 # Unit test for the geodat module
 
+from importlib import reload
 
 import FreeCAD, os, unittest, FreeCADGui
 

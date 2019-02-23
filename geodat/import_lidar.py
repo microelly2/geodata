@@ -12,6 +12,7 @@ from geodat.say import *
 
 import Points
 
+from importlib import reload
 
 import time
 from laspy.file import File

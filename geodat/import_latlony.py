@@ -67,6 +67,8 @@ import time, json, os
 
 import urllib2
 
+from importlib import reload
+
 import pivy 
 from pivy import coin
 

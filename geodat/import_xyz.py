@@ -14,6 +14,8 @@ from geodat.say import *
 
 import Points
 
+from importlib import reload
+
 import geodat.transversmercator
 from  geodat.transversmercator import TransverseMercator
 

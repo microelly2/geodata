@@ -8,11 +8,11 @@
 class house():
 	pass
 
+from importlib import reload
 
 import FreeCAD,FreeCADGui
 import Part
 import math
-
 
 
 

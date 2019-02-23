@@ -52,6 +52,8 @@ import Points
 
 import re, math
 
+from importlib import reload
+
 import geodat.transversmercator
 from  geodat.transversmercator import TransverseMercator
 

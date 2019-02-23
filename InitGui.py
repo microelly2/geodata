@@ -25,6 +25,8 @@ __title__="FreeCAD Geodata Toolkit"
 __author__ = "Thomas Gundermann"
 __url__ = "http://www.freecadbuch.de"
 
+from importlib import reload
+
 import FreeCAD, FreeCADGui
 
 windowCreated = 0

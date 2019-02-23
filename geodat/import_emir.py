@@ -9,7 +9,7 @@
 
 
 from geodat.say import *
-
+from importlib import reload
 import FreeCAD,FreeCADGui, Part
 App=FreeCAD
 Gui=FreeCADGui

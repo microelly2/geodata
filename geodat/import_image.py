@@ -11,6 +11,8 @@
 from geodat.say import *
 import Points
 
+from importlib import reload
+
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import numpy as np

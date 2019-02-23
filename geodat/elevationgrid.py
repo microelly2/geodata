@@ -18,6 +18,8 @@
 #
 #
 
+from importlib import reload
+
 import FreeCAD, Draft,Part
 import FreeCADGui
 Gui=FreeCADGui
