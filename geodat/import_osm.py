@@ -158,7 +158,7 @@ def import_osm2(b,l,bk,progressbar,status,elevation):
 		source='http://api.openstreetmap.org/api/0.6/map?bbox='+str(l1)+','+str(b1)+','+str(l2)+','+str(b2)
 		print(source)
 		try:
-			response = urllib2.urlopen(source)
+			response = urllib.request.urlopen(source)
 			first=True
 			content=''
 			f=open(fn,"w")

@@ -13,7 +13,7 @@ import FreeCAD, FreeCADGui, Draft
 
 from importlib import reload
 
-import urllib2, json, time
+import urllib.request, json, time
 import pivy
 from pivy import coin
 
@@ -33,7 +33,7 @@ tm=TransverseMercator()
 def getheight(b,l):
 
 	source="https://maps.googleapis.com/maps/api/elevation/json?locations="+str(b)+','+str(l)
-	response = urllib2.urlopen(source)
+	response = urllib.request.urlopen(source)
 	ans=response.read()
 	print(ans)
 	s=json.loads(ans)
@@ -63,7 +63,7 @@ def run(b0=50.35,l0=11.17,b=50.35,le=11.17,size=40):
 			ss += '|'
 		source += ss
 
-	response = urllib2.urlopen(source)
+	response = .request.urlopen(source)
 	ans=response.read()
 	#+# to do: error handling  - wait and try again
 	print(ans)

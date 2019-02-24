@@ -65,7 +65,9 @@ trackstring='''
 
 import time, json, os
 
-import urllib2
+#previously imported as urllib2
+#but not used in this module
+#import urllib.request
 
 from importlib import reload
 

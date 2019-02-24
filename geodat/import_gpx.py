@@ -70,7 +70,9 @@ import time, json, os
 
 from importlib import reload
 
-import urllib2
+#previously imported as urllib2
+#but not used in this module
+#import urllib.request
 
 import pivy 
 from pivy import coin
