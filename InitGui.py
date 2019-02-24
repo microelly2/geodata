@@ -124,6 +124,8 @@ class import_emir:
 	def Activated(self):
 		print("run import ...")
 		import geodat.import_emir
+		from importlib import reload		
+
 		reload(geodat.import_emir)
 		geodat.import_emir.mydialog()
 
@@ -141,6 +143,8 @@ class import_xyz:
 	def Activated(self):
 		print("run import ...")
 		import geodat.import_xyz
+		from importlib import reload
+
 		reload(geodat.import_xyz)
 		geodat.import_xyz.mydialog(False)
 		
@@ -157,6 +161,8 @@ class import_image:
 	def Activated(self):
 		print("run import ...")
 		import geodat.import_image
+		from importlib import reload
+
 		reload(geodat.import_image)
 		geodat.import_image.mydialog(False)
 		
@@ -189,6 +195,8 @@ class import_latlony:
 	def Activated(self):
 		print("run import ...")
 		import geodat.import_latlony
+		from importlib import reload
+
 		reload(geodat.import_latlony)
 		geodat.import_latlony.mydialog()
 		#geodat.import_latlony.run()
@@ -207,6 +215,8 @@ class import_aster:
 	def Activated(self):
 		print("run import ...")
 		import geodat.import_aster
+		from importlib import reload
+
 		reload(geodat.import_aster)
 		geodat.import_aster.mydialog()
 		
@@ -224,6 +234,8 @@ class import_lidar:
 	def Activated(self):
 		print("run import ...")
 		import geodat.import_lidar
+		from importlib import reload
+		
 		reload(geodat.import_lidar)
 		geodat.import_lidar.mydialog()
 		
@@ -272,6 +284,8 @@ class mydialog:
 	def XXXActivated(self):
 		print("run import ...")
 		import geodat.import_osm_logger
+		from importlib import reload
+
 		reload(geodat.import_osm_logger)
 		geodat.import_osm_logger.mydialog()
 
@@ -290,6 +304,8 @@ class importheights:
 	def Activated(self):
 		print("run import ...")
 		import geodat.import_heights
+		from importlib import reload
+
 		reload(geodat.import_heights)
 		geodat.import_heights.mydialog()
 		
@@ -306,6 +322,8 @@ class importsrtm:
 	def Activated(self):
 		print("run import ...")
 		import geodat.import_srtm
+		from importlib import reload
+		
 		reload(geodat.import_srtm)
 		geodat.import_srtm.mydialog()
 		
@@ -323,6 +341,8 @@ class createHouse:
 	def Activated(self):
 		print("run import ...")
 		import geodat.createhouse
+		from importlib import reload
+
 		reload(geodat.createhouse)
 		FreeCAD.rc=geodat.createhouse.mydialog()
 		
@@ -340,6 +360,8 @@ class ElevationGrid:
 	def Activated(self):
 		print("run import ...")
 		import geodat.elevationgrid
+		from importlib import reload
+		
 		reload(geodat.elevationgrid)
 		geodat.elevationgrid.run()
 		# FreeCAD.rc=geodat.createhouse.mydialog()

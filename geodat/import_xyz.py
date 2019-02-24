@@ -533,6 +533,7 @@ def mydialog(run=True):
 
 	import geodat
 	import geodat.miki as miki
+
 	reload(miki)
 
 	app=MyApp()
