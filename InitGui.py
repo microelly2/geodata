@@ -263,6 +263,8 @@ class mydialog:
 #		reload(geodat.mydialog)
 #		geodat.mydialog.mydialog()
 		import geodat.import_osm
+		from importlib import reload
+		
 		reload(geodat.import_osm)
 		geodat.import_osm.mydialog()
 

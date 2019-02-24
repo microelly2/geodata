@@ -18,9 +18,10 @@ from geodat.say import *
 
 from importlib import reload
 
+
 import time, json, os
 
-import urllib2
+import urllib.request
 
 import pivy
 from pivy import coin
@@ -29,10 +30,10 @@ from pivy import coin
 import geodat.transversmercator
 from  geodat.transversmercator import TransverseMercator
 
-import inventortools
+import geodat.inventortools
 
-import xmltodict
-from  xmltodict import parse
+import geodat.xmltodict
+from  geodat.xmltodict import parse
 #\endcond
 
 #------------------------------
@@ -49,7 +50,7 @@ def getHeight(b,l):
 	anz=0
 	while anz<4:
 			source="https://maps.googleapis.com/maps/api/elevation/json?locations="+str(b)+','+str(l)
-			response = urllib2.urlopen(source)
+			response = urllib.request.urlopen(source)
 			ans=response.read()
 			if ans.find("OVER_QUERY_LIMIT"):
 				anz += 1
@@ -79,7 +80,7 @@ def getHeights(points):
 			i += 1
 			ii += 1
 		source += "60.0,10.0"
-		response = urllib2.urlopen(source)
+		response = urllib.request.urlopen(source)
 		ans=response.read()
 		s=json.loads(ans)
 		res=s['results']

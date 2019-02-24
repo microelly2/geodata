@@ -16,7 +16,10 @@ https://github.com/vvoovv/blender-geo/wiki/Import-OpenStreetMap-(.osm)
 import FreeCAD,FreeCADGui
 App=FreeCAD
 
-import json,urllib2,os
+import json,os
+
+#previously imported as urllib2, but not used in this module
+#import urllib.request 
 
 from xml.parsers import expat
 from xml.sax.saxutils import XMLGenerator
