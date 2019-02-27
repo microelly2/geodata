@@ -14,7 +14,7 @@ import FreeCADGui,FreeCAD
 App=FreeCAD
 Gui=FreeCADGui
 
-
+from importlib import reload
 
 import numpy as np
 import geodat

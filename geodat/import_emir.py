@@ -9,7 +9,7 @@
 
 
 from geodat.say import *
-
+from importlib import reload
 import FreeCAD,FreeCADGui, Part
 App=FreeCAD
 Gui=FreeCADGui
@@ -37,7 +37,7 @@ cellsize     10.000000000000
 
 def parsedata(lines):
 	
-	print lines
+	print(lines)
 	a=lines[0].split()
 	dat={}
 	a=lines[0].split()
@@ -59,7 +59,7 @@ def parsedata(lines):
 		aa = lines[5+i].split()
 		a += [(0,0,float(h)) for h in aa]
 
-#	print dat
+#	print(dat)
 
 	a=np.array(a).reshape(dat['ncols'],dat['nrows'],3)
 
@@ -157,7 +157,7 @@ class MyApp(object):
 
 	def getfn(self):
 		fileName = QtGui.QFileDialog.getOpenFileName(None,u"Open File",u"/tmp/");
-		print fileName
+		print(fileName)
 		s=self.root.ids['bl']
 		s.setText(fileName[0])
 

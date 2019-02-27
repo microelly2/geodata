@@ -11,7 +11,9 @@
 import FreeCAD,FreeCADGui
 import FreeCAD, FreeCADGui, Draft
 
-import urllib2, json, time
+from importlib import reload
+
+import urllib.request, json, time
 import pivy
 from pivy import coin
 
@@ -31,9 +33,9 @@ tm=TransverseMercator()
 def getheight(b,l):
 
 	source="https://maps.googleapis.com/maps/api/elevation/json?locations="+str(b)+','+str(l)
-	response = urllib2.urlopen(source)
+	response = urllib.request.urlopen(source)
 	ans=response.read()
-	print ans
+	print(ans)
 	s=json.loads(ans)
 	res=s['results']
 	for r in res:
@@ -49,8 +51,8 @@ def run(b0=50.35,l0=11.17,b=50.35,le=11.17,size=40):
 	baseheight=getheight(tm.lat,tm.lon)
 	center=tm.fromGeographic(tm.lat,tm.lon)
 	
-	print "Base height ", baseheight
-	print "center point", center
+	print("Base height ", baseheight)
+	print("center point", center)
 
 	source="https://maps.googleapis.com/maps/api/elevation/json?locations="
 	
@@ -61,10 +63,10 @@ def run(b0=50.35,l0=11.17,b=50.35,le=11.17,size=40):
 			ss += '|'
 		source += ss
 
-	response = urllib2.urlopen(source)
+	response = .request.urlopen(source)
 	ans=response.read()
 	#+# to do: error handling  - wait and try again
-	print ans
+	print(ans)
 	s=json.loads(ans)
 	res=s['results']
 	
@@ -139,7 +141,7 @@ class MyApp(object):
 		l=float(spli[1])
 
 		s=15
-		print [l,b,s]
+		print([l,b,s])
 		import_heights(float(b),float(l),float(s))
 
 

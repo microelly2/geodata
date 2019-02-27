@@ -14,6 +14,8 @@ from geodat.say import *
 
 import Points
 
+from importlib import reload
+
 import geodat.transversmercator
 from  geodat.transversmercator import TransverseMercator
 
@@ -115,12 +117,12 @@ def reduceGrid(pts,ku=100,kv=50,lu=0,lv=0):
 		if v<sb or v>lv-nb-1:
 			pass
 		else:
-			if v%kv <>0: continue
+			if v%kv !=0: continue
 		for u in range(lu):
 			if u<wb or u>lu-eb-1:
 				pass
 			else:
-				if u%ku <>0: continue 
+				if u%ku !=0: continue 
 			pts2.append(pts[v*lu+u])
 
 #	p=Points.Points(pts2)
@@ -167,7 +169,7 @@ def import_xyz(mode,filename="/tmp/test.xyz",label='',ku=20, kv=10,lu=0,lv=0):
 	import the point cloud from the file
 	'''
 
-	print "Import mode=",mode
+	print("Import mode=",mode)
 	if mode:
 
 		if lu>0 and lv>0:
@@ -188,7 +190,7 @@ def import_xyz(mode,filename="/tmp/test.xyz",label='',ku=20, kv=10,lu=0,lv=0):
 
 		objs=App.ActiveDocument.getObjectsByLabel(label)
 
-		if len(objs)<>1:
+		if len(objs)!=1:
 			sayexc("no point cloud with this label found: >"+label+"<")
 
 		pts=objs[0].Points.Points
@@ -219,7 +221,7 @@ def import_xyz(mode,filename="/tmp/test.xyz",label='',ku=20, kv=10,lu=0,lv=0):
 
 		f=open(filename)
 		lines=f.readlines()
-		print len(lines)
+		print(len(lines))
 
 		'''
 		# utm coords 32356000.00 5638000.00
@@ -238,11 +240,11 @@ def import_xyz(mode,filename="/tmp/test.xyz",label='',ku=20, kv=10,lu=0,lv=0):
 				pts.append(FreeCAD.Vector(float(p[0])-32356000.00,float(p[1])-5638000.00,hfac*float(p[2])))
 			except: 
 				print ("error line ",i)
-				print p
-				print l
-				print 
+				print(p)
+				print(l)
+				print
 			if i % 1000 == 0:
-				print i
+				print(i)
 				Gui.updateGui()
 #			if i >100: break
 
@@ -481,7 +483,7 @@ class MyApp(object):
 		ddir=u"/tmp/"
 		ddir="/media/thomas/b08575a9-0252-47ca-971e-f94c20b33801/geodat_DATEN/xyz_lee_county"
 		fileName = QtGui.QFileDialog.getOpenFileName(None,u"Open File",ddir);
-		print fileName
+		print(fileName)
 		s=self.root.ids['bl']
 		s.setText(fileName[0])
 
@@ -514,7 +516,7 @@ class MyApp(object):
 
 
 	def createMesh(self):
-		print "NOT IMPLEMENTED"
+		print("NOT IMPLEMENTED")
 		u=self.root.ids['ud'].value()
 		v=self.root.ids['vd'].value()
 		d=self.root.ids['dd'].value()
@@ -531,6 +533,7 @@ def mydialog(run=True):
 
 	import geodat
 	import geodat.miki as miki
+
 	reload(miki)
 
 	app=MyApp()
@@ -560,7 +563,7 @@ def run(app):
 
 	outfile=open(fn)
 	t=np.load(outfile)
-	print t.shape
+	print(t.shape)
 	return t
 '''
 
@@ -846,8 +849,8 @@ for vx in range(10):
 
 se=time.time()
 
-print "running time for 100 quads"
-print round(se-st,1)
+print("running time for 100 quads")
+print(round(se-st,1))
 '''
 
 '''
@@ -858,8 +861,8 @@ for vx in range(22):
 		tt=suv(0+9*ux,0+9*vx)
 
 se=time.time()
-print "running time all"
-print round(se-st,1)
+print("running time all")
+print(round(se-st,1))
 '''
 
 '''

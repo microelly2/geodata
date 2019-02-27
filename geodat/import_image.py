@@ -11,6 +11,8 @@
 from geodat.say import *
 import Points
 
+from importlib import reload
+
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import numpy as np
@@ -397,7 +399,7 @@ class MyApp(object):
 	def getfn(self):
 		''' get the filename of the image file'''
 		fileName = QtGui.QFileDialog.getOpenFileName(None,u"Open File",u"/tmp/");
-		print fileName
+		print(fileName)
 		self.root.ids['bl'].setText(fileName[0])
 
 ## the gui startup

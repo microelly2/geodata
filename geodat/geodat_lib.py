@@ -46,12 +46,12 @@ def reduceGrid(pts,ku=100,kv=50):
 		if v<sb or v>lv-nb-1:
 			pass
 		else:
-			if v%kv <>0: continue
+			if v%kv !=0: continue
 		for u in range(lu):
 			if u<wb or u>lu-eb-1:
 				pass
 			else:
-				if u%ku <>0: continue 
+				if u%ku !=0: continue 
 			pts2.append(pts[v*lu+u])
 
 	p=Points.Points(pts2)
@@ -155,13 +155,13 @@ def addImageTexture(obj,fn,scale=(1,1)):
 	'''
 	print ("childeren",cl.getLength())
 	for c in cl:
-		print c
+		print(c)
 	'''
 	try:
 		cl[1].scaleFactor.getValue()
 		rootnode.removeChild(1) 
 	except:
-		print "no texture scaler found"
+		() "no texture scaler found")
 
 
 
@@ -169,7 +169,7 @@ def addImageTexture(obj,fn,scale=(1,1)):
 		cl[1].filename.getValue()
 		rootnode.removeChild(1) 
 	except:
-		print "no texture image found"
+		print("no texture image found")
 
 	tex =  coin.SoTexture2()
 	tex.filename = str(fn)

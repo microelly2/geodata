@@ -53,7 +53,7 @@ def import_ast(b=50.26,l=11.39):
 	# the ast dataset
 	ff="N%02dE%03d" % (int(bs),int(ls))
 	fn=FreeCAD.ConfigGet("UserAppData") +'/geodat/AST/ASTGTM2_' + ff +'_dem.tif'
-	print fn
+	print(fn)
 
 	'''
 	fn='/home/microelly2/FCB/b217_heightmaps/tandemx_daten/Chile-Chuquicatmata.tif'
@@ -61,7 +61,7 @@ def import_ast(b=50.26,l=11.39):
 	l=-68.9259643
 	bs=np.floor(b)
 	ls=np.floor(l)
-	print fn
+	print(fn)
 	'''
 
 

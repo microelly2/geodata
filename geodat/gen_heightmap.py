@@ -8,6 +8,9 @@
 #-- GNU Lesser General Public License (LGPL)
 #-------------------------------------------------
 
+from importlib import reload
+import FreeCAD as App
+
 import numpy as np
 from matplotlib import cm
 import matplotlib.pyplot as plt

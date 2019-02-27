@@ -10,6 +10,8 @@
 
 from geodat.say import *
 
+from importlib import reload
+
 import FreeCAD,FreeCADGui, Part
 App=FreeCAD
 Gui=FreeCADGui
@@ -56,12 +58,12 @@ def import_csv(fn,orig,datatext=None):
 	origin=(float(yy[0]),float(yy[1]))
 
 	data=[]
-	if len(datatext) <> 0:
+	if len(datatext) != 0:
 		lines=datatext.split('\n')
 		for l in lines:
 			pp=re.split("( )+",l)
-			print pp
-			print len(pp)
+			print(pp)
+			print(len(pp))
 			if len(pp)==1:
 				continue
 			if len(pp)<3:
@@ -72,10 +74,10 @@ def import_csv(fn,orig,datatext=None):
 		with open(fn, 'rb') as csvfile:
 			reader = csv.reader(csvfile, delimiter=';')
 			for row in reader:
-				print ', '.join(row)
+				print(', '.join(row))
 				data.append(row)
 
-	print data
+	print(data)
 
 	tm=TransverseMercator()
 	tm.lat=origin[0]
@@ -159,7 +161,7 @@ class MyApp(object):
 
 	def getfn(self):
 		fileName = QtGui.QFileDialog.getOpenFileName(None,u"Open File",u"/tmp/");
-		print fileName
+		print(fileName)
 		s=self.root.ids['bl']
 		s.setText(fileName[0])
 
