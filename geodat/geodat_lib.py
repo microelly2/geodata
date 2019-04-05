@@ -161,7 +161,7 @@ def addImageTexture(obj,fn,scale=(1,1)):
 		cl[1].scaleFactor.getValue()
 		rootnode.removeChild(1) 
 	except:
-		() "no texture scaler found")
+		print("no texture scaler found")
 
 
 

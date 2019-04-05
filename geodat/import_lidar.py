@@ -12,7 +12,10 @@ from geodat.say import *
 
 import Points
 
-from importlib import reload
+import sys
+if sys.version_info[0] !=2:
+	from importlib import reload
+
 
 import time
 from laspy.file import File
@@ -455,3 +458,5 @@ def mydialog(run=True):
 	return miki
 
 
+def importLIDAR():
+	mydialog()

@@ -14,7 +14,10 @@ from geodat.say import *
 
 import Points
 
-from importlib import reload
+import sys
+if sys.version_info[0] !=2:
+	from importlib import reload
+
 
 import geodat.transversmercator
 from  geodat.transversmercator import TransverseMercator
@@ -83,7 +86,7 @@ def getShape(pts):
 			ls.append(dist)
 			try:dists[dist] += 1
 			except: dists[dist]=1
-
+	say(dists.keys())
 	mm=np.mean(dists.keys())
 
 	tts=[]
@@ -92,12 +95,14 @@ def getShape(pts):
 			if d>mm:
 				tts.append(i-ia)
 				ia=i
-
-	dx=int(np.mean(tts))
-	dy=len(pts)/dx
-	print ("getshape shape: ",dx,dy)
-	return dx,dy
-
+	say(tts)
+	try:
+		dx=int(np.mean(tts))
+		dy=len(pts)/dx
+		say(("getshape shape: ",dx,dy))
+		return dx,dy
+	except:
+		return (len(pts),1)
 
 
 
@@ -186,7 +191,7 @@ def import_xyz(mode,filename="/tmp/test.xyz",label='',ku=20, kv=10,lu=0,lv=0):
 		try:
 			App.ActiveDocument.points
 		except:
-			points=nurbs=App.ActiveDocument.addObject("App::DocumentObjectGroup","points")
+			points=App.ActiveDocument.addObject("App::DocumentObjectGroup","points")
 
 		objs=App.ActiveDocument.getObjectsByLabel(label)
 
@@ -219,46 +224,47 @@ def import_xyz(mode,filename="/tmp/test.xyz",label='',ku=20, kv=10,lu=0,lv=0):
 		except:
 			points=App.ActiveDocument.addObject("App::DocumentObjectGroup","points")
 
-		f=open(filename)
+
+		fn=filename
+		if fn.startswith('UserAppData'):
+			fn=fn.replace('UserAppData',FreeCAD.ConfigGet("UserAppData"))
+
+		f=open(fn)
 		lines=f.readlines()
-		print(len(lines))
+		say("readlines",len(lines))
 
 		'''
 		# utm coords 32356000.00 5638000.00
 		# height scale factor
 		hfac=3
 		'''
-		
-		
+
+
 		pts=[]
-		sayW(len(lines))
 		Gui.updateGui()
 		for i,l in enumerate(lines):
 			p=l.split()
 			hfac=3
 			try:
-				pts.append(FreeCAD.Vector(float(p[0])-32356000.00,float(p[1])-5638000.00,hfac*float(p[2])))
+				#pts.append(FreeCAD.Vector(float(p[0])-32356000.00,float(p[1])-5638000.00,hfac*float(p[2])))
+
+				pts.append(FreeCAD.Vector(float(p[0]),float(p[1]),hfac*float(p[2])))
 			except: 
-				print ("error line ",i)
-				print(p)
-				print(l)
-				print
+				sayErr(("error line ",i,p,l))
 			if i % 1000 == 0:
-				print(i)
 				Gui.updateGui()
 #			if i >100: break
 
+
 		if ku>1 and kv>1:
 			pts=reduceGrid(pts,ku,kv)
-
 		p=Points.Points(pts)
 		Points.show(p)
-		App.ActiveDocument.ActiveObject.ViewObject.ShapeColor=(1.0,1.0,0.0)
-		App.ActiveDocument.ActiveObject.ViewObject.PointSize=1.0
+		App.ActiveDocument.ActiveObject.ViewObject.ShapeColor=(1.0,.0,0.0)
+		App.ActiveDocument.ActiveObject.ViewObject.PointSize=3.0
 		Gui.updateGui()
 		Gui.SendMsgToActiveView("ViewFit")
 		App.ActiveDocument.ActiveObject.ViewObject.hide()
-	print(len(pts))
 	return pts
 
 
@@ -290,7 +296,7 @@ MainWindow:
 		QtGui.QLineEdit:
 #			setText:"/home/microelly2/FCB/b202_gmx_tracks/dgm1/dgm1_32356_5638_2_nw.xyz"
 			setText:"/home/thomas/Dokumente/freecad_buch/b202_gmx_tracks/dgm1/dgm1_32356_5638_2_nw.xyz"
-			setText:"/home/thomas/Dokumente/freecad_buch/b202_gmx_tracks/dgm1/dgm1_32356_5638_2_nw.xyz"
+			setText:"UserAppData/Mod/geodat/testdata/xyz.txt"
 			id: 'bl'
 
 		HorizontalLayout:
@@ -316,6 +322,7 @@ MainWindow:
 
 		QtGui.QLineEdit:
 			setText:"Points 110 99"
+			setText:"Points"
 			id: 'pclLabel'
 
 
@@ -324,13 +331,13 @@ MainWindow:
 				setText:"Size lu,lv  "
 
 		QtGui.QLineEdit:
-			setText:"0"
-			setText:"110"
+			setText:"3"
+			#setText:"110"
 			id: 'lu'
 
 		QtGui.QLineEdit:
-			setText:"0"
-			setText:"99"
+			setText:"3"
+			#setText:"99"
 			id: 'lv'
 
 
@@ -369,12 +376,14 @@ MainWindow:
 				setMaximum: 200
 				setTickInterval: 1
 				valueChanged.connect: app.showFrame
+				valueChanged.connect: app.update2
 
 		HorizontalLayout:
 
 			QtGui.QLabel:
 				setText:"Frame size"
-
+				valueChanged.connect: app.showFrame
+#				valueChanged.connect: app.update2
 
 			QtGui.QDial:
 				setValue: 5
@@ -383,6 +392,7 @@ MainWindow:
 				setMaximum: 100
 				setTickInterval: 1
 				valueChanged.connect: app.update2
+#				valueChanged.connect: app.showFrame
 
 		HorizontalLayout:
 			QtGui.QPushButton:
@@ -423,15 +433,18 @@ class MyApp(object):
 	def update(self):
 		'''update dialog values'''
 #		lu,lv = getShape(self.pts)
+		say("update")
 		lu=int(self.root.ids['lu'].text())
 		lv=int(self.root.ids['lv'].text())
+		say("dd,ud,vd",self.root.ids['dd'].value(),self.root.ids['ud'].value(),self.root.ids['vd'].value())
 
 		dmax = min(lu - self.root.ids['ud'].value(), lv - self.root.ids['vd'].value(),101) -1
 		self.root.ids['dd'].setMaximum(dmax)
 		if self.root.ids['dd'].value() >dmax:
 			self.root.ids['dd'].setValue(dmax)
-		self.root.ids['vd'].setMaximum(lv-self.root.ids['dd'].value())
-		self.root.ids['ud'].setMaximum(lu-self.root.ids['dd'].value())
+		say("dd,ud,vd",self.root.ids['dd'].value(),self.root.ids['ud'].value(),self.root.ids['vd'].value())
+		self.root.ids['vd'].setMaximum(lv-self.root.ids['dd'].value()-1)
+		self.root.ids['ud'].setMaximum(lu-self.root.ids['dd'].value()-1)
 
 	def update2(self):
 		'''update dialog values and frame'''
@@ -483,7 +496,6 @@ class MyApp(object):
 		ddir=u"/tmp/"
 		ddir="/media/thomas/b08575a9-0252-47ca-971e-f94c20b33801/geodat_DATEN/xyz_lee_county"
 		fileName = QtGui.QFileDialog.getOpenFileName(None,u"Open File",ddir);
-		print(fileName)
 		s=self.root.ids['bl']
 		s.setText(fileName[0])
 
@@ -512,11 +524,11 @@ class MyApp(object):
 		lv=int(self.root.ids['lv'].text())
 
 		say(("create nurbs for subset",u,v,d,lu,lv))
-		suv(self,u,v,d+1,lu,lv)
+		suv(self,u,v,d,lu,lv)
 
 
 	def createMesh(self):
-		print("NOT IMPLEMENTED")
+		sayW("NOT IMPLEMENTED")
 		u=self.root.ids['ud'].value()
 		v=self.root.ids['vd'].value()
 		d=self.root.ids['dd'].value()
@@ -563,7 +575,7 @@ def run(app):
 
 	outfile=open(fn)
 	t=np.load(outfile)
-	print(t.shape)
+	say(t.shape)
 	return t
 '''
 
@@ -654,6 +666,12 @@ def create_pcl(pu,color=(1.0,0.0,0.0)):
 	p=Points.Points(pu)
 	Points.show(p)
 	App.ActiveDocument.ActiveObject.ViewObject.ShapeColor=color
+	App.ActiveDocument.ActiveObject.ViewObject.PointSize=3
+	try:
+		App.ActiveDocument.points
+	except:
+		points=App.ActiveDocument.addObject("App::DocumentObjectGroup","points")
+
 	App.ActiveDocument.points.addObject(App.ActiveDocument.ActiveObject)
 	Gui.updateGui()
 
@@ -674,15 +692,18 @@ def muv(app,u=3,v=5,d=10,la=100,lb=100):
 	if v>=2: sb=2
 	if v<la-2-d: nb=2
 	uu=[]
-	du=d+wb+eb
-	dv=d+nb+sb
+	du=d+wb+eb+1
+	dv=d+nb+sb+1
 	u=u-wb
 	v=v-sb
 	pu=[]
 	say([ "(wb,eb,sb,nb,du,dv)", (wb,eb,sb,nb,du,dv)])
+	try: pts=app.pts
+	except: pts=app
+
 	for k in range(dv):
-		pu += app.pts[u+v*la+la*k:u+v*la+du+la*k]
-		uu.append(app.pts[u+v*la+la*k:u+v*la+du+la*k])
+		pu += pts[u+v*la+la*k:u+v*la+du+la*k]
+		uu.append(pts[u+v*la+la*k:u+v*la+du+la*k])
 
 	color=(1-0.5*random.random(),1-0.5*random.random(),1-0.5*random.random())
 
@@ -709,15 +730,24 @@ def suv(app,u=3,v=5,d=10,la=100,lb=100):
 	if v>=2: sb=2
 	if v<la-2-d: nb=2
 	uu=[]
-	du=d+wb+eb
-	dv=d+nb+sb
+	du=d+wb+eb+1
+	dv=d+nb+sb+1
 	u=u-wb
 	v=v-sb
 	pu=[]
 	say([ "(wb,eb,sb,nb,du,dv)", (wb,eb,sb,nb,du,dv)])
+	say('u,v',u,v)
+	try: pts=app.pts
+	except: pts=app
 	for k in range(dv):
-		pu += app.pts[u+v*la+la*k:u+v*la+du+la*k]
-		uu.append(app.pts[u+v*la+la*k:u+v*la+du+la*k])
+		pu += pts[u+v*la+la*k:u+v*la+du+la*k]
+		uu.append(pts[u+v*la+la*k:u+v*la+du+la*k])
+		
+		say(k,u+v*la+la*k,u+v*la+du+la*k)
+	
+	say("uu")
+	say(uu)
+
 
 	color=(1-0.5*random.random(),1-0.5*random.random(),1-0.5*random.random())
 
@@ -909,3 +939,6 @@ def runtest():
 
 if __name__ == '__main__':
 	runtest()
+
+def importXYZ():
+	mydialog()

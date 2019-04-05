@@ -8,7 +8,6 @@
 class house():
 	pass
 
-from importlib import reload
 
 import FreeCAD,FreeCADGui
 import Part
@@ -89,7 +88,6 @@ def gen_haus0(le,wi,hiall,hi,midx,wx,midy,wy):
  
 def gen_haus(le,wi,hiall,hi,ang,midx=0.7,wx=0.5,midy=0.5,wy=0):
 	h=gen_haus0(le,wi,hiall,hi,midx,wx,midy,wy)
-	print(h)
 	Part.show(h)
 	p=FreeCAD.ActiveDocument.ActiveObject
 	p.Placement.Rotation.Angle=ang*math.pi/180
@@ -241,12 +239,19 @@ class MyApp(object):
 
 ## the dialog to create a house
 
+import sys
+if sys.version_info[0] !=2:
+		from importlib import reload
+
+
 def mydialog():
 	app=MyApp()
 
 	import geodat
 	import geodat.miki as miki
-	reload(miki)
+	
+
+	reload(geodat.miki)
 
 
 	miki=miki.Miki()
@@ -266,3 +271,6 @@ def runtest():
 	m.objects[0].hide()
 
 
+
+def createHouse():
+	mydialog()

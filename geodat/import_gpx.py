@@ -68,11 +68,10 @@ trackstring='''
 
 import time, json, os
 
-from importlib import reload
 
-#previously imported as urllib2
-#but not used in this module
-#import urllib.request
+import sys
+if sys.version_info[0] !=2:
+	from importlib import reload
 
 import pivy 
 from pivy import coin
@@ -113,7 +112,7 @@ def import_gpx(filename,orig,hi):
 	c1=f.read()
 	import re
 	content = re.sub('^\<\?[^\>]+\?\>', '', c1)
-#	print(content)
+	print(content)
 
 
 	tm=TransverseMercator()
@@ -248,6 +247,7 @@ def import_gpx(filename,orig,hi):
 
 	#------------------------------------------------
 	# data for postprocessing
+	return
 
 	try:
 		import numpyNode
@@ -321,7 +321,6 @@ def import_gpx(filename,orig,hi):
 	except:
 		sayexc()
 
-	print("!",orig,"!")
 	return (str(tm.lat)+','+str(tm.lon))
 	return px,py
 
@@ -382,7 +381,7 @@ MainWindow:
 			setText:"Track input filename"
 
 		QtGui.QLineEdit:
-			setText:"/tmp/track.gpx"
+			setText:"UserAppData/Mod/geodat/testdata/neufang.gpx"
 			id: 'bl'
 
 		QtGui.QPushButton:
@@ -425,6 +424,9 @@ class MyApp(object):
 	def run(self):
 		'''calls import_gpx'''
 		filename=self.root.ids['bl'].text()
+		if filename.startswith('UserAppData'):
+			filename=filename.replace('UserAppData',FreeCAD.ConfigGet("UserAppData"))
+
 		try:
 			rc=import_gpx(
 					filename,
@@ -468,6 +470,8 @@ def runtest():
 
 
 
+def importGPXTrack():
+	m=mydialog()
 
 if __name__ == '__main__':
 	runtest()

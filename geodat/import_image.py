@@ -11,7 +11,11 @@
 from geodat.say import *
 import Points
 
-from importlib import reload
+import sys
+if sys.version_info[0] !=2:
+	from importlib import reload
+
+
 
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
@@ -297,7 +301,7 @@ MainWindow:
 			clicked.connect: app.getfn
 
 		QtGui.QLineEdit:
-			setText:"/home/microelly2/Bilder/fcsw.png"
+			setText:"UserAppData/Mod/geodat/testdata/freeka.png"
 			id: 'bl'
 
 		HorizontalLayout:
@@ -374,6 +378,9 @@ class MyApp(object):
 		'''load the file and create a nurbs surface'''
 		try:
 			filename=self.root.ids['bl'].text()
+			if filename.startswith('UserAppData'):
+				filename=filename.replace('UserAppData',FreeCAD.ConfigGet("UserAppData"))
+
 			ts=time.time()
 			bs=import_image(
 					filename,
@@ -431,3 +438,5 @@ def runtest():
 if __name__ == '__main__':
 	runtest()
 
+def importImage():
+	mydialog()

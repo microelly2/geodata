@@ -52,7 +52,9 @@ import Points
 
 import re, math
 
-from importlib import reload
+import sys
+if sys.version_info[0] !=2:
+	from importlib import reload
 
 import geodat.transversmercator
 from  geodat.transversmercator import TransverseMercator
@@ -97,13 +99,6 @@ def runfile(fn, xw,xe,ys,yn,ox=0,oy=0):
 		c += 1
 		# if c == 100000: break
 		pb.pb.setValue((c/100)%100)
-		
-		
-	#	print("!", line)
-		#if c % 10 == 0:
-		#	Gui.updateGui()
-		#	Gui.SendMsgToActiveView("ViewFit")
-		
 
 		m = re.match(r'.*<node id="([^"]+)" lat="([^"]+)" lon="([^"]+)".*', line)
 		if m:
@@ -125,7 +120,7 @@ def runfile(fn, xw,xe,ys,yn,ox=0,oy=0):
 
 		m = re.match(r'.*/way.*', line)
 		if m:
-			print("erzeuge pfad")
+
 			for nd in nds:
 				x=poss[nd][0]
 				y=poss[nd][1]
@@ -139,7 +134,6 @@ def runfile(fn, xw,xe,ys,yn,ox=0,oy=0):
 #				d=Draft.makePoint(pts[0])
 
 			c +=1 
-			print (c,elev, len(pts)) 
 
 			poss={}
 			elev=0
@@ -168,16 +162,15 @@ def getdata(directory,dat):
 	if not os.path.exists(fn):
 
 		if not os.path.exists(zipfilename):
+			say("get "+ source)
 			tg=urllib.urlretrieve(source,zipfilename)
 			targetfile=tg[0]
 			say("targetfile:"+targetfile)
 		else:
-			print("schon osda")
-
-		fh = open(zipfilename, 'rb')
-		zfile = zipfile.ZipFile(fh)
-		zfile.extractall(directory)
-		fh.close()
+			fh = open(zipfilename, 'rb')
+			zfile = zipfile.ZipFile(fh)
+			zfile.extractall(directory)
+			fh.close()
 
 
 ## get the date from files,create a point cloud
@@ -191,11 +184,11 @@ def run(mx,my,dx,dy):
 	
 	dats=[]
 	
-	print (xw,ys,xe,yn)
+	say(xw,ys,xe,yn)
 	for ix in range(int(math.floor(xw)),int(math.floor(xe))+1):
 		for iy in range(int(math.floor(ys)),int(math.floor(yn))+1):
 			dat="Lat"+str(iy)+"Lon"+str(ix)+"Lat"+str(iy+1)+"Lon"+str(ix+1)
-			print(dat)
+			say(dat)
 			dats.append(dat)
 
 	directory=FreeCAD.ConfigGet("UserAppData") + "/geodat_SRTM/"
@@ -203,7 +196,6 @@ def run(mx,my,dx,dy):
 
 
 	if not os.path.isdir(directory):
-		print("create " + directory)
 		os.makedirs(directory)
 
 	for dat in dats:
@@ -218,6 +210,7 @@ def run(mx,my,dx,dy):
 
 
 	Gui.SendMsgToActiveView("ViewFit")
+	return pts
 
 
 
@@ -391,12 +384,11 @@ class MyApp(object):
 
 
 	def runbl(self):
-		print("Run values")
 		bl=self.root.ids['bl'].text()
 		spli=bl.split(',')
 		my=float(spli[0])
 		mx=float(spli[1])
-		print("Start")
+
 #		dy=0.09
 #		dx=0.09
 
@@ -409,24 +401,21 @@ class MyApp(object):
 
 
 	def runValues(self):
-		print("Run values")
 		b=self.root.ids['b'].text()
 		l=self.root.ids['l'].text()
 		s=self.root.ids['s'].value()
-		print([l,b,s])
+		say([l,b,s])
 		import WebGui
 #		WebGui.openBrowser( "http://www.openstreetmap.org/#map=19/"+str(b)+'/'+str(l))
 		import geodat.import_osm
-		print("Start")
 		geodat.import_osm.import_osm(float(b),float(l),float(s)/10,self.root.ids['progb'],self.root.ids['status'])
 
 
 	def showMap(self):
-		print("Run values")
 		b=self.root.ids['b'].text()
 		l=self.root.ids['l'].text()
 		s=self.root.ids['s'].value()
-		print([l,b,s])
+		say([l,b,s])
 		import WebGui
 		WebGui.openBrowser( "http://www.openstreetmap.org/#map=9/"+str(b)+'/'+str(l))
 
@@ -457,6 +446,8 @@ def runtest():
 	m=mydialog()
 	m.objects[0].hide()
 
+def importSRTM():
+	mydialog()
 
 if __name__ == '__main__':
 	runtest()

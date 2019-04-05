@@ -20,9 +20,12 @@ import FreeCAD
 import Draft, Part
 
 import numpy as np
-import matplotlib
-import matplotlib.pyplot as plt
-from matplotlib.pyplot import cm 
+
+
+#import matplotlib
+#import matplotlib.pyplot as plt
+#from matplotlib.pyplot import cm 
+
 
 import os,random,time,sys,traceback
 
@@ -42,9 +45,14 @@ def sayd(s):
 		log(str(s))
 		FreeCAD.Console.PrintMessage(str(s)+"\n")
 
-def say(s):
+def say(*s):
 	log(str(s))
-	FreeCAD.Console.PrintMessage(str(s)+"\n")
+	if len(s)==1:FreeCAD.Console.PrintMessage(str(s[0]))
+	elif len(s)==0:FreeCAD.Console.PrintMessage(str(s[0]))
+	else:
+		for aa in s:
+			FreeCAD.Console.PrintMessage(str(aa)+' ')
+	FreeCAD.Console.PrintMessage("\n")
 
 def sayErr(s):
 	log(str(s))

@@ -354,9 +354,6 @@ def stop():
 
 
 def keypress(ef,keystring):
-	print
-	print
-	print("!on_key_press:", keystring)
 
 	camera=FreeCAD.ActiveDocument.Wedge
 
@@ -396,10 +393,7 @@ def keypress(ef,keystring):
 
 
 def on_keypress2(ef,keystring):
-	print
-	print
-	print
-	print("on_key_press:", keystring)
+
 	try:
 		camera=FreeCADGui.activeDocument().activeView().getCameraNode()
 
@@ -545,13 +539,11 @@ def on_keypress2(ef,keystring):
 		dir=FreeCAD.Vector(pos3)# .sub(ef.campos)
 		dir.normalize()
 		
-		
-		print
 		print(ef.direction)
 		print("ef.campos", ef.campos)
 		ef.map.setPos(ef.campos.x,ef.campos.y,ef.campos.z)
 
-		
+
 		spos=FreeCAD.Vector(ef.campos)
 		d=200
 		prpos=FreeCAD.Vector(d*dir.x,d*dir.y,d*dir.z)
@@ -576,7 +568,6 @@ def on_keypress2(ef,keystring):
 
 		if keystring=='F9':
 			a=camera.heightAngle.getValue()
-			print(a)
 			a += 0.01
 			camera.heightAngle.setValue(a)
 		if keystring=='F10':
@@ -626,15 +617,8 @@ def on_keypress2(ef,keystring):
 			
 			
 			campos2=(round(ef.campos[0]),round(ef.campos[1]),round(ef.campos[2]))
-			print 
-			print("Camera position   ",campos2)
-			print("Camera direction  ",(round(t.x,2),round(t.y,2),round(t.z,2)))
-			nD=camera.nearDistance.getValue())
-			print("near Distance     ",round(nD))
-			a=camera.heightAngle.getValue())
-			print("height Angle      ", round(a/math.pi*180))
-			print("focal length      ", round(10/math.tan(a/2)))
-			print 
+			nD=camera.nearDistance.getValue()
+			a=camera.heightAngle.getValue()
 
 			out=''
 			out += "camera position " + str(campos2) +"\n"
@@ -646,6 +630,8 @@ def on_keypress2(ef,keystring):
 			out += "height Angle      " + str(round(a/math.pi*180)) +'\n'
 			out += "focal length " + str(round(10/math.tan(a/2)))+"\n"
 			out += "near Distance     " + str(round(nD)) + '\n'
+			
+			print(out)
 			
 			
 			
@@ -668,19 +654,11 @@ def on_keypress2(ef,keystring):
 	return True
 
 def on_move(ef,globalVector,localVector):
-	print("on_move:")
-	print(globalVector)
-	print(localVector)
 	return True
 
 def on_move2(ef,globalVector,localVector):
-#	print("on_move2:")
-	print(ef.mouseMode,globalVector,localVector)
-#	print(localVector)
+
 	if ef.mouseMode:
-#		print("Mouse mode  !!" ,  globalVector)
-#		print(globalVector)
-#		print(localVector)
 		d=3
 		if ef.v:
 			if ef.v[0]>globalVector[0]+d:
@@ -973,21 +951,18 @@ def myNavigatorWidget(ef):
 
 ## background image winter
 def background1(ef):
-	print("hintergrund 1")
 	fn='/home/microelly2/FCB/b175_camera_controller/winter.jpg'
 	fn=os.path.dirname(__file__) +"/../pics/winter.jpg"
 	ef.tex.filename = fn
 
 ## background image dune
 def background2(ef):
-	print("hintergrund 2")
 	fn='/home/microelly2/FCB/b175_camera_controller/P1170437.JPG'
 	fn=os.path.dirname(__file__) +"/../pics//P1170437.JPG"
 	ef.tex.filename = fn
 
 ## background image city
 def background3(ef):
-	print("hintergrund ")
 	fn='/home/microelly2/FCB/b175_camera_controller/P1170039.JPG'
 	fn=os.path.dirname(__file__) +"/../pics/P1170039.JPG"
 	ef.tex.filename = fn
@@ -995,10 +970,8 @@ def background3(ef):
 
 ## background partially transparent
 def background4(ef):
-	print("hintergrund ")
 	fn='/home/microelly2/FCB/b175_camera_controller/transpa.png'
 	fn=os.path.dirname(__file__) +"/../pics/transpa.png"
-	print(fn)
 	ef.tex.filename = fn
 
 def on_windowslist(ef,windowslist):
@@ -1067,7 +1040,6 @@ def navi():
 	fn=os.path.dirname(__file__) +"/../pics/winter.jpg"
 
 	sg = FreeCADGui.ActiveDocument.ActiveView.getSceneGraph()
-	print(sg)
 
 	col = coin.SoBaseColor()
 	#col.rgb=(1,0,0)
@@ -1179,8 +1151,6 @@ def navi():
 	mgr.setAutoClipping(0)
 	FreeCAD.ActiveDocument.recompute()
 	FreeCADGui.updateGui() 
-	print("File ", __file__)
-	print("1!!")
 
 	return ef
 
@@ -1191,3 +1161,7 @@ def runtest():
 	ef.navi.hide()
 	ef.output.hide()
 
+
+
+def Navigator():
+	runtest()

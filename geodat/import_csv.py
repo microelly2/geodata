@@ -10,7 +10,9 @@
 
 from geodat.say import *
 
-from importlib import reload
+import sys
+if sys.version_info[0] !=2:
+	from importlib import reload
 
 import FreeCAD,FreeCADGui, Part
 App=FreeCAD
@@ -62,8 +64,6 @@ def import_csv(fn,orig,datatext=None):
 		lines=datatext.split('\n')
 		for l in lines:
 			pp=re.split("( )+",l)
-			print(pp)
-			print(len(pp))
 			if len(pp)==1:
 				continue
 			if len(pp)<3:
@@ -71,13 +71,11 @@ def import_csv(fn,orig,datatext=None):
 			data.append([str(pp[0]),str(pp[2])])
 		print(data)
 	else:
-		with open(fn, 'rb') as csvfile:
+		with open(fn, 'r') as csvfile:
 			reader = csv.reader(csvfile, delimiter=';')
+			print (reader)
 			for row in reader:
-				print(', '.join(row))
 				data.append(row)
-
-	print(data)
 
 	tm=TransverseMercator()
 	tm.lat=origin[0]
@@ -115,7 +113,7 @@ MainWindow:
 			setText:"Data input filename"
 
 		QtGui.QLineEdit:
-			setText:"???/csv_example.csv"
+			setText:"/home/thomas/.FreeCAD/Mod/geodat/testdata/csv_example.csv"
 			id: 'bl'
 
 		QtGui.QPushButton:
@@ -161,17 +159,17 @@ class MyApp(object):
 
 	def getfn(self):
 		fileName = QtGui.QFileDialog.getOpenFileName(None,u"Open File",u"/tmp/");
-		print(fileName)
 		s=self.root.ids['bl']
 		s.setText(fileName[0])
 
 
-def mydialog():
+
+def importCSV():
 	app=MyApp()
 
-	import geodat
 	import geodat.miki as miki
-	reload(miki)
+	#reload(miki)
+
 
 	miki=miki.Miki()
 	miki.app=app

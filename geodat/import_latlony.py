@@ -65,11 +65,11 @@ trackstring='''
 
 import time, json, os
 
-#previously imported as urllib2
-#but not used in this module
-#import urllib.request
 
-from importlib import reload
+import sys
+if sys.version_info[0] !=2:
+	from importlib import reload
+
 
 import pivy 
 from pivy import coin
@@ -112,7 +112,6 @@ def import_latlon(filename,orig,hi):
 	c1=f.read()
 	import re
 	#content = re.sub('^\<\?[^\>]+\?\>', '', c1)
-	print(c1)
 
 
 	tm=TransverseMercator()
@@ -120,8 +119,9 @@ def import_latlon(filename,orig,hi):
 	# outdoor inn ...
 	tm.lat,tm.lon = 50.3736049,11.191643
 	
-	if orig!='auto':
+	if orig != 'auto':
 		yy=orig.split(' ')
+		say(yy)
 		origin=(float(yy[0]),float(yy[1]))
 		tm.lat=origin[0]
 		tm.lon=origin[1]
@@ -172,7 +172,6 @@ def import_latlon(filename,orig,hi):
 
 	import Draft
 	Draft.makeWire(points)
-	print(points)
 
 
 	return
@@ -180,7 +179,7 @@ def import_latlon(filename,orig,hi):
 
 	if orig == 'auto':
 		tm.lat, tm.lon = (max(lats)+min(lats))/2,(max(lons)+min(lons))/2
-		print("origin:")
+		print ("origin:")
 		print(tm.lat,tm.lon)
 		print ("----------")
 
@@ -336,6 +335,7 @@ def import_latlon(filename,orig,hi):
 		sayexc()
 
 	print("!",orig,"!")
+
 	return (str(tm.lat)+','+str(tm.lon))
 	return px,py
 
@@ -407,8 +407,8 @@ MainWindow:
 			setText:"Origin (lat,lon) "
 
 		QtGui.QLineEdit:
-#			setText:"50.3736049,11.191643"
-			setText:"auto"
+			setText:"50.3736049 11.191643"
+#			setText:"auto"
 			id: 'orig'
 
 		QtGui.QLabel:
@@ -448,7 +448,6 @@ class MyApp(object):
 
 	def getfn(self):
 		fileName = QtGui.QFileDialog.getOpenFileName(None,u"Open File",u"/tmp/");
-		print(fileName)
 		s=self.root.ids['bl']
 		s.setText(fileName[0])
 
@@ -458,6 +457,7 @@ def mydialog():
 
 	import geodat
 	import geodat.miki as miki
+
 	reload(miki)
 
 	miki=miki.Miki()
@@ -467,8 +467,8 @@ def mydialog():
 	miki.parse2(s6)
 	miki.run(s6)
 
-
-# mydialog()
+def importLatLonZ():
+	mydialog()
 
 
 

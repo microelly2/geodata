@@ -7,9 +7,13 @@
 #-- GNU Lesser General Public License (LGPL)
 #-------------------------------------------------
 
+import sys
+if sys.version_info[0] !=2:
+	from importlib import reload
+
 
 from geodat.say import *
-from importlib import reload
+
 import FreeCAD,FreeCADGui, Part
 App=FreeCAD
 Gui=FreeCADGui
@@ -97,6 +101,10 @@ def	import_emir(
 			):
 
 	#lines=data.splitlines()
+	if filename.startswith('UserAppData'):
+		filename=filename.replace('UserAppData',FreeCAD.ConfigGet("UserAppData"))
+
+
 	f=open(filename, 'rb')
 	lines=f.readlines()
 	rc=parsedata(lines)
@@ -120,7 +128,7 @@ MainWindow:
 			setText:"Data input filename"
 
 		QtGui.QLineEdit:
-			setText:"/tmp/emir.dat"
+			setText:"UserAppData/Mod/geodat/testdata/emir.dat"
 			id: 'bl'
 
 		QtGui.QPushButton:
@@ -185,3 +193,8 @@ def mydialog():
 def runtest():
 	m=mydialog()
 	m.objects[0].hide()
+
+
+
+def importEMIR():
+	mydialog()

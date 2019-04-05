@@ -11,15 +11,22 @@
 import FreeCAD,FreeCADGui
 import FreeCAD, FreeCADGui, Draft
 
-from importlib import reload
+import sys
+if sys.version_info[0] !=2:
+	from importlib import reload
+	import urllib.request
+else:
+	import urllib2
 
-import urllib.request, json, time
+import json, time
 import pivy
 from pivy import coin
 
 import geodat.transversmercator
 from  geodat.transversmercator import TransverseMercator
 import inventortools
+
+from geodat.say import *
 
 #\cond
 tm=TransverseMercator()
@@ -30,13 +37,30 @@ tm=TransverseMercator()
 # @param b latitude
 # @param l longitude
 
-def getheight(b,l):
+'''
+f='https://maps.googleapis.com/maps/api/elevation/json?locations=50.3377879,11.2104096'
+response = urllib2.urlopen(f)
+'''
 
+def getheight(b,l):
 	source="https://maps.googleapis.com/maps/api/elevation/json?locations="+str(b)+','+str(l)
-	response = urllib.request.urlopen(source)
+	say(source)
+
+	try:
+		import urllib2
+		response = urllib2.urlopen(source)
+	except:
+		response = urllib.request.urlopen(source)
+
 	ans=response.read()
-	print(ans)
+#	say(ans)
 	s=json.loads(ans)
+#	say(s)
+
+	if s['status']=='REQUEST_DENIED':
+		say(s['error_message'])
+		return 100.
+
 	res=s['results']
 	for r in res:
 		return round(r['elevation']*1000,2)
@@ -50,9 +74,9 @@ def run(b0=50.35,l0=11.17,b=50.35,le=11.17,size=40):
 	tm.lon=l0
 	baseheight=getheight(tm.lat,tm.lon)
 	center=tm.fromGeographic(tm.lat,tm.lon)
-	
-	print("Base height ", baseheight)
-	print("center point", center)
+
+	say("Base height ", baseheight)
+	say("center point", center)
 
 	source="https://maps.googleapis.com/maps/api/elevation/json?locations="
 	
@@ -63,12 +87,28 @@ def run(b0=50.35,l0=11.17,b=50.35,le=11.17,size=40):
 			ss += '|'
 		source += ss
 
-	response = .request.urlopen(source)
-	ans=response.read()
+
+	try:
+		import urllib2
+		response = urllib2.urlopen(source)
+	except:
+		response = urllib.request.urlopen(source)
+
 	#+# to do: error handling  - wait and try again
-	print(ans)
+	ans=response.read()
+#	say(ans)
+#	say("--------")
 	s=json.loads(ans)
-	res=s['results']
+	say(s)
+
+	
+	if s['status']=='REQUEST_DENIED':
+		say("Fehler-aBBruch")
+		return
+	else:
+		print(ans)
+		s=json.loads(ans)
+		res=s['results']
 	
 	points=[]
 	for r in res:
@@ -95,6 +135,7 @@ def import_heights(b,le,size):
 
 	lines=[]
 	for ld in range(-size,size): 
+		say("run",ld)
 		res=run(b,le,b,le +ld*0.001,size)
 		lines.append(res)
 
@@ -122,11 +163,13 @@ MainWindow:
 		QtGui.QLineEdit:
 			setText:"50.3377879,11.2104096"
 #			setText:"50.3736049,11.191643"
-
 			id: 'bl'
+
 		QtGui.QPushButton:
 			setText: "Run values"
 			clicked.connect: app.runbl
+
+#
 '''
 
 
@@ -141,8 +184,10 @@ class MyApp(object):
 		l=float(spli[1])
 
 		s=15
-		print([l,b,s])
+		say([l,b,s])
 		import_heights(float(b),float(l),float(s))
+
+
 
 
 ## the gui startup
@@ -166,8 +211,8 @@ def mydialog():
 
 
 ## test start the gui 
-def mytest():
-	app=App()
+def importHeights():
+	app=MyApp()
 
 	import geodat.miki as miki
 	reload(miki)
@@ -186,4 +231,7 @@ def mytest():
 # mytest()
 
 
-
+def importHeights():
+	say("runit")
+	mydialog()
+	say("runit-done")

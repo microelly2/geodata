@@ -24,8 +24,12 @@
 __title__="FreeCAD Geodata Toolkit"
 __author__ = "Thomas Gundermann"
 __url__ = "http://www.freecadbuch.de"
+__vers__ ="py3.01"
 
-from importlib import reload
+import sys
+if sys.version_info[0] !=2:
+	from importlib import reload
+
 
 import FreeCAD, FreeCADGui
 
@@ -36,28 +40,19 @@ windowCreated = 0
 #for p in sys.path:
 #	print(p)
 
-#print("------------------")
-#import geodat
-#print(geodat)
-#print("geodat loaded")
+'''
+try:
+	import importlib
+	def reload(a):
+		importlib.reload(a)
+except:
+	pass
+>>>>>>> Stashed changes
 
-
-# kann weg 
-#class import_osm:
-#
-#	def Activated(self):
-#		print("run import ...")
-#		import geodat.import_osm
-#		geodat.import_osm.import_osm()
-#		
-#
-#	def GetResources(self):
-#		return {
-#			'Pixmap'  : 'Std_Tool2', 
-#			'MenuText': 'Import OSM Map', 
-#			'ToolTip': 'Import OSM Map'
-#		}
-
+def reload(a):
+	import importlib
+	importlib.reload(a)
+'''
 
 try:
 	import cv2
@@ -76,6 +71,8 @@ except:
 
 import FreeCAD,FreeCADGui
 import sys
+
+reload(sys)
 
 #---------------------------------------------------------------------------
 # define the Commands of the Test Application module
@@ -107,7 +104,6 @@ FreeCADGui.addCommand('My_Test Geodat'        ,MyTestCmd2())
 class import_csv:
 
 	def Activated(self):
-		print("run import ...")
 		import geodat.import_csv
 		geodat.import_csv.mydialog()
 
@@ -122,7 +118,6 @@ class import_csv:
 class import_emir:
 
 	def Activated(self):
-		print("run import ...")
 		import geodat.import_emir
 		from importlib import reload		
 
@@ -141,7 +136,6 @@ class import_emir:
 class import_xyz:
 
 	def Activated(self):
-		print("run import ...")
 		import geodat.import_xyz
 		from importlib import reload
 
@@ -159,7 +153,6 @@ class import_xyz:
 class import_image:
 
 	def Activated(self):
-		print("run import ...")
 		import geodat.import_image
 		from importlib import reload
 
@@ -178,10 +171,10 @@ class import_image:
 class import_gpx:
 
 	def Activated(self):
-		print("run import ...")
 		import geodat.import_gpx
+
 		geodat.import_gpx.mydialog()
-		
+
 
 	def GetResources(self):
 		return {
@@ -193,10 +186,8 @@ class import_gpx:
 class import_latlony:
 
 	def Activated(self):
-		print("run import ...")
 		import geodat.import_latlony
 		from importlib import reload
-
 		reload(geodat.import_latlony)
 		geodat.import_latlony.mydialog()
 		#geodat.import_latlony.run()
@@ -213,7 +204,6 @@ class import_latlony:
 class import_aster:
 
 	def Activated(self):
-		print("run import ...")
 		import geodat.import_aster
 		from importlib import reload
 
@@ -232,7 +222,6 @@ class import_aster:
 class import_lidar:
 
 	def Activated(self):
-		print("run import ...")
 		import geodat.import_lidar
 		from importlib import reload
 		
@@ -252,7 +241,6 @@ class import_lidar:
 class navigator:
 
 	def Activated(self):
-		print("run import ...")
 		import geodat.navigator
 		FreeCADGui.activeDocument().activeView().setCameraType("Perspective")
 		FreeCADGui.updateGui() 
@@ -270,19 +258,13 @@ class navigator:
 class mydialog:
 
 	def Activated(self):
-		print("run import ...")
-#		import geodat.mydialog
-#		reload(geodat.mydialog)
-#		geodat.mydialog.mydialog()
 		import geodat.import_osm
 		from importlib import reload
-		
 		reload(geodat.import_osm)
 		geodat.import_osm.mydialog()
 
 	# logger version for paulee
 	def XXXActivated(self):
-		print("run import ...")
 		import geodat.import_osm_logger
 		from importlib import reload
 
@@ -302,7 +284,6 @@ class mydialog:
 class importheights:
 
 	def Activated(self):
-		print("run import ...")
 		import geodat.import_heights
 		from importlib import reload
 
@@ -320,7 +301,6 @@ class importheights:
 class importsrtm:
 
 	def Activated(self):
-		print("run import ...")
 		import geodat.import_srtm
 		from importlib import reload
 		
@@ -339,7 +319,6 @@ class importsrtm:
 class createHouse:
 
 	def Activated(self):
-		print("run import ...")
 		import geodat.createhouse
 		from importlib import reload
 
@@ -358,7 +337,7 @@ class createHouse:
 class ElevationGrid:
 
 	def Activated(self):
-		print("run import ...")
+
 		import geodat.elevationgrid
 		from importlib import reload
 		
@@ -390,6 +369,189 @@ FreeCADGui.addCommand('Create House', createHouse())
 FreeCADGui.addCommand('Navigator', navigator())
 FreeCADGui.addCommand('ElevationGrid', ElevationGrid())
 FreeCADGui.addCommand('Import EMIR', import_emir())
+#------------------------------------------------------------------------------
+
+# the menu entry list
+FreeCAD.tcmdsGeodat = []
+
+def always():
+	''' always'''
+	return True
+
+def ondocument():
+	'''if a document is active'''
+	return FreeCADGui.ActiveDocument is not None
+
+def onselection():
+	'''if at least one object is selected'''
+	return len(FreeCADGui.Selection.getSelection())>0
+
+def onselection1():
+	'''if exactly one object is selected'''
+	return len(FreeCADGui.Selection.getSelection())==1
+
+def onselection2():
+	'''if exactly two objects are selected'''
+	return len(FreeCADGui.Selection.getSelection())==2
+
+def onselection3():
+	'''if exactly three objects are selected'''
+	return len(FreeCADGui.Selection.getSelection())==3
+
+def onselex():
+	'''if at least one subobject is selected'''
+	return len(FreeCADGui.Selection.getSelectionEx())!=0
+
+def onselex1():
+	'''if exactly one subobject is selected'''
+	return len(FreeCADGui.Selection.getSelectionEx())==1
+
+
+global _Command2
+
+class _Command2():
+
+	def __init__(self, lib=None, name=None, icon=None, command=None, modul='geodat',tooltip='No Tooltip'):
+
+
+		if lib == None:
+			lmod = modul
+		else:
+			lmod = modul + '.' + lib
+		if command == None:
+			command = lmod + ".run()"
+		else:
+			command = lmod + "." + command
+
+		self.lmod = lmod
+		self.command = command
+		self.modul = modul
+		if icon != None:
+			self.icon = __dir__ + icon
+		else:
+			self.icon = None
+
+		if name == None:
+			name = command
+		self.name = name
+		self.tooltip=tooltip
+
+	def GetResources(self):
+		if self.icon != None:
+			return {'Pixmap': self.icon,
+					'MenuText': self.name,
+					'ToolTip': self.tooltip,
+					'CmdType': "ForEdit"  # bleibt aktiv, wenn sketch editor oder andere tasktab an ist
+					}
+		else:
+			return {
+				#'Pixmap' : self.icon,
+				'MenuText': self.name,
+				'ToolTip': self.name,
+				'CmdType': "ForEdit"  # bleibt aktiv, wenn sketch editor oder andere tasktab an ist
+			}
+
+	def IsActive(self):
+		if Gui.ActiveDocument:
+			return True
+		else:
+			return False
+
+	def Activated(self):
+
+
+		import re
+		ta=True
+		if ta:
+			FreeCAD.ActiveDocument.openTransaction(self.name)
+		if self.command != '':
+			if self.modul != '':
+				modul = self.modul
+			else:
+				modul = self.name
+			if sys.version_info[0] !=2:
+				Gui.doCommand("from importlib import reload")
+
+			Gui.doCommand("import " + modul)
+			Gui.doCommand("import " + self.lmod)
+			Gui.doCommand("reload(" + self.lmod + ")")
+			docstring = "print();print(" + re.sub(r'\(.*\)', '.__doc__'+")", self.command)
+
+			Gui.doCommand(docstring)
+			Gui.doCommand(self.command)
+		if ta:
+			FreeCAD.ActiveDocument.commitTransaction()
+		if FreeCAD.ActiveDocument != None:
+			FreeCAD.ActiveDocument.recompute()
+
+
+
+def c3bI(menu, isactive, name, text, icon='None', cmd=None, tooltip='',*info):
+
+	import re
+	global _Command2
+	if cmd == None:
+		cmd = re.sub(r' ', '', text) + '()'
+	if name == 0:
+		name = re.sub(r' ', '', text)
+	if icon=='None':
+		pic=re.sub(r' ', '', text)
+		icon='/../icons/'+pic+'.svg'
+
+	if tooltip=='':
+		tooltip=name
+	t = _Command2(name, text, icon, cmd, tooltip=tooltip,*info)
+	title = re.sub(r' ', '', text)
+	name1 = "Geodat_" + title
+	t.IsActive = isactive
+	Gui.addCommand(name1, t)
+	FreeCAD.tcmdsGeodat.append([menu, name1])
+	return name1
+
+
+
+if FreeCAD.GuiUp:
+
+	tools=[]
+	_beztools=[]
+
+	current=[]
+	_current=[]
+
+	tools += [c3bI(["Geodat"], always, 'import_osm', 'import OSM',tooltip='import data from openstreetmap',icon=None)]
+	tools += [c3bI(["Geodat"], always, 'import_csv', 'import CSV',tooltip='import csv file with point data',icon=None)]
+
+	tools += [c3bI(["Geodat"], always, 'import_gpx', 'import GPX Track',tooltip='import track in gpx format',icon=None)]
+	tools += [c3bI(["Geodat"], always, 'import_heights', 'import Heights',tooltip='import heights #+#',icon=None)]
+	tools += [c3bI(["Geodat"], always, 'import_srtm', 'import SRTM',tooltip='import contours from SRTM',icon=None)]
+	tools += [c3bI(["Geodat"], always, 'import_xyz', 'import XYZ',tooltip='import x,y,z tuples from file',icon=None)]
+	tools += [c3bI(["Geodat"], always, 'import_latlony', 'import LatLonZ',tooltip='import lat,lon,height tuples from file',icon=None)]
+	tools += [c3bI(["Geodat"], always, 'import_image', 'import Image',tooltip='import pixel colors as heights',icon=None)]
+	tools += [c3bI(["Geodat"], always, 'import_aster', 'import ASTER',tooltip='import ASTER data from file',icon=None)]
+	tools += [c3bI(["Geodat"], always, 'import_lidar', 'import LIDAR',tooltip='import LIDAR data from file',icon=None)]
+	tools += [c3bI(["Geodat"], always, 'import_emir', 'import EMIR',tooltip='import EMIR data from file',icon=None)]
+	tools += [c3bI(["Geodat","Specials"], always, 'createhouse', 'create House',tooltip='create a house',icon=None)]
+	tools += [c3bI(["Geodat","Specials"], always, 'navigator', 'Navigator',tooltip='inspect the scene with a navigator',icon=None)]
+	tools += [c3bI(["Geodat"], always, 'elevationgrid', 'Elevation Grid',tooltip='#+#',icon=None)]
+
+
+
+
+	current += [c3bI(["Geodat"], always, 'run_tests', 'test_import_csv',icon=None)]
+	current += [c3bI(["Geodat"], always, 'run_tests', 'test_import_osm',icon=None)]
+	current += [c3bI(["Geodat"], always, 'run_tests', 'test_A',icon=None)]
+	current += [c3bI(["Geodat"], always, 'run_tests', 'test_B',icon=None)]
+
+
+
+	toolbars = [
+				['Geodat Tools', tools],
+				['My current Work', current]
+			]
+
+
+
+
 
 class Geodat ( Workbench ):
 	"Geo data"
@@ -400,14 +562,40 @@ class Geodat ( Workbench ):
 	def GetClassName(self):
 		return "Gui::PythonWorkbench"
 
+	def __init__(self, toolbars, version):
+
+		self.toolbars = toolbars
+		self.version = version
+
+
 	def Initialize(self):
 		
-		cmds= ["Import OSM Map",'Import CSV','Import GPX',
-			'Import Heights','Import SRTM','Import XYZ','Import LatLonZ','Import Image','Import ASTER','Import LIDAR','Navigator',
-			'Create House','ElevationGrid','Import EMIR']
-		self.appendToolbar("Geo Data Test", ['My_Test Geodat','Import LIDAR'])
-		self.appendMenu("Geo Data", cmds)
+#		cmds= ["Import OSM Map",'Import CSV','Import GPX',
+#			'Import Heights','Import SRTM','Import XYZ','Import LatLonZ','Import Image','Import ASTER','Import LIDAR','Navigator',
+#			'Create House','ElevationGrid','Import EMIR']
+#		self.appendToolbar("Geo Data Test", ['My_Test Geodat','Import LIDAR'])
+#		self.appendMenu("Geo Data", cmds)
 		Log ("Loading Goe Data Workbench ... done\n")
+
+		# create menues
+		menues = {}
+		ml = []
+		for _t in FreeCAD.tcmdsGeodat:
+			c = _t[0]
+			a = _t[1]
+			try:
+				menues[tuple(c)].append(a)
+
+			except:
+				menues[tuple(c)] = [a]
+				ml.append(tuple(c))
+
+		for m in ml:
+			self.appendMenu(list(m), menues[m])
+
+		for t in self.toolbars:
+				self.appendToolbar(t[0], t[1])
+
 
 
 
@@ -742,4 +930,9 @@ static char * osm_xpm[] = {
 "_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+"};
 """
 
-FreeCADGui.addWorkbench(Geodat)
+
+
+
+
+
+FreeCADGui.addWorkbench(Geodat(toolbars, __vers__))

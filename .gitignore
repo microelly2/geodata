@@ -60,3 +60,17 @@ target/
 
 #Ipython Notebook
 .ipynb_checkpoints
+
+
+*.txt
+*~
+_private/
+Doxyfile
+makefile
+myStyle.css
+
+doxygen_doku.md
+doxup
+Test*
+
+

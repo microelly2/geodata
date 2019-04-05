@@ -18,7 +18,10 @@
 #
 #
 
-from importlib import reload
+import sys
+if sys.version_info[0] !=2:
+	from importlib import reload
+
 
 import FreeCAD, Draft,Part
 import FreeCADGui
@@ -30,6 +33,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy.interpolate
 import Points
+from say import say,sayErr,sayW
 
 
 # test data
@@ -145,12 +149,11 @@ def text2coordList(datatext):
 			words=l.split()
 			try:
 				[xv,yv,zv]=[float(words[0]),float(words[1]),float(words[2])]
-#				print(xv+yv+zv)
 				x.append(xv)
 				y.append(yv)
 				z.append(10*zv)
 			except:
-				print("Fehler in Zeile ",zn)
+				sayErr(("Fehler in Zeile ",zn))
 
 	x=np.array(x)
 	y=np.array(y)
@@ -222,7 +225,7 @@ def interpolate(x,y,z, gridsize,mode='thin_plate',rbfmode=True,shape=None):
 		rbf = scipy.interpolate.Rbf(x, y, z, function=mode)
 		rbf2 = scipy.interpolate.Rbf( y,x, z, function=mode)
 	else:
-		print("interp2d nicht implementiert")
+		sayErr("interp2d nicht implementiert")
 		x=np.array(x)
 		y=np.array(y)
 		z=np.array(z)
@@ -250,22 +253,12 @@ def showFace(rbf,rbf2,x,y,gridsize,shapeColor,bound):
 	for ix in xi:
 		points=[]
 		for iy in yi:
-#			print (ix,iy, rbf(ix,iy))
 			iz=float(rbf(ix,iy))
 
 #---------------------- special hacks #+#
 			if bound>0:
 				if iz > bound: iz = bound
 				if iz < -bound: iz = -bound
-#			print (ix,iy,iz)
-#			if abs(ix)>20 or abs(iy)>20: 
-#					iz=0
-
-#			if ix==np.max(x) or ix==np.min(x) or iy==np.max(y) or iy==np.min(y): 
-#					iz=0
-
-#---------------------- end hack 
-
 
 #			if rbf2!=None:
 #				iz -= float(rbf2(ix,iy))
@@ -275,9 +268,6 @@ def showFace(rbf,rbf2,x,y,gridsize,shapeColor,bound):
 		ws.append(w)
 		pts2.append(points)
 
-#-		FreeCAD.activeDocument().recompute()
-#-		FreeCADGui.updateGui()
-#-		Gui.SendMsgToActiveView("ViewFit")
 
 	ll=FreeCAD.activeDocument().addObject('Part::Loft','elevation')
 	ll.Sections=ws
@@ -292,8 +282,6 @@ def showFace(rbf,rbf2,x,y,gridsize,shapeColor,bound):
 	ll.Label="Interpolation Gitter " + str(grids)
 
 	bs=Part.BSplineSurface()
-#	print("Points --")
-#	print(pts2)
 	bs.interpolate(pts2)
 	Part.show(bs.toShape())
 
@@ -344,8 +332,8 @@ def createElevationGrid(mode,rbfmode=True,source=None,gridCount=20,zfactor=20,bo
 	'quintic' :(0.5,1.0, 0.0)
 	}
 
-	print ("Source",source,"mode",mode)
-	if source!=None:
+	say("Source",source,"mode",mode)
+	if source<>None:
 
 		if hasattr(source,"Shape"):
 			# part object
@@ -403,10 +391,6 @@ def createElevationGrid(mode,rbfmode=True,source=None,gridCount=20,zfactor=20,bo
 	ze=[20,10,20,5]
 
 	rbf2,xi2,yi2,zi2 = interpolate(xe,ye,ze, gridsize,mode,rbfmode,zi1.shape)
-	
-	#print(zi1.shape)
-	#print(zi2.shape)
-	
 	#zi=zi1-zi2
 	zi=zi1
 
@@ -508,15 +492,12 @@ import PySide
 from PySide import  QtGui,QtCore
 
 def srun(window):
-	print("arbeite ---")
-	print(window.colormap)
+	say(("colormap",window.colormap))
 #	window.r.hide()
 	mode=None
 	for it in window.mode.selectedItems():
-		print(it.text())
 		mode= it.text()
 	if mode == None: mode = 'linear'
-	print(int(window.grid.text()))
 	grid=int(window.grid.text())
 	zfac=int(window.zfac.text())
 	zmax=int(window.zmax.text())
@@ -537,7 +518,6 @@ def srun(window):
 
 
 def dialog(points):
-	print("dialog ",points.Label)
 
 	w=QtGui.QWidget()
 	w.source=points
@@ -608,11 +588,12 @@ def run():
 		App.setActiveDocument("Unnamed")
 		App.ActiveDocument=App.getDocument("Unnamed")
 		Gui.ActiveDocument=Gui.getDocument("Unnamed")
-		fname, _ = QtGui.QFileDialog.getOpenFileName(self, 'Open file with points','/home/thomas/freecad_buch/b234_heini_grid/')
-		print(fname)
+		fn='/home/thomas/.FreeCAD/Mod/geodat/testdata/roo.asc'
+		
+		fname, _ = QtGui.QFileDialog.getOpenFileName(self, 'Open file with points',fn)
+		say("Filename "+fname)
 		Points.insert(fname,"Unnamed")
 		t=App.ActiveDocument.ActiveObject.Label
-		print(t)
 		Gui.SendMsgToActiveView("ViewFit")
 		pcl=App.ActiveDocument.ActiveObject
 
@@ -621,4 +602,8 @@ def run():
 
 
 if __name__ == '__main__':
+	run()
+
+
+def ElevationGrid():
 	run()

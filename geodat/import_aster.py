@@ -237,3 +237,6 @@ def runtest():
 
 if __name__ == '__main__':
 	runtest()
+
+def importASTER():
+	mydialog()

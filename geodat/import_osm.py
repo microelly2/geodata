@@ -16,12 +16,22 @@
 #\cond
 from geodat.say import *
 
-from importlib import reload
-
 
 import time, json, os
 
-import urllib.request
+import sys
+if sys.version_info[0] !=2:
+	from importlib import reload
+	import urllib.request
+
+from say import *
+
+import time, json, os
+
+try:
+	import urllib2
+except:
+	import urllib
 
 import pivy
 from pivy import coin
@@ -30,7 +40,7 @@ from pivy import coin
 import geodat.transversmercator
 from  geodat.transversmercator import TransverseMercator
 
-import geodat.inventortools
+import geodat.inventortools as inventortools
 
 import geodat.xmltodict
 from  geodat.xmltodict import parse
@@ -50,7 +60,10 @@ def getHeight(b,l):
 	anz=0
 	while anz<4:
 			source="https://maps.googleapis.com/maps/api/elevation/json?locations="+str(b)+','+str(l)
-			response = urllib.request.urlopen(source)
+			try:
+				response = urllib2.urlopen(source)
+			except:
+				response = urllib.request.urlopen(source)
 			ans=response.read()
 			if ans.find("OVER_QUERY_LIMIT"):
 				anz += 1
@@ -114,6 +127,164 @@ def organize():
 			pathes.addObject(oj)
 			oj.ViewObject.Visibility=False
 
+#---------------------
+from geodat.say import *
+import re
+
+#fn='/home/thomas/.FreeCAD//geodat3/50.340722-11.232647-0.015'
+#fn='/home/thomas/.FreeCAD/system.cfg'
+
+debug=False
+
+class node():
+
+	def __init__(self,typ):
+#		print("erzuegen node,type ",typ)
+		self.typ=typ
+		self.params={}
+		self.content=[]
+
+	def getParam(self,param):
+		return self.params[param]
+
+	def getNodes(self,typ):
+		ns=[]
+		for c in self.content:
+			if c.typ==typ:
+				ns += [c]
+		return ns
+	
+	def addContent(self,c):
+		self.content += [c]
+
+	def __str__(self):
+		return self.typ
+
+
+	def getiterator(self,typ):
+		rc=[]
+		for obj in self.content:
+			if obj.typ==typ:
+				rc += [obj]
+			rc += obj.getiterator(typ)
+		return rc
+
+
+def parseParams(string):
+	params={}
+	s=string
+	while s!="":
+		res = re.search(r"(\S+)=\"([^\"]*)\"\s+(\S.*)", s)
+		if res != None:
+			assert len(res.groups())==3
+			k,v,s=res.group(1),res.group(2),res.group(3)
+			params[k]=v
+			continue
+
+		res = re.search(r"(\S+)=\"(.*)\"", s)
+		if res != None:
+			assert len(res.groups())==2
+			k,v,s=res.group(1),res.group(2),""
+			params[k]=v
+			continue
+
+		else:
+			raise Exception("parse Params Fehler:"+ s)
+			s=""
+	return params
+
+def getData(fn):
+	stack=[0,0]*4
+	stackpointer=-1
+
+	objs=[]
+
+	say("Read data from cache file ...")
+	say(fn)
+	f=open(fn,"r")
+	content=f.readlines()
+	# say(content)
+	for line in content:
+	#	print(line)
+
+		if re.search(r"^\s*$",line):
+			continue
+
+		# ein satz
+		res = re.search(r"^\s*<(\S+)\s+([^<]*)/>\s*$", line)
+		if res != None:
+	#		print "complete! ",res.groups()
+			assert len(res.groups())==2
+			typ=res.group(1)
+			obj=node(typ)
+			paramstring=res.group(2)
+			obj.params=parseParams(paramstring)
+			objs += [obj]
+			if stackpointer != -1:
+				stack[stackpointer].content += [obj]
+	#			print stack[stackpointer]
+	#			for c in stack[stackpointer].content:
+	#				print c,",",
+	#			print 
+			continue
+
+		res = re.search(r"^\s*<(\S+)\s+([^<]*)>\s*$", line)
+		if res != None:
+	#		print "!start! ",res.groups()
+			assert len(res.groups())==2
+			typ=res.group(1)
+			obj=node(typ)
+			paramstring=res.group(2)
+			obj.params=parseParams(paramstring)
+			objs += [obj]
+			if stackpointer != -1:
+				stack[stackpointer].content += [obj]
+	#			for c in stack[stackpointer].content:
+	#				print c,
+			stackpointer += 1
+			stack[stackpointer]=obj
+			continue
+
+
+		res = re.search(r"^\s*</([^<]*)>\s*$", line)
+		if res != None:
+	#		print "!ende! ",res.groups()
+			assert len(res.groups())==1
+			stackpointer -= 1
+			continue
+
+		res = re.search(r"^\s*<([^<\s]*)>\s*$", line)
+		if res != None:
+	#		print "!simple start! ",res.groups()
+			assert len(res.groups())==1
+			typ=res.group(1)
+			obj=node(typ)
+
+			continue
+
+
+		#auf und zu
+		res = re.search(r"^\s*<(\S+)\s+([^<]*)>(.*)</([^<]+)>\s*$", line)
+		if res != None:
+	#		print "!alles! ",res.groups()
+			assert len(res.groups())==4
+			continue
+
+
+		raise Exception("unerwartet :" +line +":")
+	#	x = re.findall('<([^<]*)>', line)
+	#	for xl in x: 
+	#		print(xl)
+
+	return stack[0]
+
+
+
+
+
+#--------------------
+
+
 ## core method to download and import the data
 #
 
@@ -121,6 +292,7 @@ def organize():
 #	import_osm2(b,l,bk,progressbar,status,False)
 
 def import_osm2(b,l,bk,progressbar,status,elevation):
+
 
 	dialog=False
 	debug=False
@@ -134,62 +306,102 @@ def import_osm2(b,l,bk,progressbar,status,elevation):
 	content=''
 
 	bk=0.5*bk
-	dn=FreeCAD.ConfigGet("UserAppData") + "/geodat/"
+	dn=FreeCAD.ConfigGet("UserAppData") + "/geodat3/"
 	fn=dn+str(b)+'-'+str(l)+'-'+str(bk)
 	import os
 	if not os.path.isdir(dn):
-		print("create " + dn)
 		os.makedirs(dn)
 
+
 	try:
-		print("I try to read data from cache file ...")
-		print(fn)
+		say("I try to read data from cache file ... ")
+		say(fn)
 		f=open(fn,"r")
 		content=f.read()
-		print("successful read")
-#		print(content)
+	#	say(content)
+	#	raise Exception("to debug:force load from internet")
 	except:
-		print("no cache file, so I connect to  openstreetmap.org...")
+		sayW("no cache file, so I connect to  openstreetmap.org...")
 		lk=bk #
 		b1=b-bk/1113*10
 		l1=l-lk/713*10
 		b2=b+bk/1113*10
 		l2=l+lk/713*10
 		source='http://api.openstreetmap.org/api/0.6/map?bbox='+str(l1)+','+str(b1)+','+str(l2)+','+str(b2)
-		print(source)
-		try:
-			response = urllib.request.urlopen(source)
-			first=True
-			content=''
-			f=open(fn,"w")
-			l=0
-			z=0
-			ct=0
-			for line in response:
+		say(source)
+
+		import requests
+		response = requests.get(source)
+		data = response.text
+		lines=response.text.split('\n')
+		FreeCAD.t=response
+		
+		
+		f=open(fn,"w")
+#		f.write(response.text)
+		if response.status_code == 200:
+			with open(fn, 'wb') as f:
+				for chunk in response.iter_content(1024):
+					f.write(chunk)
+		f.close()
+#		print("huhu");return
+
+
+		if 0:
+			try:
+				say("read--")
+				response = urllib.request.urlopen(source)
+				#import ssl
+				#ssl._create_default_https_context = ssl._create_unverified_context
+				#response = urllib.request.urlopen(source)
+
+	#			import requests
+	#			response = requests.get(source)
+
+				say(response)
+				say("2huu")
+				first=True
+				content=''
+				f=open(fn,"w")
+				l=0
+				z=0
+				ct=0
+				
+				say("2wkkw")
+				#say(response.text)
+		#		lines=response.text.split('\n')
+		#		say(len(lines))
+				say("ll")
+				# for line in lines:
+				for line in response:	
+					print ("Y",line)
+					if status:
+						if z>5000:
+							status.setText("read data ..." + str(l))
+							z=0
+						FreeCADGui.updateGui()
+						l+=1
+						z+=1
+					if first:
+						first=False
+					else:
+						content += line
+						f.write(line)
+				f.close()
 				if status:
-					if z>5000:
-						status.setText("read data ..." + str(l))
-						z=0
+					status.setText("FILE CLOSED ..." + str(l))
 					FreeCADGui.updateGui()
-					l+=1
-					z+=1
-				if first:
-					first=False
-				else:
-					content += line
-					f.write(line)
-			f.close()
+				response.close()
+			except:
+				sayErr( "Fehler beim Lesen")
+
 			if status:
-				status.setText("FILE CLOSED ..." + str(l))
+				status.setText("got data from openstreetmap.org ...")
 				FreeCADGui.updateGui()
-			response.close()
-		except:
-			print("Fehler beim Lesen")
-		if status:
-			status.setText("got data from openstreetmap.org ...")
-			FreeCADGui.updateGui()
-		print("Beeenden - im zweiten versuch daten auswerten")
-		return False
+			sayW("Beeenden - im zweiten versuch daten auswerten")
+
+			return False
+
 
 	if elevation:
 		baseheight=getHeight(b,l)
@@ -197,44 +409,58 @@ def import_osm2(b,l,bk,progressbar,status,elevation):
 		baseheight=0
 
 	if debug:
-		print("-------Data---------")
-		print(content)
-		print("--------------------")
+		say( "-------Data---------")
+		say(content)
 
 	if status:
 		status.setText("parse data ...")
 		FreeCADGui.updateGui()
 
-	try:
-		sd=parse(content)
-	except:
-		sayexc("Problem parsing data - abort")
-		status.setText("Problem parsing data - aborted, for details see Report view")
-		return
+	say("------------------------------")
+	say(fn)
+
+#	fn='/home/thomas/.FreeCAD//geodat3/50.340722-11.232647-0.015'
+	say(fn)
+
+	tree=getData(fn)
+
+#	for element in tree.getiterator('node'):
+#		say(element.params)
+
+#	say("ways")
+#	for element in tree.getiterator('way'):
+#		say(element.params)
+#	say("relations")
+#	for element in tree.getiterator('relation'):
+#		say(element.params)
 
 
 
-	if debug: print(json.dumps(sd, indent=4))
+
+	if 0:
+		try:
+			sd=parse(content)
+		except:
+			sayexc("Problem parsing data - abort")
+			status.setText("Problem parsing data - aborted, for details see Report view")
+			return
+
+	if debug: say(json.dumps(sd, indent=4))
 
 	if status:
 		status.setText("transform data ...")
 		FreeCADGui.updateGui()
 
-	bounds=sd['osm']['bounds']
-	nodes=sd['osm']['node']
-	ways=sd['osm']['way']
-	try:
-		relations=sd['osm']['relation']
-	except:
-		relations=[]
-
+	relations=tree.getiterator('relation')
+	nodes=tree.getiterator('node')
+	ways=tree.getiterator('way')
+	bounds=tree.getiterator('bounds')[0]
 
 	# center of the scene
-	bounds=sd['osm']['bounds']
-	minlat=float(bounds['@minlat'])
-	minlon=float(bounds['@minlon'])
-	maxlat=float(bounds['@maxlat'])
-	maxlon=float(bounds['@maxlon'])
+	minlat=float(bounds.params['minlat'])
+	minlon=float(bounds.params['minlon'])
+	maxlat=float(bounds.params['maxlat'])
+	maxlon=float(bounds.params['maxlon'])
 
 	tm=TransverseMercator()
 	tm.lat=0.5*(minlat+maxlat)
@@ -248,9 +474,12 @@ def import_osm2(b,l,bk,progressbar,status,elevation):
 	points={}
 	nodesbyid={}
 	for n in nodes:
-		nodesbyid[n['@id']]=n
-		ll=tm.fromGeographic(float(n['@lat']),float(n['@lon']))
-		points[str(n['@id'])]=FreeCAD.Vector(ll[0]-center[0],ll[1]-center[1],0.0)
+		nodesbyid[n.params['id']]=n
+		ll=tm.fromGeographic(float(n.params['lat']),float(n.params['lon']))
+		points[str(n.params['id'])]=FreeCAD.Vector(ll[0]-center[0],ll[1]-center[1],0.0)
+
+#	say(points)
+#	say("abbruch3 -hier daten uebernehmen !!");return
 
 	# hack to catch deutsche umlaute
 	def beaustring(string):
@@ -271,7 +500,7 @@ def import_osm2(b,l,bk,progressbar,status,elevation):
 				elif ord(tk)==242:
 					res += 'ü'
 				else:
-					print(["error sign",tk,ord(tk),string])
+					sayErr(["error sign",tk,ord(tk),string])
 					res +="#"
 		return res
 
@@ -322,9 +551,12 @@ def import_osm2(b,l,bk,progressbar,status,elevation):
 	starttime=time.time()
 	refresh=1000
 	for w in ways:
-#		print(w)
-		wid=w['@id']
-#		print(wid)
+		wid=w.params['id']
+
+#		say(w.params)
+#		say("way content")
+#		for c in w.content:
+#			say(c)
 
 		building=False
 		landuse=False
@@ -335,106 +567,91 @@ def import_osm2(b,l,bk,progressbar,status,elevation):
 		#if wn <2000: continue
 
 		nowtime=time.time()
-		if wn!=0 and (nowtime-starttime)/wn > 0.5: print("way ---- # " + str(wn) + "/" + str(coways) + " time per house: " +  str(round((nowtime-starttime)/wn,2)))
+		if wn!=0 and (nowtime-starttime)/wn > 0.5: 
+			say(("way ---- # " + str(wn) + "/" + str(coways) + " time per house: " +  str(round((nowtime-starttime)/wn,2))))
 		if progressbar:
 			progressbar.setValue(int(0+100.0*wn/coways))
 
-		if debug: print("w=", w)
-		if debug: print("tags ...")
 		st=""
+		st2=""
 		nr=""
 		h=0
-		try:
-			w['tag']
-		except:
-			print("no tags found.")
-			continue
+		ci=""
 
-		for t in w['tag']:
-			if t.__class__.__name__ == 'OrderedDict':
-				try:
-					if debug: print(t)
+		for t in w.getiterator('tag'):
+					try:
+						if debug: say(t)
+#						say(t.params['k'])
+#						say(t.params['v'])
 
-					if str(t['@k'])=='building':
-						building=True
-						st='building'
+						if str(t.params['k'])=='building':
+							building=True
+							if st == '':
+								st='building'
 
-					if str(t['@k'])=='landuse':
-						landuse=True
-						st=w['tag']['@k']
-						nr=w['tag']['@v']
+						if str(t.params['k'])=='landuse':
+							landuse=True
+							st=t.params['k']
+							nr=t.params['v']
 
-					if str(t['@k'])=='highway':
-						highway=True
-						st=t['@k']
+						if str(t.params['k'])=='highway':
+							highway=True
+							st=t.params['k']
 
-					if str(t['@k'])=='name':
-						zz=t['@v']
-						nr=beaustring(zz)
-					if str(t['@k'])=='ref':
-						zz=t['@v']
-						nr=beaustring(zz)+" /"
+						if str(t.params['k'])=='addr:city':
+							ci=t.params['v']
 
-					if str(t['@k'])=='addr:street':
-						zz=w['tag'][1]['@v']
-						st=beaustring(zz)
-					if str(t['@k'])=='addr:housenumber':
-						nr=str(t['@v'])
+						if str(t.params['k'])=='name':
+							zz=t.params['v']
+							nr=beaustring(zz)
+						if str(t.params['k'])=='ref':
+							zz=t.params['v']
+							nr=beaustring(zz)+" /"
 
-					if str(t['@k'])=='building:levels':
-						if h==0:
-							h=int(str(t['@v']))*1000*3
-					if str(t['@k'])=='building:height':
-						h=int(str(t['@v']))*1000
+						if str(t.params['k'])=='addr:street':
+							zz=t.params['v']
+							st2=" "+beaustring(zz)
+						if str(t.params['k'])=='addr:housenumber':
+							nr=str(t.params['v'])
 
-				except:
-					print("unexpected error ################################################################")
+						if str(t.params['k'])=='building:levels':
+							if h==0:
+								h=int(str(t.params['v']))*1000*3
+						if str(t.params['k'])=='building:height':
+							h=int(str(t.params['v']))*1000
 
-			else:
-				if debug: print([w['tag']['@k'],w['tag']['@v']])
-				if str(w['tag']['@k'])=='building':
-					building=True
-					st='building'
-				if str(w['tag']['@k'])=='building:levels':
-					if h==0:
-						h=int(str(w['tag']['@v']))*1000*3
-				if str(w['tag']['@k'])=='building:height':
-					h=int(str(w['tag']['@v']))*1000
+					except:
+						sayErr("unexpected error ######################################################")
 
-				if str(w['tag']['@k'])=='landuse':
-					landuse=True
-					st=w['tag']['@k']
-					nr=w['tag']['@v']
-				if str(w['tag']['@k'])=='highway':
-					highway=True
-					st=w['tag']['@k']
-					nr=w['tag']['@v']
-
-			name=str(st) + " " + str(nr)
-			if name==' ':
-				name='landuse xyz'
-			if debug: print("name ",name)
+		name=str(st) + " " + str(nr)
+		name=str(st) + st2+ " " + str(nr) 
+		if name==' ':
+			name='landuse xyz'
+		if debug: say(("name ",name))
+		#say(name,zz,nr,ci)
 
 		#generate pointlist of the way
 		polis=[]
 		height=None
 
 		llpoints=[]
-		for n in w['nd']:
-			m=nodesbyid[n['@ref']]
-			llpoints.append([n['@ref'],m['@lat'],m['@lon']])
+#		say("get nodes",w)
+		for n in w.getiterator('nd'):
+#			say(n.params)
+			m=nodesbyid[n.params['ref']]
+			llpoints.append([n.params['ref'],m.params['lat'],m.params['lon']])
 		if elevation:
-			print("get heights for " + str(len(llpoints)))
+			say("get heights for " + str(len(llpoints)))
 			heights=getHeights(llpoints)
 
-		for n in w['nd']:
-			p=points[str(n['@ref'])]
+		for n in w.getiterator('nd'):
+			p=points[str(n.params['ref'])]
 			if building and elevation:
 				if not height:
 					try:
-						height=heights[m['@lat']+' '+m['@lon']]*1000 - baseheight
+						height=heights[m.params['lat']+' '+m.params['lon']]*1000 - baseheight
 					except:
-						print("---no height avaiable for " + m['@lat']+' '+m['@lon'])
+						sayErr("---no height avaiable for " + m.params['lat']+' '+m.params['lon'])
 						height=0
 				p.z=height
 			polis.append(p)
@@ -492,7 +709,7 @@ def import_osm2(b,l,bk,progressbar,status,elevation):
 		refresh += 1
 		if os.path.exists("/tmp/stop"):
 
-			print("notbremse gezogen")
+			sayErr("notbremse gezogen")
 			FreeCAD.w=w
 			raise Exception("Notbremse Manager main loop")
 
@@ -514,7 +731,7 @@ def import_osm2(b,l,bk,progressbar,status,elevation):
 	organize()
 
 	endtime=time.time()
-	print("running time ", int(endtime-starttime),  " count ways ", coways)
+	say(("running time ", int(endtime-starttime),  " count ways ", coways))
 	return True
 
 
@@ -582,7 +799,7 @@ MainWindow:
 
 		QtGui.QLabel:
 		QtGui.QPushButton:
-			setText:"Get Coordinates"
+			setText:"Get Coordinates "
 			setFixedHeight: 20
 			clicked.connect: app.getCoordinate
 
@@ -752,16 +969,6 @@ class MyApp(object):
 		'''imports Sonneberg Neufang observatorium'''
 		self.run(50.3736049,11.191643)
 
-#	def runbl(self):
-#		print("Run values")
-#		bl=self.root.ids['bl'].text()
-#		spli=bl.split(',')
-#		b=float(spli[0])
-#		l=float(spli[1])
-#		s=self.root.ids['s'].value()
-#		elevation=self.root.ids['elevation'].isChecked()
-#		print([l,b,s])
-#		import_osm2(float(b),float(l),float(s)/10,self.root.ids['progb'],self.root.ids['status'],elevation)
 
 	def showHelpBox(self):
 		msg=PySide.QtGui.QMessageBox()
@@ -771,7 +978,7 @@ class MyApp(object):
 
 	def showHelpBoxY(self):
 		#self.run_sternwarte()
-		print("showHelpBox called")
+		say("showHelpBox called")
 
 	def getSeparator(self):
 		bl=self.root.ids['bl'].text()
@@ -829,7 +1036,7 @@ class MyApp(object):
 		br=self.root.ids['running']
 		br.show()
 
-		
+
 		bl_disp=self.root.ids['lat'].text()
 		b=float(bl_disp)
 		bl_disp=self.root.ids['long'].text()
@@ -838,7 +1045,7 @@ class MyApp(object):
 
 		s=self.root.ids['s'].value()
 		elevation=self.root.ids['elevation'].isChecked()
-		print([l,b,s])
+
 		rc= import_osm2(float(b),float(l),float(s)/10,self.root.ids['progb'],self.root.ids['status'],elevation)
 		if not rc:
 			button=self.root.ids['runbl2']
@@ -865,7 +1072,7 @@ class MyApp(object):
 
 		s=self.root.ids['s'].value()
 		elevation=self.root.ids['elevation'].isChecked()
-		print([l,b,s])
+
 		import_osm2(float(b),float(l),float(s)/10,self.root.ids['progb'],self.root.ids['status'],elevation)
 		button=self.root.ids['runbl1']
 		button.show()
@@ -880,10 +1087,8 @@ class MyApp(object):
 		b=float(bl_disp)
 		bl_disp=self.root.ids['long'].text()
 		l=float(bl_disp)
-		
-		
+
 		s=self.root.ids['s'].value()
-		print([l,b,s])
 		WebGui.openBrowser( "http://www.openstreetmap.org/#map=16/"+str(b)+'/'+str(l))
 
 	def showDistanceOnLabel(self):
@@ -909,4 +1114,57 @@ def mydialog():
 	miki.run(s6)
 	return miki
 
+
+def importOSM():
+	mydialog()
+
+
+
+'''
+#-----------------
+# verarbeiten 
+
+import xml.etree.ElementTree as ET
+
+fn='/home/thomas/.FreeCAD//geodat3/50.340722-11.232647-0.015'
+#tree = ET.parse(fn)
+
+data_as_string=''<?xml version="1.0"?><data>
+    <country name="Liechtenstein">
+        <rank>1</rank>
+        <year>2008</year>
+        <gdppc>141100</gdppc>
+        <neighbor name="Austria" direction="E"/>
+        <neighbor name="Switzerland" direction="W"/>
+    </country>
+    <country name="Singapore">
+        <rank>4</rank>
+        <year>2011</year>
+        <gdppc>59900</gdppc>
+        <neighbor name="Malaysia" direction="N"/>
+    </country>
+    <country name="Panama">
+        <rank>68</rank>
+        <year>2011</year>
+        <gdppc>13600</gdppc>
+        <neighbor name="Costa Rica" direction="W"/>
+        <neighbor name="Colombia" direction="E"/>
+    </country>
+</data>
+''
+
+root = ET.fromstring(data_as_string)
+
+
+for element in tree.getiterator('node'):
+    print(element.attrib)
+
+
+root = tree.getroot()
+ET.dump(root)
+
+for elem in root:
+	print (elem.tag,elem.attrib)
+#----------------
+'''
 
