@@ -36,9 +36,9 @@ import re
 import pivy
 from pivy import coin
 
-import nurbswb.configuration
-reload (nurbswb.configuration)
-from nurbswb.configuration import getcb
+#import nurbswb.configuration
+#reload (nurbswb.configuration)
+#from nurbswb.configuration import getcb
 
 
 def getMainWindow():
@@ -458,7 +458,8 @@ class Miki(object):
 		##\endcond
 
 		
-		debug = getcb("mikidebug")
+		#debug = getcb("mikidebug")
+		debug=0
 		#debug = 1
 		if debug:
 			say("lines parsed ...")
